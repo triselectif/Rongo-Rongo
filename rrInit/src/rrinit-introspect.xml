@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<node name="/org/rongorongo/rrinit">
+	<interface name="org.rongorongo.apps">
+		<method name="getList">
+			<arg type="a{s(sss)}" name="apps" direction="out"/>
+		</method>
+		<method name="open">
+			<arg type="s" name="id" direction="in"/>
+		</method>
+		<method name="close">
+			<arg type="s" name="id" direction="in"/>
+		</method>
+	</interface>
+</node>
