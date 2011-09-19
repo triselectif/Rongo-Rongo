@@ -1,0 +1,5 @@
+This is the backend of rrLauncher
+
+On a c++ developement ubuntu system, you need libdbus-c++-dev package in order to compile
+
+The eclipse config files are included
