@@ -19,7 +19,7 @@ from datetime import datetime, timedelta
 from random import random
 
 class Square(Scatter):
-    geometry_id = NumericProperty(None)
+    geometry_id = NumericProperty(None)#location on the field where the Square sits
     #content
     name = StringProperty(None)
     image_source = StringProperty(None)
@@ -41,13 +41,13 @@ class Square(Scatter):
         super(Square,self).__init__(**kwargs)
         self.init_layouts()
 
-    def init_layouts(self):    
+    def init_layouts(self):
+        #create a layout for each size so that we can switch
+        #easily from one to another 
+    
         texture_path = self.style['square_texture_path']
         texture = Image(texture_path).texture
         layout_type = self.layout_type
-        
-        #create a layout for each size so that we can switch
-        #easily from one to another 
 
         def create_layout(text):
             with self.layout_type2layout(text).canvas :
@@ -127,7 +127,7 @@ class Square(Scatter):
 class GeometrySquare(Scatter):
     style = DictProperty({'color':(0.5,0.5,0.5,0.5), 'texture_path':'style/border29.png' })
     layout_type = StringProperty('')
-    geometry_id = NumericProperty(0)
+    geometry_id = NumericProperty(0)#location on the field
     
     def __init__(self,**kwargs) :
         super(GeometrySquare, self).__init__(**kwargs)
