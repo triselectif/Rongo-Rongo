@@ -49,6 +49,14 @@ class Square(Scatter):
         #create a layout for each size so that we can switch
         #easily from one to another 
 
+        def create_layout(layout_name, size, text):
+            with layout_name.canvas :
+                Color(a, b, c)        
+                Rectangle(texture = texture, size = layout_name.size )
+            l = Label(text=text)
+            l.pos = self.center
+            layout_name.add_widget( l )
+
         #color
         a = random()
         b = random()
@@ -58,31 +66,16 @@ class Square(Scatter):
         l = Label(text='icon')
         l.pos = self.center
         self.icon_layout.add_widget( l )
-        #small
-        self.small_layout = BoxLayout(size = self.small_size)
-        with self.small_layout.canvas :
-                Color(a, b, c)        
-                Rectangle(texture = texture, size = self.small_layout.size )
-        l = Label(text='small')
-        l.pos = self.center
-        self.small_layout.add_widget( l )
-        #medium
-        self.medium_layout = BoxLayout(size = self.medium_size)
-        with self.medium_layout.canvas :
-                Color(a, b, c)        
-                Rectangle(texture = texture, size = self.medium_layout.size )
-        l = Label(text='medium')
-        l.pos = self.center
-        self.medium_layout.add_widget( l )  
         #large
         self.large_layout = BoxLayout(size = self.large_size)
-        with self.large_layout.canvas :
-                Color(a, b, c)        
-                Rectangle(texture = texture, size = self.large_layout.size )
-        l = Label(text='large')
-        l.pos = self.center
-        self.large_layout.add_widget( l ) 
-        
+        create_layout(self.large_layout,self.large_size,'large')        
+        #medium
+        self.medium_layout = BoxLayout(size = self.medium_size)
+        create_layout(self.medium_layout,self.medium_size,'medium') 
+        #small
+        self.small_layout = BoxLayout(size = self.small_size)
+        create_layout(self.small_layout,self.small_size,'small') 
+
         #add a random layout so that it can be removed by the next function
         self.layout = BoxLayout()
         self.add_widget(self.layout) 
