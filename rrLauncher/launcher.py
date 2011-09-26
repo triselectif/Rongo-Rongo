@@ -150,8 +150,10 @@ class Field(Widget):
     squares = DictProperty( {} )#stores all the squares widgets
     geometry = DictProperty( {} )#geometry = squares' target relative positions and sizes on the field
     geometry_detailed = DictProperty( {} ) #real positions on the field
-    geometry_squares = DictProperty( {} )#stores all the geometry empty square positions
-    
+    geometry_squares = DictProperty( {} ) 
+    #stores all the geometry empty squares as widgets so that we can easily
+    #compare their positions with the real squares
+
     def __init__(self,**kwargs) :
         super(Field, self).__init__(**kwargs)
         self.init_geometry()
