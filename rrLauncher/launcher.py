@@ -29,12 +29,10 @@ class Square(Scatter):
     rotation_90d = NumericProperty(0)
     style = DictProperty( {'square_texture_path' : 'style/border30.png'} )
     layout_type = StringProperty(None) #'icon'/'small'/'medium' or 'large'
-    #field_geometry = DictProperty( {} )#the field geometry is passed to the square
     small_size = ObjectProperty( None )
     medium_size = ObjectProperty( None )
     large_size = ObjectProperty( None )
-    #internal
-    #switch_timestamp = ObjectProperty( (0,datetime.now() ) )
+    #internal variables
     touches = DictProperty( {} ) #current active touches on the widget
 
     def __init__(self,**kwargs) :
@@ -108,6 +106,8 @@ class Square(Scatter):
         self.size = self.layout.size
         
     def on_touch_down(self, touch):
+        #analyse and store touches so that we know on_touch_up which
+        #square was concerned by the touch_up 
         if self.collide_point(touch.x,touch.y):
             self.touches[touch.id] = touch
         super(Square, self).on_touch_down(touch)       
@@ -218,6 +218,7 @@ class Field(Widget):
                 self.add_widget( self.geometry_squares[id] )
 
     def init_squares(self):
+        #create and display squares
         for key,val in self.geometry_detailed.iteritems():
                 id = key
                 pos = val['pos']
