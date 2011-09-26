@@ -49,13 +49,13 @@ class Square(Scatter):
         #create a layout for each size so that we can switch
         #easily from one to another 
 
-        def create_layout(layout_name, size, text):
-            with layout_name.canvas :
+        def create_layout(text):
+            with self.layout_type2layout(text).canvas :
                 Color(a, b, c)        
-                Rectangle(texture = texture, size = layout_name.size )
+                Rectangle(texture = texture, size = self.layout_type2size(text) )
             l = Label(text=text)
             l.pos = self.center
-            layout_name.add_widget( l )
+            self.layout_type2layout(text).add_widget( l )
 
         #color
         a = random()
@@ -68,13 +68,13 @@ class Square(Scatter):
         self.icon_layout.add_widget( l )
         #large
         self.large_layout = BoxLayout(size = self.large_size)
-        create_layout(self.large_layout,self.large_size,'large')        
+        create_layout('large')        
         #medium
         self.medium_layout = BoxLayout(size = self.medium_size)
-        create_layout(self.medium_layout,self.medium_size,'medium') 
+        create_layout('medium') 
         #small
         self.small_layout = BoxLayout(size = self.small_size)
-        create_layout(self.small_layout,self.small_size,'small') 
+        create_layout('small') 
 
         #add a random layout so that it can be removed by the next function
         self.layout = BoxLayout()
@@ -82,13 +82,24 @@ class Square(Scatter):
         #display the right layout
         self.layout_type2function(layout_type)
 
-    def layout_type2function(self,layout_type) :
+    def layout_type2layout(self,layout_type) :
         #print layout_type
         if layout_type == 'large': l = self.large_layout
         elif layout_type == 'medium': l = self.medium_layout
         elif layout_type == 'small': l = self.small_layout
         elif layout_type == 'icon': l = self.icon_layout
-        return self.set_new_layout( l )
+        return l
+
+    def layout_type2size(self,layout_type) :
+        #print layout_type
+        if layout_type == 'large': s = self.large_size
+        elif layout_type == 'medium': s = self.medium_size
+        elif layout_type == 'small': s = self.small_size
+        return s
+
+    def layout_type2function(self,layout_type) :
+        layout = self.layout_type2layout(layout_type)
+        return self.set_new_layout( layout )
 
     def set_new_layout(self, new_layout) : 
         self.remove_widget(self.layout)
