@@ -14,7 +14,7 @@ from kivy.uix.widget import Widget
 from kivy.properties import ObjectProperty, NumericProperty, StringProperty, \
     BooleanProperty, DictProperty, ListProperty
 from kivy.core.image import Image
-from kivy.graphics import Color, Line, Rectangle, LineWidth
+from kivy.graphics import Color, Line, Rectangle, LineWidth, BorderImage
 from kivy.vector import Vector
 
 from datetime import datetime, timedelta
@@ -56,8 +56,9 @@ class Square(Scatter):
 
         def create_layout(text):
             with self.layout_type2layout(text).canvas :
-                Color(a, b, c)        
-                Rectangle(texture = texture, size = self.layout_type2size(text) )
+                Color(a, b, c)
+                BorderImage(source = texture_path,border = (12,12,12,12), size = self.layout_type2size(text) )        
+                #Rectangle(texture = texture, size = self.layout_type2size(text) )
             l = Label(text=text)
             l.pos = self.center
             self.layout_type2layout(text).add_widget( l )
@@ -163,7 +164,8 @@ class GeometrySquare(Scatter):
 
         with self.canvas :
             Color(a, b, c)        
-            Rectangle(texture = texture, size =self.size)
+            #Rectangle(texture = texture, size =self.size)
+            BorderImage(source = texture_path,border = (12,12,12,12), size = self.size )    
         
 
 class Field(Widget):
