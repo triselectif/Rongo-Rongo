@@ -8,9 +8,11 @@ from kivy.uix.label import Label
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
+#from kivy.uix.stacklayout import StackLayout
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.button import Button
 from kivy.uix.widget import Widget
+from kivy.uix.video import Video
 from kivy.properties import ObjectProperty, NumericProperty, StringProperty, \
     BooleanProperty, DictProperty, ListProperty
 from kivy.core.image import Image
@@ -20,16 +22,28 @@ from kivy.vector import Vector
 from datetime import datetime, timedelta
 from random import random
 
+
+
 class Square(Scatter):
     geometry_id = NumericProperty(None)#location on the field where the Square sits
     #content
-    name = StringProperty(None)
-    image_source = StringProperty(None)
-    description = StringProperty(None)
-    screenshot_source = StringProperty(None)
+    title = StringProperty(None)
+    app_type = StringProperty(None) #'info', 'service', 'jeu'
+    authors = StringProperty(None)
+    main_media_type = StringProperty(None) #'image' or 'video'
+    main_media_path = StringProperty(None)
+    alternative_image_path = StringProperty(None)
+    main_description = StringProperty(None)
+    long_description = StringProperty(None)
+    info_title = StringProperty(None)
+    info_text = StringProperty(None)
+    info_conclusion = StringProperty(None)
     #shape
     rotation_90d = NumericProperty(0)
-    style = DictProperty( {'square_texture_path' : 'style/border30.png'} )
+    style = DictProperty( {
+                          'square_texture_path' : 'style/border30.png',
+                          'color' : '0,0,0,0'
+                          } )
     layout_type = StringProperty(None) #'icon'/'small'/'medium' or 'large'
     icon_size = ObjectProperty( None )
     small_size = ObjectProperty( None )
@@ -37,20 +51,17 @@ class Square(Scatter):
     large_size = ObjectProperty( None )
     #internal variables
     touches = DictProperty( {} ) #current active touches on the widget
-    
 
     def __init__(self,**kwargs) :
         super(Square,self).__init__(**kwargs)
         self.init_layouts()
-        """
-        from kivy.uix.image import Image
-        self.icon = Image(source=self.image_source, size_hint=( None, None), size=(72,72) )
-        """
+        
     def init_layouts(self):
         #create a layout for each size so that we can switch
         #easily from one to another 
     
         texture_path = self.style['square_texture_path']
+        from kivy.core.image import Image
         texture = Image(texture_path).texture
         layout_type = self.layout_type
 
@@ -63,22 +74,172 @@ class Square(Scatter):
             l.pos = self.center
             self.layout_type2layout(text).add_widget( l )
 
+        def app_type2name(app_type):
+            if app_type == 'info' : return 'Info'
+            elif app_type == 'service' : return 'Service'
+            elif app_type == 'jeu' : return 'Jeu'
+
         #color
         a = random()
         b = random()
         c = random()
-        #icon
-        self.icon_layout = BoxLayout(size = self.icon_size)
-        create_layout('icon')
-        #large
-        self.large_layout = BoxLayout(size = self.large_size)
-        create_layout('large')        
-        #medium
-        self.medium_layout = BoxLayout(size = self.medium_size)
-        create_layout('medium') 
-        #small
-        self.small_layout = BoxLayout(size = self.small_size)
-        create_layout('small') 
+        ######################### ICON LAYOUT ############################################################
+        texture_path = 'style/square_icon.png'#self.style['square_texture_path']
+        from kivy.core.image import Image
+        texture = Image(texture_path).texture
+  
+        self.icon_layout = BoxLayout(orientation = 'vertical', size = self.icon_size)
+        #create_layout('icon')
+        text = 'icon'
+        with self.layout_type2layout(text).canvas :
+                Color(a, b, c)
+                BorderImage(source = texture_path,border = (12,12,12,12), size = self.layout_type2size(text) )        
+                #Rectangle(texture = texture, size = self.layout_type2size(text) )
+        l = Label(text=self.title, font_size = 8)
+        self.layout_type2layout(text).add_widget( l )
+        from kivy.uix.image import Image
+        alternative_image = Image(source = self.alternative_image_path)
+        self.layout_type2layout(text).add_widget( alternative_image )
+
+        ######################### LARGE LAYOUT ##########################################################
+        texture_path = 'style/square_large.png'#self.style['square_texture_path']
+        from kivy.core.image import Image
+        texture = Image(texture_path).texture
+        
+        self.large_layout = BoxLayout(orientation = 'vertical', size = self.large_size)
+        #create_layout('large')        
+        text = 'large'
+
+        with self.layout_type2layout(text).canvas :
+                Color(a, b, c)
+                #BorderImage(source = 'style/square_medium.png',border = (12,12,12,12), size = self.layout_type2size(text) )        
+                Rectangle(texture = texture, size = self.layout_type2layout(text).size )
+
+        box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.15) )
+        l1 = Label(text=self.title, font_size = 32 )
+        box2 = BoxLayout(orientation = 'vertical', size_hint = (0.4,1) )
+        l2 = Label(text = app_type2name(self.app_type), font_size = 16, halign = 'right' )
+        l3 = Label(text = self.authors, font_size = 10, halign = 'right' )
+        box2.add_widget(l2)
+        box2.add_widget(l3)
+        box.add_widget(l1)
+        box.add_widget(box2)
+        self.layout_type2layout(text).add_widget( box )
+
+        main_box = BoxLayout(orientation = 'vertical', size_hint = (1,0.75) )
+
+        box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.6) )
+        if self.main_media_type == 'image' : 
+            from kivy.uix.image import Image
+            alternative_image = Image(source = self.alternative_image_path, size_hint = (1,1) )
+        elif self.main_media_type == 'video' : 
+            alternative_image = Video(source = self.main_media_path, play=True, size_hint = (1,1) )
+            #play_button = Button(text ='play')
+            #play_button.bind( on_press = alternative_image.play() )
+            #box.add_widget( play_button )
+        #l = Label(text = self.main_description, size_hint = (1,1), font_size = 12 )
+        box.add_widget( alternative_image )
+        #box.add_widget( l )
+
+        main_box.add_widget(box)   
+
+        box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.4) )
+        #alternative image
+        from kivy.uix.image import Image
+        alternative_image = Image(source = self.alternative_image_path, size_hint = (0.25,1) )
+        box.add_widget( alternative_image )
+        #main description
+        box2 = BoxLayout(orientation = 'vertical', size_hint = (0.25,1) )
+        l = Label(text = self.main_description, size_hint = (1,1), halign = 'left',font_size = 12 )
+        box2.add_widget( l )
+        box.add_widget( box2 )
+        #long description        
+        box3 = BoxLayout(orientation = 'horizontal', size_hint = (0.5,1) )
+        l = Label(text = self.long_description, size_hint = (1,1), halign = 'left', font_size = 12 )
+        box3.add_widget( l )
+        box.add_widget(box3)    
+
+        #self.layout_type2layout(text).add_widget( box )
+
+        main_box.add_widget(box)
+        self.layout_type2layout(text).add_widget( main_box ) 
+
+        box = BoxLayout(size_hint = (1,0.1) )
+        l = Label(text='vote and launch', size_hint = (1,1) )
+        box.add_widget(l)
+        self.layout_type2layout(text).add_widget( box )                
+
+        ######################### MEDIUM LAYOUT ##########################################################
+        texture_path = 'style/square_medium.png'#self.style['square_texture_path']
+        from kivy.core.image import Image
+        texture = Image(texture_path).texture
+        
+        self.medium_layout = BoxLayout(orientation = 'vertical', size = self.medium_size)
+        #create_layout('icon')
+        text = 'medium'
+        
+        with self.layout_type2layout(text).canvas :
+                Color(a, b, c)
+                #BorderImage(source = 'style/square_medium.png',border = (12,12,12,12), size = self.layout_type2size(text) )        
+                Rectangle(texture = texture, size = self.medium_layout.size )
+        
+        box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.2) )
+        l1 = Label(text=self.title, font_size = 24 )
+        box2 = BoxLayout(orientation = 'vertical', size_hint = (0.4,1) )
+        l2 = Label(text = app_type2name(self.app_type), font_size = 12, halign = 'right' )
+        l3 = Label(text = self.authors, font_size = 8, halign = 'right' )
+        box2.add_widget(l2)
+        box2.add_widget(l3)
+        box.add_widget(l1)
+        box.add_widget(box2)
+        self.medium_layout.add_widget( box )
+
+        box = BoxLayout(orientation = 'vertical', size_hint = (1,0.6) )
+        if self.main_media_type == 'image' : 
+            from kivy.uix.image import Image
+            alternative_image = Image(source = self.alternative_image_path, size_hint = (1,1) )
+        elif self.main_media_type == 'video' : 
+            alternative_image = Video(source = self.main_media_path, play=True, size_hint = (1,1) )
+            #play_button = Button(text ='play')
+            #play_button.bind( on_press = alternative_image.play() )
+            #box.add_widget( play_button )
+        #l = Label(text = self.main_description, size_hint = (1,1), font_size = 12 )
+        box.add_widget( alternative_image )
+        #box.add_widget( l )
+        self.medium_layout.add_widget( box )
+
+        box = BoxLayout(size_hint = (1,0.2) )
+        l = Label(text='vote and launch', size_hint = (1,1) )
+        box.add_widget(l)
+        self.medium_layout.add_widget( box )
+        
+        ######################### SMALL LAYOUT ##########################################################
+        texture_path = 'style/square_small.png'#self.style['square_texture_path']
+        from kivy.core.image import Image
+        texture = Image(texture_path).texture
+        
+        self.small_layout = BoxLayout(orientation = 'vertical', size = self.small_size)
+        #create_layout('icon')
+        text = 'small'
+        
+        with self.layout_type2layout(text).canvas :
+                Color(a, b, c)
+                #BorderImage(source = 'style/square_medium.png',border = (12,12,12,12), size = self.layout_type2size(text) )        
+                Rectangle(texture = texture, size = self.small_layout.size )
+        
+        box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.2) )
+        l1 = Label(text=self.title, font_size = 16 )
+        box2 = BoxLayout(orientation = 'vertical', size_hint = (0.4,1) )
+        l2 = Label(text = app_type2name(self.app_type), font_size = 10, halign = 'right' )
+        box2.add_widget(l2)
+        box.add_widget(l1)
+        box.add_widget(box2)
+        self.small_layout.add_widget( box )
+        from kivy.uix.image import Image
+        alternative_image = Image(source = self.alternative_image_path, size_hint = (1,0.6) )
+        self.small_layout.add_widget( alternative_image )
+        l = Label(text='vote and launch', size_hint = (1,0.2), font_size = 10 )
+        self.small_layout.add_widget( l )
 
         #add a random layout so that it can be removed by the next function
         self.layout = BoxLayout()
@@ -105,13 +266,7 @@ class Square(Scatter):
     def layout_type2function(self,layout_type) :
         layout = self.layout_type2layout(layout_type)
         return self.set_new_layout( layout )
-    """
-    def lock(self):
-        self.do_translation = False  
-
-    def unlock(self):
-        self.do_translation = True  
-    """
+    
     def set_new_layout(self, new_layout) :
         #self.new_layout = new_layout
         """
@@ -124,11 +279,7 @@ class Square(Scatter):
         self.layout = new_layout
         self.add_widget(self.layout)
         self.size = self.layout.size
-        """
-        if new_layout == "icon" :
-            self.lock()
-        else : self.unlock()  
-        """
+        
     def on_touch_down(self, touch):
         #analyse and store touches so that we know on_touch_up which
         #square was concerned by the touch_up 
@@ -301,7 +452,17 @@ class Field(Widget):
                             small_size = self.get_size('small'),
                             medium_size = self.get_size('medium'),
                             large_size = self.get_size('large'),
-                            image_source = "apps/icon.png"
+                            title = 'NOM XYZ',
+                            app_type = 'info',
+                            authors = 'Realise par : Lapin,\nMichel, Marie-Rose' ,
+                            main_media_type = 'video',
+                            main_media_path = 'apps/vid.avi',
+                            alternative_image_path = 'apps/pic.png',
+                            main_description = 'Lapein oindoz\niuhboiuhqvoiuh\nb oiuhbqdsoiuh\nbv oiuhbqosid\nuhb oiuhbv' ,
+                            long_description = 'Lapein oindoziu\nhboiuhqvoiuhb o\niuhbqdsoiuhbv o\niuhbqosiduhb oiuhbv',
+                            info_title = 'oiuhnoiuhn oiuhn',
+                            info_text = ' uuh i i i                   hhhi u u h iu h i uh iuh iu hi uh iu h',
+                            info_conclusion = 'conclude'
                             )
                 self.add_widget(self.squares[id])
 
@@ -418,9 +579,11 @@ class Field(Widget):
         #switch position with another widget
         #get current properties of the target empty square to switch with 
         target = self.geometry_squares[matcher]
-        target_layout = target.layout_type
+        if int(matcher) >= self.bar_start_geometry_id :
+            target_layout = 'icon'
+        else : target_layout = self.geometry[matcher][2]
         target_pos = target.pos
-        target_size = target.size
+        target_size = self.get_size(target_layout)
         #get current square properties
         current_layout = square.layout_type
         current_pos = self.geometry_squares[str(square.geometry_id)].pos
@@ -433,19 +596,16 @@ class Field(Widget):
         #if empty location
         
         def place_square():
-            if int(matcher) >= self.bar_start_geometry_id :
-                layout_type = 'icon'
-            else : layout_type = self.geometry[matcher][2]
             #move to there
-            if layout_type == 'icon' and square.rotation_90d ==0 : square.pos = target_pos
+            if target_layout == 'icon' and square.rotation_90d ==0 : square.pos = target_pos
             animation = Animation(pos = target_pos, size = target_size, duration = 0.5,t='in_out_cubic')
             animation.start(square)
             #resize
-            square.layout_type2function(layout_type)
+            square.layout_type2function(target_layout)
             square.geometry_id = int(matcher)
         
         #fake a different pos to match user behaviour (i.e. placing the square in the center of the target)
-        #square.center = square.pos         
+        #square.center = square.pos #(changes with rotation .. )        
  
         if target == 0 :
             place_square()
@@ -472,9 +632,6 @@ class Field(Widget):
          
 
 
-
-
-
 class Bar(ScrollView):
     app = ObjectProperty(None)
     style = DictProperty( {'texture_path':'style/border29.png', 'geometry_square_margin' : 13} )
@@ -485,18 +642,8 @@ class Bar(ScrollView):
 
     def __init__(self,**kwargs) :
         super(Bar, self).__init__(**kwargs) 
-        """
-        #draw
-        color = (1,1,1,1) 
-        a,b,c,d = color
-        texture_path = self.style['texture_path']
-        texture = Image(texture_path).texture      
-
-        with self.canvas :
-            Color(a, b, c)        
-            Rectangle(texture = texture, size =self.size)
-        """
-
+        Rectangle(texture = texture, size =self.size)
+        
         m = self.style['geometry_square_margin']
         self.layout = Widget(size_x = 72, size_hint_y=None)
         self.init_geometry()
@@ -548,59 +695,10 @@ class Bar(ScrollView):
         if square.center[0] > self.width :
             print "out"
         else : print "in" 
-        """
-        matcher = self.find_matcher(square)
-        if matcher is not None :
-                self.switch(square, matcher)
-        else : 
-                self.push_back_into_place(square)
-        """
-    """
-    def add_widget(self, widget):
-        if self.container is None:
-            return super(Bar, self).add_widget(widget)
-        # Nop.
-        image = BankImage(source=widget.source_side, bank=self)
-        widget.bank = self
-        self.objects[widget.source_side] = (widget, image)
-        return self.container.add_widget(image)
-    
-    def remove_widget(self, widget):
-        if self.container is None:
-            return super(Bank, self).remove_widget(widget)
-        return self.container.remove_widget(widget)
-    
-    def put_on_field(self, fn, touch):
-        widget, image = self.objects[fn]
-        self.container.remove_widget(image)
-        self.app.field.add_and_track(widget, touch)
-
-    def put_back(self, widget):
-        widget, image = self.objects[widget.source_side]
-        self.app.field.remove_widget(widget)
-        self.container.add_widget(image)
-
-    def on_touch_down(self, touch):
-        if super(Bar, self).on_touch_down(touch):
-            return True
-        for child in self.parent.children:
-            if child is self:
-                continue
-            child.close()
-        self.open()
-
-    def open(self):
-        if self.container in self.children:
-            return
-        super(Bank, self).add_widget(self.container)
-
-    def close(self):
-        if self.container not in self.children:
-            return
-        super(Bank, self).remove_widget(self.container)
-    """
+        
     def add_square(self,square):
         self.layout.add_widget(square)
+
 
 class AppView(FloatLayout):
     app = ObjectProperty(None)
