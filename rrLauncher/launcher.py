@@ -322,6 +322,7 @@ class GeometrySquare(Scatter):
 class Field(Widget):
     app = ObjectProperty(None)
     style = DictProperty({'geometry_square_margin':13  })
+    activate_animations = BooleanProperty( False )
     #internal variables
     squares = DictProperty( {} )#stores all the squares widgets
     geometry = DictProperty( {} )#geometry = squares' target relative positions and sizes on the field
@@ -495,12 +496,17 @@ class Field(Widget):
         
     def push_back_into_place(self,square) :
         id = str(square.geometry_id)
-        animation = Animation(pos = self.geometry_squares[id].pos, duration = 0.2,t='in_quad')
-        animation.start(square)
+        if self.activate_animations : 
+            animation = Animation(pos = self.geometry_squares[id].pos, duration = 0.2,t='in_quad')
+            animation.start(square)
+        else : 
+            square.pos = self.geometry_squares[id].pos
 
     def rotate(self,square, rotation) :
-        animation = Animation(rotation = rotation, duration = 0.2,t='in_quad')
-        animation.start(square)
+        if self.activate_animations : 
+            animation = Animation(rotation = rotation, duration = 0.2,t='in_quad')
+            animation.start(square)
+        else : square.rotation = rotation
     """
     def add_to_bar(self,square) :
         bar = self.app.bar
@@ -598,8 +604,12 @@ class Field(Widget):
         def place_square():
             #move to there
             if target_layout == 'icon' and square.rotation_90d ==0 : square.pos = target_pos
-            animation = Animation(pos = target_pos, size = target_size, duration = 0.5,t='in_out_cubic')
-            animation.start(square)
+            if self.activate_animations : 
+                animation = Animation(pos = target_pos, size = target_size, duration = 0.5,t='in_out_cubic')
+                animation.start(square)
+            else : 
+                square.pos = target_pos
+                square.size = target_size
             #resize
             square.layout_type2function(target_layout)
             square.geometry_id = int(matcher)
@@ -616,10 +626,19 @@ class Field(Widget):
             target.size = current_size
         
         #switch pos and size
-        animation = Animation(pos = target_pos, size = target_size, duration = 0.4,t='in_out_cubic')
-        animation.start(square)
-        animation = Animation(pos = current_pos, size = current_size, duration = 0.4,t='in_out_cubic')
-        animation.start(target)
+        if self.activate_animations : 
+            animation = Animation(pos = target_pos, size = target_size, duration = 0.4,t='in_out_cubic')
+            animation.start(square)
+        else :
+            square.pos = target_pos
+            square.size = target_size
+        if self.activate_animations : 
+            animation = Animation(pos = current_pos, size = current_size, duration = 0.4,t='in_out_cubic')
+            animation.start(target)
+        else :
+            target.pos = current_pos
+            target.size = current_size
+
         #switch layouts
         square.layout_type = target_layout
         target.layout_type = current_layout
@@ -725,7 +744,7 @@ class LauncherApp(App):
         #self.bar = Bar(app = self )
         #self.appview.add_widget(self.bar)
         
-        self.field = Field(app=self)
+        self.field = Field(app=self, activate_animations = True)
         self.appview.add_widget(self.field)
         
         #self.field.load_bank() 
