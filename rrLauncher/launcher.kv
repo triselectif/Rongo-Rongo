@@ -1,0 +1,62 @@
+#:kivy 1.0
+
+<Field>:
+	x: 0
+	width: 1280
+	height: 620
+	
+
+		
+<Var>:
+	height: 600
+	size_hint_y: None
+		
+	canvas.before:
+		Color:
+			rgb: .1, .1, .1
+		BorderImage:
+			source: 'style/border.png'
+			border: 40, 40, 40, 40
+			pos: self.pos
+			size: 100, self.height
+
+	GridLayout:
+		cols: 1
+		size_hint: None, None
+		pos: root.pos
+		spacing: 14
+		padding: 15
+		on_children: self.size = (0, 0)
+
+		Label:
+			text: 'bleh'
+<Bar>:
+	height: 620
+	size_hint_y: None
+		
+	
+	
+<AppView>:
+	
+	ScrollView:
+		scroll_timeout: 200
+		width: 155
+		size_hint_x: None
+		do_scroll_x: False
+
+		canvas.before:
+			Color:
+				rgb: 1, 1, 1
+			Rectangle:
+				texture: root.texture_sidebar
+				tex_coords: [root.texture_sidebar, 0, 0, 1, 0, 1, self.height / 5, 0, self.height / 5][1:]
+				pos: self.pos
+				size: self.size
+
+		BoxLayout:
+			padding: 14
+			spacing: 14
+			size_hint_y: None
+			on_size: print 'SIZE', args
+		
+
