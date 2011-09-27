@@ -275,7 +275,7 @@ class Field(Widget):
                            size = icon_size, 
                            layout_type = "icon", 
                            do_scale = False, 
-                           do_rotation = True, 
+                           do_rotation = False, 
                            do_translation = False, 
                            auto_bring_to_front = False
                            )
@@ -354,12 +354,18 @@ class Field(Widget):
         geometry_id = str(square.geometry_id)
         geometry_squares = self.geometry_squares
         
-        def find(x1,y1) : 
-            matching_list = [] 
+        def find(x1,y1,target_is_bar) : 
+            matching_list = []
             for key,val in geometry_squares.iteritems() :
                 if not str(key) == geometry_id :
-                    if val.collide_point(x1,y1) :
-                        matching_list.append(key)
+                    if target_is_bar is False :
+                        if val.collide_point(x1,y1) :
+                            matching_list.append(key)
+                    else :
+                        #all the icons are possibly a potential location   
+                        if key >= self.bar_start_geometry_id :
+                            matching_list.append(key)
+
             l = len(matching_list)
             #one matches
             if l == 1:
@@ -382,19 +388,24 @@ class Field(Widget):
 
         #the center of the current widget is the reference
         x1,y1 = square.center
-        m = find(x1,y1)
+        m = find(x1,y1, False)
         
         if m == None :
             #one more try
             #check if within the fast launcher bar
             #if yes, better use the left border than the center
+            #the left border center becomes the reference
             bar_width = self.bar_width
-            x1 = square.x
+            rot = square.rotation_90d
+            
+            #chosen to be independant from the rotation
+            x1 = square.x + square.width/2
             y1 = square.y + square.height/2
+            
             if x1 < bar_width :
                 #print "in the bar"
                 #find the most accurate position
-                m = find(x1,y1)
+                m = find(x1,y1,True)
                 return m 
             else : 
                 return None
@@ -431,6 +442,9 @@ class Field(Widget):
             square.layout_type2function(layout_type)
             square.geometry_id = int(matcher)
         
+        #fake a different pos to match user behaviour (i.e. placing the square in the center of the target)
+        #square.center = square.pos         
+ 
         if target == 0 :
             place_square()
             return
