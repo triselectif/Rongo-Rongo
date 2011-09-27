@@ -323,16 +323,6 @@ class Field(Widget):
             self.rotate(square, target_rot)
 
             #focus on translation
-            """
-            #check if within the fast launcher bar
-            bar = self.app.bar.layout
-            x,y = self.to_window(square.x,square.center[1])
-            #print x,y,bar.width
-            if bar.collide_point(x,y) or x < bar.x :
-                print "in the bar"
-                self.add_to_bar(square)
-                return
-            """
             matcher = self.find_matcher(square)
             if matcher is not None :
                 self.switch(square, matcher)
@@ -364,33 +354,52 @@ class Field(Widget):
         geometry_id = str(square.geometry_id)
         geometry_squares = self.geometry_squares
         
-        #center of the current widget is the reference
-        x1,y1 = square.center
+        def find(x1,y1) : 
+            matching_list = [] 
+            for key,val in geometry_squares.iteritems() :
+                if not str(key) == geometry_id :
+                    if val.collide_point(x1,y1) :
+                        matching_list.append(key)
+            l = len(matching_list)
+            #one matches
+            if l == 1:
+                return matching_list[0]
+            #several match, get the closest
+            elif l>1 :
+                closest_dist = 1000000000000000000000
+                closest_widget = 0 
+                for key in matching_list :
+                    #get distance to target widget center
+                    x2,y2 = geometry_squares[key].center        
+                    dist = Vector(x1,y1).distance( Vector(x2,y2) )
+                    if dist < closest_dist : 
+                        closest_dist = dist
+                        closest_widget = key
+                return closest_widget
+            #none matches
+            elif l == 0 : 
+                return None
 
-        matching_list = [] 
-        for key,val in geometry_squares.iteritems() :
-            if not str(key) == geometry_id :
-                if val.collide_point(x1,y1) :
-                    matching_list.append(key)
-        l = len(matching_list)
-        #one matches
-        if l == 1:
-            return matching_list[0]
-        #none matches
-        elif l == 0 : 
-            return None
-        #several match, get the closest
-        elif l>1 :
-            closest_dist = 1000000000000000000000
-            closest_widget = 0 
-            for key in matching_list :
-                #get distance to target widget center
-                x2,y2 = geometry_squares[key].center        
-                dist = Vector(x1,y1).distance( Vector(x2,y2) )
-                if dist < closest_dist : 
-                    closest_dist = dist
-                    closest_widget = key
-            return closest_widget
+        #the center of the current widget is the reference
+        x1,y1 = square.center
+        m = find(x1,y1)
+        
+        if m == None :
+            #one more try
+            #check if within the fast launcher bar
+            #if yes, better use the left border than the center
+            bar_width = self.bar_width
+            x1 = square.x
+            y1 = square.y + square.height/2
+            if x1 < bar_width :
+                #print "in the bar"
+                #find the most accurate position
+                m = find(x1,y1)
+                return m 
+            else : 
+                return None
+        else : 
+            return m 
 
     def switch(self, square, matcher) :    
         #switch position with another widget
