@@ -41,7 +41,7 @@ class Square(Scatter):
     #shape
     rotation_90d = NumericProperty(0)
     style = DictProperty( {
-                          'square_texture_path' : 'style/border30.png',
+                          'square_texture_path' : 'style/border31.png',
                           'color' : '0,0,0,0'
                           } )
     layout_type = StringProperty(None) #'icon'/'small'/'medium' or 'large'
@@ -102,6 +102,10 @@ class Square(Scatter):
         self.layout_type2layout(text).add_widget( alternative_image )
 
         ######################### LARGE LAYOUT ##########################################################
+        """
+        self.large_layout = BoxLayout(orientation = 'vertical', size = self.large_size)
+        create_layout('large')   
+        """
         texture_path = 'style/square_large.png'#self.style['square_texture_path']
         from kivy.core.image import Image
         texture = Image(texture_path).texture
@@ -168,8 +172,12 @@ class Square(Scatter):
         l = Label(text='vote and launch', size_hint = (1,1) )
         box.add_widget(l)
         self.layout_type2layout(text).add_widget( box )                
-
+        
         ######################### MEDIUM LAYOUT ##########################################################
+        """
+        self.medium_layout = BoxLayout(orientation = 'vertical', size = self.medium_size)
+        create_layout('medium')
+        """ 
         texture_path = 'style/square_medium.png'#self.style['square_texture_path']
         from kivy.core.image import Image
         texture = Image(texture_path).texture
@@ -300,7 +308,7 @@ class Square(Scatter):
     
          
 class GeometrySquare(Scatter):
-    style = DictProperty({'color':(0.5,0.5,0.5,0.5), 'texture_path':'style/border29.png' })
+    style = DictProperty({'color':(0.5,0.5,0.5,0.5), 'texture_path':'style/border31.png' })
     layout_type = StringProperty('')
     geometry_id = NumericProperty(0)#location on the field
     
@@ -316,7 +324,7 @@ class GeometrySquare(Scatter):
         with self.canvas :
             Color(a, b, c)        
             #Rectangle(texture = texture, size =self.size)
-            BorderImage(source = texture_path,border = (12,12,12,12), size = self.size )    
+            BorderImage(source = texture_path,border = (5,5,5,5), size = self.size )    
         
 
 class Field(Widget):
@@ -469,8 +477,8 @@ class Field(Widget):
 
                 #in case the screen is displayed vertically
                 if self.geometry["vertical"] == 'True' :
-                    self.rotate(self.squares[id], 90)
-                    self.squares[id].rotation_90d = 1
+                    self.rotate(self.squares[id], -90)
+                    self.squares[id].rotation_90d = 3
 
     def process_touch_up(self, square) :
             #focus on rotation
@@ -503,10 +511,8 @@ class Field(Widget):
             square.pos = self.geometry_squares[id].pos
 
     def rotate(self,square, rotation) :
-        if self.activate_animations : 
-            animation = Animation(rotation = rotation, duration = 0.2,t='in_quad')
-            animation.start(square)
-        else : square.rotation = rotation
+        square.rotation = rotation
+        print square.pos
     """
     def add_to_bar(self,square) :
         bar = self.app.bar
@@ -583,17 +589,24 @@ class Field(Widget):
 
     def switch(self, square, matcher) :    
         #switch position with another widget
-        #get current properties of the target empty square to switch with 
+
+        def get_layout_type(geometry_id) :
+            if int(matcher) >= self.bar_start_geometry_id :
+                return 'icon'
+            else : 
+                return self.geometry[ str(geometry_id) ][2]
+ 
+        #get current properties of the target empty square to switch with
         target = self.geometry_squares[matcher]
-        if int(matcher) >= self.bar_start_geometry_id :
-            target_layout = 'icon'
-        else : target_layout = self.geometry[matcher][2]
+        target_layout = get_layout_type(int(matcher))
         target_pos = target.pos
         target_size = self.get_size(target_layout)
+        
         #get current square properties
-        current_layout = square.layout_type
+        #current_layout = square.layout_type #this way was buggy
+        current_layout = get_layout_type(square.geometry_id)
         current_pos = self.geometry_squares[str(square.geometry_id)].pos
-        current_size = square.size
+        current_size = self.get_size(current_layout)#target.size
         #get the target square
         target = 0
         for key,val in self.squares.iteritems() :
@@ -620,10 +633,6 @@ class Field(Widget):
         if target == 0 :
             place_square()
             return
-        #switch sizes
-        if current_size <> target_size : 
-            square.size = target_size
-            target.size = current_size
         
         #switch pos and size
         if self.activate_animations : 
@@ -647,13 +656,21 @@ class Field(Widget):
         target.layout_type2function(current_layout)
         #store pos
         target.geometry_id = square.geometry_id
-        square.geometry_id = int(matcher)                    
-         
+        square.geometry_id = int(matcher) 
+        
+        """
+        #control
+        #on current square
+        if square.pos == self.geometry_squares[str(square.geometry_id)].pos : 
+            print True
+        else : 
+            print False                   
+        """ 
 
 
 class Bar(ScrollView):
     app = ObjectProperty(None)
-    style = DictProperty( {'texture_path':'style/border29.png', 'geometry_square_margin' : 13} )
+    style = DictProperty( {'texture_path':'style/border31.png', 'geometry_square_margin' : 13} )
     geometry = DictProperty( {} )
     icon_size = ObjectProperty( None )
     start_geometry_id = NumericProperty( None ) #so that there's no common index with the field
