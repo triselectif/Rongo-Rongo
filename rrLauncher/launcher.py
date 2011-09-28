@@ -51,11 +51,12 @@ class Square(Scatter):
     large_size = ObjectProperty( None )
     #internal variables
     touches = DictProperty( {} ) #current active touches on the widget
+    buttons = DictProperty( {} ) #store buttons widgets
 
     def __init__(self,**kwargs) :
         super(Square,self).__init__(**kwargs)
         self.init_layouts()
-        
+
     def init_layouts(self):
         #create a layout for each size so that we can switch
         #easily from one to another 
@@ -163,14 +164,20 @@ class Square(Scatter):
         box3.add_widget( l )
         box.add_widget(box3)    
 
-        #self.layout_type2layout(text).add_widget( box )
-
         main_box.add_widget(box)
+
         self.layout_type2layout(text).add_widget( main_box ) 
 
-        box = BoxLayout(size_hint = (1,0.1) )
-        l = Label(text='vote and launch', size_hint = (1,1) )
-        box.add_widget(l)
+        box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.07) )
+        box.padding = 10 #box.height*0.15
+        box.spacing = self.layout_type2size(text)[0]*0.72
+        vote_button = Button(text = 'vote') #, size = (box.width*0.25 - margin[0], box.height - 2*margin[1]), pos=margin) #size_hint = (0.5,1) )
+        vote_button.bind( on_press = self.vote )
+        box.add_widget( vote_button ) 
+        launch_button = Button(text = 'lancer') #, size = (box.width*0.25, box.height - 2*margin[1]), pos=(box.width - margin[0], margin[1]) ) 
+        launch_button.bind( on_press = self.launch ) 
+        box.add_widget( launch_button )
+
         self.layout_type2layout(text).add_widget( box )                
         
         ######################### MEDIUM LAYOUT ##########################################################
@@ -216,9 +223,16 @@ class Square(Scatter):
         #box.add_widget( l )
         self.medium_layout.add_widget( box )
 
-        box = BoxLayout(size_hint = (1,0.2) )
-        l = Label(text='vote and launch', size_hint = (1,1) )
-        box.add_widget(l)
+        box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.15) )
+        box.padding = 10 #box.height*0.15
+        box.spacing = self.layout_type2size(text)[0]*0.46
+        vote_button = Button(text = 'voter') #, size = (box.width*0.25 - margin[0], box.height - 2*margin[1]), pos=margin) #size_hint = (0.5,1) )
+        vote_button.bind( on_press = self.vote )
+        box.add_widget( vote_button ) 
+        launch_button = Button(text = 'lancer') #, size = (box.width*0.25, box.height - 2*margin[1]), pos=(box.width - margin[0], margin[1]) ) 
+        launch_button.bind( on_press = self.launch ) 
+        box.add_widget( launch_button )
+        
         self.medium_layout.add_widget( box )
         
         ######################### SMALL LAYOUT ##########################################################
@@ -246,8 +260,18 @@ class Square(Scatter):
         from kivy.uix.image import Image
         alternative_image = Image(source = self.alternative_image_path, size_hint = (1,0.6) )
         self.small_layout.add_widget( alternative_image )
-        l = Label(text='vote and launch', size_hint = (1,0.2), font_size = 10 )
-        self.small_layout.add_widget( l )
+        
+        box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.2) )
+        box.padding = 2 #box.height*0.15
+        box.spacing = self.layout_type2size(text)[0]*0.5
+        vote_button = Button(text = 'vote') #, size = (box.width*0.25 - margin[0], box.height - 2*margin[1]), pos=margin) #size_hint = (0.5,1) )
+        vote_button.bind( on_press = self.vote )
+        box.add_widget( vote_button ) 
+        launch_button = Button(text = 'lancer') #, size = (box.width*0.25, box.height - 2*margin[1]), pos=(box.width - margin[0], margin[1]) ) 
+        launch_button.bind( on_press = self.launch ) 
+        box.add_widget( launch_button )
+        
+        self.small_layout.add_widget( box )
 
         #add a random layout so that it can be removed by the next function
         self.layout = BoxLayout()
@@ -283,11 +307,24 @@ class Square(Scatter):
         animation.start(self.layout)
         """
         #def set_new_layout2(self,a,b) :
-        self.remove_widget(self.layout)
+        #self.remove_widget(self.layout)
+        self.clear_widgets()
         self.layout = new_layout
         self.add_widget(self.layout)
         self.size = self.layout.size
-        
+        """
+        buttons = self.buttons
+        for key,val in buttons.iteritems(): 
+            val.size = self.get_launch_button_size(key) 
+            self.add_widget( buttons[key] )
+        """
+
+    def launch(self,a):
+        print 'launch app ' + self.title 
+
+    def vote(self,a):
+        print 'vote for app ' + self.title       
+    
     def on_touch_down(self, touch):
         #analyse and store touches so that we know on_touch_up which
         #square was concerned by the touch_up 
@@ -591,7 +628,7 @@ class Field(Widget):
         #switch position with another widget
 
         def get_layout_type(geometry_id) :
-            if int(matcher) >= self.bar_start_geometry_id :
+            if int(geometry_id) >= self.bar_start_geometry_id :
                 return 'icon'
             else : 
                 return self.geometry[ str(geometry_id) ][2]
