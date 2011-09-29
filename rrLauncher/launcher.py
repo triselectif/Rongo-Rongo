@@ -22,8 +22,7 @@ from kivy.clock import Clock
 
 from datetime import datetime, timedelta
 from random import random
-
-   
+       
 
 class Square(Scatter):
     geometry_id = NumericProperty(None)#location on the field where the Square sits
@@ -71,6 +70,14 @@ class Square(Scatter):
             self.buttons.spacing = 5# self.layout_type2size(text)[0]*0.46
             self.play_button = Button(text ='play\nstop', size_hint = (1,0.5) )
             self.play_button.bind( on_press = self.start_video )
+            """
+            from kivy.core.image import Image
+            texture = Image('style/play.png').texture
+            with self.play_button.canvas:
+                Color(1., 1., 0)
+                Rectangle(size=self.play_button.size, texture = texture)
+            #self.play_button.texture = texture
+            """
             self.buttons.add_widget( self.play_button )
             self.sound_button = Button(text ='mute\nunmute', size_hint = (1,0.5) )
             self.sound_button.bind( on_press = self.unmute )
@@ -194,20 +201,7 @@ class Square(Scatter):
         elif self.main_media_type == 'video' : 
             box2 = BoxLayout(orientation = 'vertical', size_hint = (1,1) )
             self.video_box_large = BoxLayout(orientation = 'horizontal', size_hint = (1,1) )
-            #self.main_media_large = Video(source = self.main_media_path, play=False, size_hint = (1,0.85) )
-            """
-            box3 = BoxLayout(orientation = 'horizontal', size_hint = (1,0.15) )
-            box3.padding = 10 #box.height*0.15
-            box3.spacing = self.layout_type2size(text)[0]*0.72
-            play_button = Button(text ='play/stop', size_hint = (0.5,1) )
-            play_button.bind( on_press = self.start_video )
-            box3.add_widget( play_button )
-            sound_button = Button(text ='unmute', size_hint = (0.5,1) )
-            sound_button.bind( on_press = self.unmute )
-            box3.add_widget( sound_button )
-            """
             box2.add_widget( self.video_box_large)
-            #box2.add_widget( box3 )
             box.add_widget( box2 )            
 
         main_box.add_widget(box)   
@@ -282,20 +276,7 @@ class Square(Scatter):
         elif self.main_media_type == 'video' : 
             box2 = BoxLayout(orientation = 'horizontal', size_hint = (1,1) )
             self.video_box_medium = BoxLayout(orientation = 'horizontal', size_hint = (1,1) )
-            #self.main_media_medium = Video(source = self.main_media_path, play=False, size_hint = (0.8,1) )
-            """
-            box3 = BoxLayout(orientation = 'vertical', size_hint = (0.17,1) )
-            box3.padding = 5 #box.height*0.15
-            box3.spacing = 5# self.layout_type2size(text)[0]*0.46
-            play_button = Button(text ='play\nstop', size_hint = (1,0.5) )
-            play_button.bind( on_press = self.start_video )
-            box3.add_widget( play_button )
-            sound_button = Button(text ='mute\nunmute', size_hint = (1,0.5) )
-            sound_button.bind( on_press = self.unmute )
-            box3.add_widget( sound_button )
-            """
             box2.add_widget( self.video_box_medium )
-            #box2.add_widget( box3 )
             box.add_widget( box2 ) 
 
         self.layout_type2layout(text).add_widget( box ) 
