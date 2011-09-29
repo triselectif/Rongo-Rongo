@@ -60,7 +60,7 @@ class Square(Scatter):
         super(Square,self).__init__(**kwargs)
         
         if self.main_media_type == 'video' :
-            self.video = Video(source = self.video_path, play=False )
+            self.video = Video(source = self.video_path, play=False, options = {'eos':'loop'} )
             Clock.schedule_once(self.start_video,0.2)
             Clock.schedule_once(self.start_video,2.4) 
             #self.add_widget(self.video)
