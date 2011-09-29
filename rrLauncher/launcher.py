@@ -18,20 +18,23 @@ from kivy.properties import ObjectProperty, NumericProperty, StringProperty, \
 from kivy.core.image import Image
 from kivy.graphics import Color, Line, Rectangle, LineWidth, BorderImage
 from kivy.vector import Vector
+from kivy.clock import Clock
 
 from datetime import datetime, timedelta
 from random import random
 
-
+   
 
 class Square(Scatter):
     geometry_id = NumericProperty(None)#location on the field where the Square sits
     #content
+    id = NumericProperty(0)
     title = StringProperty(None)
     app_type = StringProperty(None) #'info', 'service', 'jeu'
     authors = StringProperty(None)
     main_media_type = StringProperty(None) #'image' or 'video'
-    main_media_path = StringProperty(None)
+    image_path = StringProperty(None)
+    video_path = StringProperty(None)
     alternative_image_path = StringProperty(None)
     main_description = StringProperty(None)
     long_description = StringProperty(None)
@@ -51,12 +54,60 @@ class Square(Scatter):
     large_size = ObjectProperty( None )
     #internal variables
     touches = DictProperty( {} ) #current active touches on the widget
-    buttons = DictProperty( {} ) #store buttons widgets
+    #buttons = DictProperty( {} ) #store buttons widgets
 
     def __init__(self,**kwargs) :
         super(Square,self).__init__(**kwargs)
-        self.init_layouts()
+        
+        if self.main_media_type == 'video' :
+            self.video = Video(source = self.video_path, play=False )
+            Clock.schedule_once(self.start_video,0.2)
+            Clock.schedule_once(self.start_video,2.4) 
+            #self.add_widget(self.video)
+            #self.play_but = Button(text = 'play')
+            
+            self.buttons = BoxLayout(orientation = 'vertical' )
+            self.buttons.padding = 5 #box.height*0.15
+            self.buttons.spacing = 5# self.layout_type2size(text)[0]*0.46
+            self.play_button = Button(text ='play\nstop', size_hint = (1,0.5) )
+            self.play_button.bind( on_press = self.start_video )
+            self.buttons.add_widget( self.play_button )
+            self.sound_button = Button(text ='mute\nunmute', size_hint = (1,0.5) )
+            self.sound_button.bind( on_press = self.unmute )
+            self.buttons.add_widget( self.sound_button )
+            
+             
+        self.init_layouts()  
 
+        #init video to the front at the right location
+        #self.layout_type2function(self.layout_type)
+
+
+    def start_video(self,a) :
+            m = self.video 
+            if m.play == False : 
+                m.play=True
+                self.unmute(self.uid)
+                self.play_button.text = 'stop'
+            else : 
+                m.play=False
+                self.play_button.text = 'play'
+
+    def mute(self):
+        if self.main_media_type == 'video' :
+            self.video.volume = 0
+            self.sound_button.text = 'unmute'
+   
+    def unmute(self,a):
+        if self.main_media_type == 'video' :
+            if self.video.volume == 1:
+                self.video.volume = 0
+                self.sound_button.text = 'unmute'
+            else :     
+                self.video.volume = 1
+                self.parent.mute(self.uid)
+                self.sound_button.text = 'mute'
+  
     def init_layouts(self):
         #create a layout for each size so that we can switch
         #easily from one to another 
@@ -79,6 +130,8 @@ class Square(Scatter):
             if app_type == 'info' : return 'Info'
             elif app_type == 'service' : return 'Service'
             elif app_type == 'jeu' : return 'Jeu'
+
+        
 
         #color
         a = random()
@@ -107,7 +160,7 @@ class Square(Scatter):
         self.large_layout = BoxLayout(orientation = 'vertical', size = self.large_size)
         create_layout('large')   
         """
-        texture_path = 'style/square_large.png'#self.style['square_texture_path']
+        texture_path='style/square_large.png'#self.style['square_texture_path']
         from kivy.core.image import Image
         texture = Image(texture_path).texture
         
@@ -136,15 +189,26 @@ class Square(Scatter):
         box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.6) )
         if self.main_media_type == 'image' : 
             from kivy.uix.image import Image
-            alternative_image = Image(source = self.alternative_image_path, size_hint = (1,1) )
+            image_large = Image(source = self.alternative_image_path, size_hint = (1,1) )
+            box.add_widget( image_large ) 
         elif self.main_media_type == 'video' : 
-            alternative_image = Video(source = self.main_media_path, play=True, size_hint = (1,1) )
-            #play_button = Button(text ='play')
-            #play_button.bind( on_press = alternative_image.play() )
-            #box.add_widget( play_button )
-        #l = Label(text = self.main_description, size_hint = (1,1), font_size = 12 )
-        box.add_widget( alternative_image )
-        #box.add_widget( l )
+            box2 = BoxLayout(orientation = 'vertical', size_hint = (1,1) )
+            self.video_box_large = BoxLayout(orientation = 'horizontal', size_hint = (1,1) )
+            #self.main_media_large = Video(source = self.main_media_path, play=False, size_hint = (1,0.85) )
+            """
+            box3 = BoxLayout(orientation = 'horizontal', size_hint = (1,0.15) )
+            box3.padding = 10 #box.height*0.15
+            box3.spacing = self.layout_type2size(text)[0]*0.72
+            play_button = Button(text ='play/stop', size_hint = (0.5,1) )
+            play_button.bind( on_press = self.start_video )
+            box3.add_widget( play_button )
+            sound_button = Button(text ='unmute', size_hint = (0.5,1) )
+            sound_button.bind( on_press = self.unmute )
+            box3.add_widget( sound_button )
+            """
+            box2.add_widget( self.video_box_large)
+            #box2.add_widget( box3 )
+            box.add_widget( box2 )            
 
         main_box.add_widget(box)   
 
@@ -178,7 +242,8 @@ class Square(Scatter):
         launch_button.bind( on_press = self.launch ) 
         box.add_widget( launch_button )
 
-        self.layout_type2layout(text).add_widget( box )                
+        self.layout_type2layout(text).add_widget( box )
+        
         
         ######################### MEDIUM LAYOUT ##########################################################
         """
@@ -198,7 +263,7 @@ class Square(Scatter):
                 #BorderImage(source = 'style/square_medium.png',border = (12,12,12,12), size = self.layout_type2size(text) )        
                 Rectangle(texture = texture, size = self.medium_layout.size )
         
-        box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.2) )
+        box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.13) )
         l1 = Label(text=self.title, font_size = 24 )
         box2 = BoxLayout(orientation = 'vertical', size_hint = (0.4,1) )
         l2 = Label(text = app_type2name(self.app_type), font_size = 12, halign = 'right' )
@@ -207,24 +272,36 @@ class Square(Scatter):
         box2.add_widget(l3)
         box.add_widget(l1)
         box.add_widget(box2)
-        self.medium_layout.add_widget( box )
+        self.layout_type2layout(text).add_widget( box ) 
 
-        box = BoxLayout(orientation = 'vertical', size_hint = (1,0.6) )
+        box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.8) )
         if self.main_media_type == 'image' : 
             from kivy.uix.image import Image
-            alternative_image = Image(source = self.alternative_image_path, size_hint = (1,1) )
+            image_medium = Image(source = self.alternative_image_path, size_hint = (1,1) )
+            box.add_widget( image_medium ) 
         elif self.main_media_type == 'video' : 
-            alternative_image = Video(source = self.main_media_path, play=True, size_hint = (1,1) )
-            #play_button = Button(text ='play')
-            #play_button.bind( on_press = alternative_image.play() )
-            #box.add_widget( play_button )
-        #l = Label(text = self.main_description, size_hint = (1,1), font_size = 12 )
-        box.add_widget( alternative_image )
-        #box.add_widget( l )
-        self.medium_layout.add_widget( box )
+            box2 = BoxLayout(orientation = 'horizontal', size_hint = (1,1) )
+            self.video_box_medium = BoxLayout(orientation = 'horizontal', size_hint = (1,1) )
+            #self.main_media_medium = Video(source = self.main_media_path, play=False, size_hint = (0.8,1) )
+            """
+            box3 = BoxLayout(orientation = 'vertical', size_hint = (0.17,1) )
+            box3.padding = 5 #box.height*0.15
+            box3.spacing = 5# self.layout_type2size(text)[0]*0.46
+            play_button = Button(text ='play\nstop', size_hint = (1,0.5) )
+            play_button.bind( on_press = self.start_video )
+            box3.add_widget( play_button )
+            sound_button = Button(text ='mute\nunmute', size_hint = (1,0.5) )
+            sound_button.bind( on_press = self.unmute )
+            box3.add_widget( sound_button )
+            """
+            box2.add_widget( self.video_box_medium )
+            #box2.add_widget( box3 )
+            box.add_widget( box2 ) 
 
-        box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.15) )
-        box.padding = 10 #box.height*0.15
+        self.layout_type2layout(text).add_widget( box ) 
+
+        box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.1) )
+        box.padding = 5 #box.height*0.15
         box.spacing = self.layout_type2size(text)[0]*0.46
         vote_button = Button(text = 'voter') #, size = (box.width*0.25 - margin[0], box.height - 2*margin[1]), pos=margin) #size_hint = (0.5,1) )
         vote_button.bind( on_press = self.vote )
@@ -272,12 +349,12 @@ class Square(Scatter):
         box.add_widget( launch_button )
         
         self.small_layout.add_widget( box )
-
+        
         #add a random layout so that it can be removed by the next function
-        self.layout = BoxLayout()
-        self.add_widget(self.layout) 
+        #self.layout = BoxLayout()
+        #self.add_widget(self.layout) 
         #display the right layout
-        self.layout_type2function(layout_type)
+        self.layout_type2function(layout_type, True)        
 
     def layout_type2layout(self,layout_type) :
         #print layout_type
@@ -295,11 +372,12 @@ class Square(Scatter):
         elif layout_type == 'icon': s = self.icon_size
         return s
 
-    def layout_type2function(self,layout_type) :
+    def layout_type2function(self,layout_type, startup) :
         layout = self.layout_type2layout(layout_type)
-        return self.set_new_layout( layout )
+        #self.layout_type = layout_type
+        return self.set_new_layout( layout, layout_type, startup )
     
-    def set_new_layout(self, new_layout) :
+    def set_new_layout(self, new_layout, layout_type, startup) :
         #self.new_layout = new_layout
         """
         animation = Animation(size = new_layout.size, duration = 1,t='in_quad')
@@ -312,12 +390,48 @@ class Square(Scatter):
         self.layout = new_layout
         self.add_widget(self.layout)
         self.size = self.layout.size
+
+        if self.main_media_type == 'video':
+            self.fit_video(layout_type, startup)
         """
         buttons = self.buttons
         for key,val in buttons.iteritems(): 
             val.size = self.get_launch_button_size(key) 
             self.add_widget( buttons[key] )
         """
+
+    def fit_video(self, layout_type, startup):
+        if not startup == True : 
+            if layout_type == 'medium':
+                self.video.pos = self.video_box_medium.pos
+                self.video.size = self.video_box_medium.size
+            elif layout_type == 'large':
+                self.video.pos = self.video_box_large.pos
+                self.video.size = self.video_box_large.size
+            elif layout_type in ['small','icon']:
+                self.video.size = (0,0)
+        else : #self.video_box_large.size is nul at startup..
+            #print self.video_box_large.size  
+            if layout_type == 'medium':
+                #self.video.pos = self.video_box_medium.pos
+                self.video.size = self.size
+            elif layout_type == 'large':
+                #self.video.pos = self.video_box_large.pos
+                self.video.size = self.size
+            elif layout_type in ['small','icon']:
+                self.video.size = (0,0)
+                
+        #video back to the front on top of the layout
+        self.remove_widget(self.video)
+        self.add_widget(self.video)
+        
+        self.buttons.pos = self.video.pos
+        self.buttons.width = self.video.width /4
+        self.buttons.height = self.video.height /3
+        self.remove_widget(self.buttons)
+        if not layout_type in ['small','icon']:
+            self.add_widget(self.buttons)
+
 
     def launch(self,a):
         print 'launch app ' + self.title 
@@ -397,6 +511,11 @@ class Field(Widget):
         l = l * width - 2*margin
         h = h * height - 2*margin
         return (l,h) 
+
+    def square_is_in_the_bar(self,square):
+        if square.geometry_id < self.bar_start_geometry_id :
+            return False
+        else : return True
     
     def init_geometry(self):
         #Import the json file that defines it
@@ -498,11 +617,13 @@ class Field(Widget):
                             small_size = self.get_size('small'),
                             medium_size = self.get_size('medium'),
                             large_size = self.get_size('large'),
+                            id = 0,
                             title = 'NOM XYZ',
                             app_type = 'info',
                             authors = 'Realise par : Lapin,\nMichel, Marie-Rose' ,
                             main_media_type = 'video',
-                            main_media_path = 'apps/vid.avi',
+                            image_path = 'apps/pic.png',
+                            video_path = 'apps/vid.avi',
                             alternative_image_path = 'apps/pic.png',
                             main_description = 'Lapein oindoz\niuhboiuhqvoiuh\nb oiuhbqdsoiuh\nbv oiuhbqosid\nuhb oiuhbv' ,
                             long_description = 'Lapein oindoziu\nhboiuhqvoiuhb o\niuhbqdsoiuhbv o\niuhbqosiduhb oiuhbv',
@@ -516,6 +637,7 @@ class Field(Widget):
                 if self.geometry["vertical"] == 'True' :
                     self.rotate(self.squares[id], -90)
                     self.squares[id].rotation_90d = 3
+                
 
     def process_touch_up(self, square) :
             #focus on rotation
@@ -549,7 +671,7 @@ class Field(Widget):
 
     def rotate(self,square, rotation) :
         square.rotation = rotation
-        print square.pos
+        
     """
     def add_to_bar(self,square) :
         bar = self.app.bar
@@ -602,8 +724,8 @@ class Field(Widget):
         x1,y1 = square.center
         m = find(x1,y1, False)
         
-        if m == None :
-            #one more try
+        if m == None and not self.square_is_in_the_bar(square) :
+            #one more try if square comes from outside of the bar
             #check if within the fast launcher bar
             #if yes, better use the left border than the center
             #the left border center becomes the reference
@@ -623,6 +745,7 @@ class Field(Widget):
                 return None
         else : 
             return m 
+
 
     def switch(self, square, matcher) :    
         #switch position with another widget
@@ -661,7 +784,7 @@ class Field(Widget):
                 square.pos = target_pos
                 square.size = target_size
             #resize
-            square.layout_type2function(target_layout)
+            square.layout_type2function(target_layout, False)
             square.geometry_id = int(matcher)
         
         #fake a different pos to match user behaviour (i.e. placing the square in the center of the target)
@@ -689,8 +812,8 @@ class Field(Widget):
         square.layout_type = target_layout
         target.layout_type = current_layout
         #if square.layout_type <> target.layout_type :
-        square.layout_type2function(target_layout)
-        target.layout_type2function(current_layout)
+        square.layout_type2function(target_layout, False)
+        target.layout_type2function(current_layout, False)
         #store pos
         target.geometry_id = square.geometry_id
         square.geometry_id = int(matcher) 
@@ -703,7 +826,11 @@ class Field(Widget):
         else : 
             print False                   
         """ 
-
+    def mute(self,uid):
+        #mute all the square, unmute the given one
+        for i in self.squares.itervalues():
+            if not i.uid == uid :
+                i.mute()
 
 class Bar(ScrollView):
     app = ObjectProperty(None)
