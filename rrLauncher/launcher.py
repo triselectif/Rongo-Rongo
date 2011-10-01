@@ -129,9 +129,9 @@ class Square(Scatter):
                 Color(a, b, c)
                 BorderImage(source = texture_path,border = (12,12,12,12), size = self.layout_type2size(text) )        
                 #Rectangle(texture = texture, size = self.layout_type2size(text) )
-            l = Label(text=text)
-            l.pos = self.center
-            self.layout_type2layout(text).add_widget( l )
+            #l = Label(text=text)
+            #l.pos = self.center
+            #self.layout_type2layout(text).add_widget( l )
 
         def app_type2name(app_type):
             if app_type == 'info' : return 'Info'
@@ -164,7 +164,7 @@ class Square(Scatter):
 
         ######################### LARGE LAYOUT ##########################################################
         """
-        self.large_layout = BoxLayout(orientation = 'vertical', size = self.large_size)
+        #self.large_layout = BoxLayout(orientation = 'vertical', size = self.large_size)
         create_layout('large')   
         """
         texture_path='style/square_large.png'#self.style['square_texture_path']
@@ -172,9 +172,9 @@ class Square(Scatter):
         texture = Image(texture_path).texture
         
         self.large_layout = BoxLayout(orientation = 'vertical', size = self.large_size)
-        #create_layout('large')        
+        create_layout('large')        
         text = 'large'
-
+        
         with self.layout_type2layout(text).canvas :
                 Color(a, b, c)
                 #BorderImage(source = 'style/square_medium.png',border = (12,12,12,12), size = self.layout_type2size(text) )        
@@ -241,15 +241,15 @@ class Square(Scatter):
         
         ######################### MEDIUM LAYOUT ##########################################################
         """
-        self.medium_layout = BoxLayout(orientation = 'vertical', size = self.medium_size)
+        #self.medium_layout = BoxLayout(orientation = 'vertical', size = self.medium_size)
         create_layout('medium')
-        """ 
+        """
         texture_path = 'style/square_medium.png'#self.style['square_texture_path']
         from kivy.core.image import Image
         texture = Image(texture_path).texture
         
         self.medium_layout = BoxLayout(orientation = 'vertical', size = self.medium_size)
-        #create_layout('icon')
+        create_layout('medium')
         text = 'medium'
         
         with self.layout_type2layout(text).canvas :
@@ -741,13 +741,14 @@ class Field(Widget):
         target = self.geometry_squares[matcher]
         target_layout = get_layout_type(int(matcher))
         target_pos = target.pos
-        target_size = self.get_size(target_layout)
-        
+        target_size = target.size #target_size = self.get_size(target_layout)        
+
         #get current square properties
         #current_layout = square.layout_type #this way was buggy
         current_layout = get_layout_type(square.geometry_id)
         current_pos = self.geometry_squares[str(square.geometry_id)].pos
-        current_size = self.get_size(current_layout)#target.size
+        current_size = square.size #current_size = self.get_size(current_layout)#target.size
+
         #get the target square
         target = 0
         for key,val in self.squares.iteritems() :
@@ -762,8 +763,9 @@ class Field(Widget):
                 animation = Animation(pos = target_pos, size = target_size, duration = 0.5,t='in_out_cubic')
                 animation.start(square)
             else : 
-                square.pos = target_pos
                 square.size = target_size
+                square.pos = target_pos
+                
             #resize
             square.layout_type2function(target_layout, False)
             square.geometry_id = int(matcher)
@@ -780,14 +782,16 @@ class Field(Widget):
             animation = Animation(pos = target_pos, size = target_size, duration = 0.4,t='in_out_cubic')
             animation.start(square)
         else :
-            square.pos = target_pos
             square.size = target_size
+            square.pos = target_pos
+            
         if self.activate_animations : 
             animation = Animation(pos = current_pos, size = current_size, duration = 0.4,t='in_out_cubic')
             animation.start(target)
         else :
-            target.pos = current_pos
             target.size = current_size
+            target.pos = current_pos
+            
 
         #switch layouts
         square.layout_type = target_layout
@@ -799,14 +803,11 @@ class Field(Widget):
         target.geometry_id = square.geometry_id
         square.geometry_id = int(matcher) 
         
-        """
+        
         #control
         #on current square
-        if square.pos == self.geometry_squares[str(square.geometry_id)].pos : 
-            print True
-        else : 
-            print False                   
-        """ 
+        print square.pos, self.geometry_squares[str(square.geometry_id)].pos        
+         
     def mute(self,uid):
         #mute all the square, unmute the given one
         for i in self.squares.itervalues():
