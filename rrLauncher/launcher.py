@@ -651,7 +651,7 @@ class Field(Widget):
             square.pos = self.geometry_squares[id].pos
 
     def rotate(self,square, rotation) :
-        square.rotation = rotation
+        square.rotation = rotation  
         
     """
     def add_to_bar(self,square) :
@@ -802,11 +802,7 @@ class Field(Widget):
         #store pos
         target.geometry_id = square.geometry_id
         square.geometry_id = int(matcher) 
-        
-        
-        #control
-        #on current square
-        print square.pos, self.geometry_squares[str(square.geometry_id)].pos        
+             
          
     def mute(self,uid):
         #mute all the square, unmute the given one
