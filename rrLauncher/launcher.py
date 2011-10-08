@@ -371,9 +371,10 @@ class Square(Scatter):
         self.layout = new_layout
         self.add_widget(self.layout)
         self.size = self.layout.size
-
+        
         if self.main_media_type == 'video':
             self.fit_video(layout_type, startup)
+        
         """
         buttons = self.buttons
         for key,val in buttons.iteritems(): 
@@ -395,6 +396,7 @@ class Square(Scatter):
             #print self.video_box_large.size  
             if layout_type == 'medium':
                 #self.video.pos = self.video_box_medium.pos
+                #print self.video_box_medium.size
                 self.video.size = self.size
             elif layout_type == 'large':
                 #self.video.pos = self.video_box_large.pos
@@ -612,6 +614,7 @@ class Field(Widget):
                             info_text = ' uuh i i i                   hhhi u u h iu h i uh iuh iu hi uh iu h',
                             info_conclusion = 'conclude'
                             )
+                
                 self.add_widget(self.squares[id])
 
                 #in case the screen is displayed vertically
@@ -645,7 +648,7 @@ class Field(Widget):
     def push_back_into_place(self,square) :
         id = str(square.geometry_id)
         if self.activate_animations : 
-            animation = Animation(pos = self.geometry_squares[id].pos, duration = 0.2,t='in_quad')
+            animation = Animation(pos = self.geometry_squares[id].pos, duration = 0.9,t='in_out_back')
             animation.start(square)
         else : 
             square.pos = self.geometry_squares[id].pos
@@ -760,7 +763,7 @@ class Field(Widget):
             #move to there
             if target_layout == 'icon' and square.rotation_90d ==0 : square.pos = target_pos
             if self.activate_animations : 
-                animation = Animation(pos = target_pos, size = target_size, duration = 0.5,t='in_out_cubic')
+                animation = Animation(pos = target_pos, size = target_size, duration = 0.9,t='in_out_back')
                 animation.start(square)
             else : 
                 square.size = target_size
@@ -779,14 +782,14 @@ class Field(Widget):
         
         #switch pos and size
         if self.activate_animations : 
-            animation = Animation(pos = target_pos, size = target_size, duration = 0.4,t='in_out_cubic')
+            animation = Animation(pos = target_pos, size = target_size, duration = 0.9,t='in_out_back')
             animation.start(square)
         else :
             square.size = target_size
             square.pos = target_pos
             
         if self.activate_animations : 
-            animation = Animation(pos = current_pos, size = current_size, duration = 0.4,t='in_out_cubic')
+            animation = Animation(pos = current_pos, size = current_size, duration = 0.9,t='in_out_back')
             animation.start(target)
         else :
             target.size = current_size
