@@ -2,6 +2,7 @@
         "id" : "app1",
         "title" : "NOM XY",
         "app_type" : "jeu",
+        "color" : [1,0,0,1],
         "authors": "Realise par Lapin\n Michel Marie-Rose1",
         "main_media_type" : "video",
         "image_path" : "apps/pic.png", 

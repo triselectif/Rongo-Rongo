@@ -31,6 +31,7 @@ class Square(Scatter):
     id = StringProperty('')
     title = StringProperty(None)
     app_type = StringProperty(None) #'info', 'service', 'jeu'
+    color = ObjectProperty( (1,1,0,1) )
     authors = StringProperty(None)
     main_media_type = StringProperty(None) #'image' or 'video'
     image_path = StringProperty(None)
@@ -143,9 +144,7 @@ class Square(Scatter):
         
 
         #color
-        a = random()
-        b = random()
-        c = random()
+        a,b,c,d = self.color
         ######################### ICON LAYOUT ############################################################
         texture_path = 'style/square_icon.png'#self.style['square_texture_path']
         from kivy.core.image import Image
@@ -636,6 +635,7 @@ class Field(Widget):
                             id = apps[key]['id'],
                             title = apps[key]['title'],
                             app_type = apps[key]['app_type'],
+                            color = apps[key]['color'],
                             authors = apps[key]['authors'],
                             main_media_type = apps[key]['main_media_type'],
                             image_path = apps[key]['image_path'],
