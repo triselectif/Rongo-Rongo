@@ -625,17 +625,20 @@ class Field(Widget):
 
     def process_touch_up(self, square) :
             #focus on rotation
-            current_rot = (90 * square.rotation_90d)%360
-            #print current_rot
-            if square.rotation > (current_rot + 45) : 
-                target_rot = (current_rot + 90)
-                square.rotation_90d +=1
-            elif square.rotation < (current_rot - 45) : 
-                target_rot = (current_rot + 270)
-                square.rotation_90d +=1
-            #elif square.rotation < (current_rot - 45) : target_rot = (current_rot - 90)
-            else : target_rot = current_rot
-            self.rotate(square, target_rot)
+            current_rot = square.rotation_90d
+            print 'enter: '+str(current_rot)+','+str(square.rotation)
+            #calculate angle between previous pos and now
+            a = square.rotation
+            b = current_rot
+            if a > (b + 45) : 
+                square.rotation_90d +=90
+            elif a < (b - 45) : 
+                square.rotation_90d -=90
+            self.rotate(square, square.rotation_90d)
+            #fix an issue : flip 180 when smallest angle is negative
+            smallest_angle = min( (180 - abs(a - b), abs(a - b)) )
+            if smallest_angle <0 : 
+                self.rotate(square, square.rotation_90d + 180)
 
             #focus on translation
             matcher = self.find_matcher(square)
@@ -714,7 +717,7 @@ class Field(Widget):
             #if yes, better use the left border than the center
             #the left border center becomes the reference
             bar_width = self.bar_width
-            rot = square.rotation_90d
+            #rot = square.rotation_90d
             
             #chosen to be independant from the rotation
             x1 = square.x + square.width/2
