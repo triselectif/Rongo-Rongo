@@ -1,5 +1,6 @@
 from json import loads
 from os.path import join, dirname, exists
+from os import walk
 from kivy.app import App
 from kivy.animation import Animation
 #from kivy.clock import Clock
@@ -27,7 +28,7 @@ from random import random
 class Square(Scatter):
     geometry_id = NumericProperty(None)#location on the field where the Square sits
     #content
-    id = NumericProperty(0)
+    id = StringProperty('')
     title = StringProperty(None)
     app_type = StringProperty(None) #'info', 'service', 'jeu'
     authors = StringProperty(None)
@@ -137,6 +138,7 @@ class Square(Scatter):
             if app_type == 'info' : return 'Info'
             elif app_type == 'service' : return 'Service'
             elif app_type == 'jeu' : return 'Jeu'
+            else : return ''
 
         
 
@@ -472,6 +474,7 @@ class Field(Widget):
     geometry_squares = DictProperty( {} ) 
     #stores all the geometry empty squares as widgets so that we can easily
     #compare their positions with the real squares
+    apps = DictProperty( {} )#stores all the apps information
 
     #bar variables
     bar_width = NumericProperty(155)
@@ -482,6 +485,7 @@ class Field(Widget):
         self.init_geometry()
         self.init_geometry_detailed()
         self.draw_geometry()
+        self.init_apps()
         self.init_squares()
 
     def get_size(self, layout_type) :
@@ -586,9 +590,33 @@ class Field(Widget):
                            )
             self.add_widget( self.geometry_squares[str(min+i)] ) 
     
+    def init_apps(self):
+        #Import the json file that defines apps
+
+        file_path = join(dirname(__file__), 'apps','detail')
+        self.apps = {}
+        nb = 0
+        for subdir, dirs, files in walk(file_path):
+            for file in files:
+                print file
+                with open(file_path +'/'+file, 'r') as fd:
+                    t = loads(fd.read())
+                    self.apps[str(nb)] = t 
+                nb +=1
+
+        if self.apps is None:
+            print 'Unable to load', file_path
+            return
+        print self.apps
+        
+
+        
+        
 
     def init_squares(self):
         #create and display squares
+        apps = self.apps
+        
         for key,val in self.geometry_detailed.iteritems():
                 id = key
                 pos = val['pos']
@@ -604,36 +632,34 @@ class Field(Widget):
                             small_size = self.get_size('small'),
                             medium_size = self.get_size('medium'),
                             large_size = self.get_size('large'),
-                            id = 0,
-                            title = 'NOM XYZ',
-                            app_type = 'info',
-                            authors = 'Realise par : Lapin,\nMichel, Marie-Rose' ,
-                            main_media_type = 'video',
-                            image_path = 'apps/pic.png',
-                            video_path = 'apps/vid.avi',
-                            alternative_image_path = 'apps/pic.png',
-                            main_description = 'Lapein oindoz\niuhboiuhqvoiuh\nb oiuhbqdsoiuh\nbv oiuhbqosid\nuhb oiuhbv' ,
-                            long_description = 'Lapein oindoziu\nhboiuhqvoiuhb o\niuhbqdsoiuhbv o\niuhbqosiduhb oiuhbv',
-                            info_title = 'oiuhnoiuhn oiuhn',
-                            info_text = ' uuh i i i                   hhhi u u h iu h i uh iuh iu hi uh iu h',
-                            info_conclusion = 'conclude'
+
+                            id = apps[key]['id'],
+                            title = apps[key]['title'],
+                            app_type = apps[key]['app_type'],
+                            authors = apps[key]['authors'],
+                            main_media_type = apps[key]['main_media_type'],
+                            image_path = apps[key]['image_path'],
+                            video_path = apps[key]['video_path'],
+                            alternative_image_path = apps[key]['alternative_image_path'],
+                            main_description = apps[key]['main_description'] ,
+                            long_description = apps[key]['long_description'],
+                            info_title = apps[key]['info_title'],
+                            info_text = apps[key]['info_text'],
+                            info_conclusion = apps[key]['info_conclusion']
                             )
                 
                 self.add_widget(self.squares[id])
 
                 #in case the screen is displayed vertically
                 if self.geometry["vertical"] == 'True' :
+                    self.squares[id].rotation_90d -= 90
                     self.rotate(self.squares[id], -90)
-                    self.squares[id].rotation_90d = 3
-                
 
     def process_touch_up(self, square) :
             #focus on rotation
-            current_rot = square.rotation_90d
-            print 'enter: '+str(current_rot)+','+str(square.rotation)
             #calculate angle between previous pos and now
             a = square.rotation
-            b = current_rot
+            b = square.rotation_90d
             if a > (b + 45) : 
                 square.rotation_90d +=90
             elif a < (b - 45) : 

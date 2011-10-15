@@ -1,0 +1,15 @@
+{
+        "id" : "app1",
+        "title" : "NOM XY",
+        "app_type" : "jeu",
+        "authors": "Realise par Lapin\n Michel Marie-Rose5",
+        "main_media_type" : "video",
+        "image_path" : "apps/pic.png", 
+        "video_path" : "apps/vid.avi", 
+        "alternative_image_path" : "apps/pic.png", 
+        "main_description" : "Lapein oindoziuhboiuhqvoi\nuhb oiuhbqdsoiuhbv oiuhbqosi\nduhb oiuhbv" , 
+        "long_description" : "Lapein oindoziuhboiuhqvoi\nuhb oiuhbqdsoiuhbv oiuhbqosi\nduhb oiuhbv", 
+        "info_title" : "oiuhnoiuhn oiuhn", 
+        "info_text" : " uuhu", 
+        "info_conclusion":"conclude"
+}
