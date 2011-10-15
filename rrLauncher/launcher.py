@@ -489,7 +489,9 @@ class Field(Widget):
             l,h = self.geometry["icon_px"]
             return (l,h) 
         margin = self.style['geometry_square_margin']
-        width,height = self.size
+        #Current screen size is applied
+        #width,height = self.size
+        width,height = self.geometry["screen_size"]
         l,h = self.geometry[layout_type]
         l = l * width - 2*margin
         h = h * height - 2*margin
@@ -515,7 +517,7 @@ class Field(Widget):
         #get the nb of squares in the field
         max = 0
         for i in self.geometry :
-             if i not in ["vertical", "icon_px","small","medium", "large"]:
+             if i not in ["screen_size","vertical", "icon_px","small","medium", "large"]:
                  i = int(i)
                  if i > max : max = i 
         self.bar_start_geometry_id = max + 1
@@ -525,10 +527,12 @@ class Field(Widget):
         style = self.style
         margin = style['geometry_square_margin']
         bar_width = self.bar_width
-        width,height = self.size       
+        #Current screen size is applied
+        #width,height = self.size
+        width,height = self.geometry["screen_size"]       
         
         for key,val in self.geometry.iteritems() :
-            if not key in ["icon_px","large","medium","small","vertical"]: 
+            if not key in ["screen_size","icon_px","large","medium","small","vertical"]: 
                 x,y,square_layout_type = val
                 x = x * width + margin + self.x + bar_width
                 y = y * height + margin + self.y
@@ -869,7 +873,7 @@ class Bar(ScrollView):
         #get the nb of squares in the field
         max = 0
         for i in self.geometry :
-             if i not in ["vertical", "icon_px","small","medium", "large"]:
+             if i not in ["screen_size","vertical", "icon_px","small","medium", "large"]:
                  i = int(i)
                  if i > max : max = i 
         self.start_geometry_id = max + 1
