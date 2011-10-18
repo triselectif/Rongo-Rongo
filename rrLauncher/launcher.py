@@ -70,7 +70,7 @@ class Square(Scatter):
             self.buttons = BoxLayout(orientation = 'vertical' )
             self.buttons.padding = 5 #box.height*0.15
             self.buttons.spacing = 5# self.layout_type2size(text)[0]*0.46
-            self.play_button = Button(text ='play\nstop', size_hint = (1,0.5) )
+            self.play_button = Button(text ='', background_normal= 'style/1318898242_media-play.png', background_down= 'style/1318898242_media-play.png')#, size_hint = (1,0.5) )
             self.play_button.bind( on_press = self.start_video )
             """
             from kivy.core.image import Image
@@ -81,7 +81,7 @@ class Square(Scatter):
             #self.play_button.texture = texture
             """
             self.buttons.add_widget( self.play_button )
-            self.sound_button = Button(text ='mute\nunmute', size_hint = (1,0.5) )
+            self.sound_button = Button(text ='', background_normal = 'style/1318898261_media-volume-0.png', background_down = 'style/1318898261_media-volume-0.png')#, size_hint = (1,0.5)
             self.sound_button.bind( on_press = self.unmute )
             self.buttons.add_widget( self.sound_button )
             
@@ -97,25 +97,31 @@ class Square(Scatter):
             if m.play == False : 
                 m.play=True
                 self.unmute(self.uid)
-                self.play_button.text = 'stop'
+                #self.play_button.text = 'stop'
+                self.play_button.background_normal = 'style/1318898221_media-stop.png'
+                
             else : 
                 m.play=False
-                self.play_button.text = 'play'
+                #self.play_button.text = 'play'
+                self.play_button.background_normal = 'style/1318898242_media-play.png'
 
     def mute(self):
         if self.main_media_type == 'video' :
             self.video.volume = 0
-            self.sound_button.text = 'unmute'
+            #self.sound_button.text = 'unmute'
+            self.sound_button.background_normal = 'style/1318898286_media-volume-3.png'
    
     def unmute(self,a):
         if self.main_media_type == 'video' :
             if self.video.volume == 1:
                 self.video.volume = 0
-                self.sound_button.text = 'unmute'
+                #self.sound_button.text = 'unmute'
+                self.sound_button.background_normal = 'style/1318898286_media-volume-3.png'
             else :     
                 self.video.volume = 1
                 self.parent.mute(self.uid)
-                self.sound_button.text = 'mute'
+                #self.sound_button.text = 'mute'
+                self.sound_button.background_normal = 'style/1318898261_media-volume-0.png'
   
     def init_layouts(self):
         #create a layout for each size so that we can switch
@@ -182,7 +188,7 @@ class Square(Scatter):
                 Rectangle(texture = texture, size = self.layout_type2layout(text).size )
 
         box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.15) )
-        l1 = Label(text=self.title, font_size = 32 )
+        l1 = Label(text=self.title, font_size = 28 )
         box2 = BoxLayout(orientation = 'vertical', size_hint = (0.4,1) )
         l2 = Label(text = app_type2name(self.app_type), font_size = 16, halign = 'right' )
         l3 = Label(text = self.authors, font_size = 10, halign = 'right' )
@@ -214,12 +220,12 @@ class Square(Scatter):
         box.add_widget( alternative_image )
         #main description
         box2 = BoxLayout(orientation = 'vertical', size_hint = (0.25,1) )
-        l = Label(text = self.main_description, size_hint = (1,1), halign = 'left',font_size = 12 )
+        l = Label(text = self.main_description, halign = 'left',font_size = 12, test_size = (300,300) )
         box2.add_widget( l )
         box.add_widget( box2 )
         #long description        
         box3 = BoxLayout(orientation = 'horizontal', size_hint = (0.5,1) )
-        l = Label(text = self.long_description, size_hint = (1,1), halign = 'left', font_size = 12 )
+        l = Label(text = self.long_description, halign = 'left', font_size = 12, test_size = (box3.width,box3.height) )
         box3.add_widget( l )
         box.add_widget(box3)    
 
@@ -259,7 +265,7 @@ class Square(Scatter):
                 Rectangle(texture = texture, size = self.medium_layout.size )
         
         box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.13) )
-        l1 = Label(text=self.title, font_size = 24 )
+        l1 = Label(text=self.title, font_size = 20 )
         box2 = BoxLayout(orientation = 'vertical', size_hint = (0.4,1) )
         l2 = Label(text = app_type2name(self.app_type), font_size = 12, halign = 'right' )
         l3 = Label(text = self.authors, font_size = 8, halign = 'right' )
@@ -309,7 +315,7 @@ class Square(Scatter):
                 Rectangle(texture = texture, size = self.small_layout.size )
         
         box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.2) )
-        l1 = Label(text=self.title, font_size = 16 )
+        l1 = Label(text=self.title, font_size = 13 )
         box2 = BoxLayout(orientation = 'vertical', size_hint = (0.4,1) )
         l2 = Label(text = app_type2name(self.app_type), font_size = 10, halign = 'right' )
         box2.add_widget(l2)
@@ -410,8 +416,8 @@ class Square(Scatter):
         self.add_widget(self.video)
         
         self.buttons.pos = self.video.pos
-        self.buttons.width = self.video.width /4
-        self.buttons.height = self.video.height /3
+        self.buttons.width = 70#self.video.width /8
+        self.buttons.height = 140#self.video.height /2
         self.remove_widget(self.buttons)
         if not layout_type in ['small','icon']:
             self.add_widget(self.buttons)
