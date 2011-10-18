@@ -187,7 +187,7 @@ class Square(Scatter):
                 #BorderImage(source = 'style/square_medium.png',border = (12,12,12,12), size = self.layout_type2size(text) )        
                 Rectangle(texture = texture, size = self.layout_type2layout(text).size )
 
-        box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.15) )
+        box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.10) )
         l1 = Label(text=self.title, font_size = 28 )
         box2 = BoxLayout(orientation = 'vertical', size_hint = (0.4,1) )
         l2 = Label(text = app_type2name(self.app_type), font_size = 16, halign = 'right' )
@@ -198,9 +198,9 @@ class Square(Scatter):
         box.add_widget(box2)
         self.layout_type2layout(text).add_widget( box )
 
-        main_box = BoxLayout(orientation = 'vertical', size_hint = (1,0.75) )
+        main_box = BoxLayout(orientation = 'vertical', size_hint = (1,0.8) )
 
-        box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.6) )
+        box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.70) )
         if self.main_media_type == 'image' : 
             from kivy.uix.image import Image
             image_large = Image(source = self.alternative_image_path, size_hint = (1,1) )
@@ -213,7 +213,7 @@ class Square(Scatter):
 
         main_box.add_widget(box)   
 
-        box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.4) )
+        box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.33) )
         #alternative image
         from kivy.uix.image import Image
         alternative_image = Image(source = self.alternative_image_path, size_hint = (0.25,1) )
@@ -225,7 +225,7 @@ class Square(Scatter):
         box.add_widget( box2 )
         #long description        
         box3 = BoxLayout(orientation = 'horizontal', size_hint = (0.5,1) )
-        l = Label(text = self.long_description, halign = 'left', font_size = 12, test_size = (box3.width,box3.height) )
+        l = Label(text = self.long_description, halign = 'left',font_size = 12, test_size = (box3.width,box3.height) )
         box3.add_widget( l )
         box.add_widget(box3)    
 
@@ -233,7 +233,7 @@ class Square(Scatter):
 
         self.layout_type2layout(text).add_widget( main_box ) 
 
-        box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.07) )
+        box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.04) )
         box.padding = 10 #box.height*0.15
         box.spacing = self.layout_type2size(text)[0]*0.72
         vote_button = Button(text = 'vote') #, size = (box.width*0.25 - margin[0], box.height - 2*margin[1]), pos=margin) #size_hint = (0.5,1) )
