@@ -891,7 +891,7 @@ class Field(Widget):
         
         #target
         if self.activate_animations : 
-            animation = Animation(size = current_size, center = current_pos, duration = 0.6,t='in_out_back') 
+            animation = Animation(center = current_pos, duration = 0.6,t='in_out_back') + Animation(size = current_size, duration = 0.6,t='in_out_back') 
             animation.start(target)
             #animation.bind(on_complete = self.switch_layouts)
         else :
@@ -902,6 +902,17 @@ class Field(Widget):
         target.geometry_id = square.geometry_id
         square.geometry_id = int(matcher)    
     
+    def switch_layouts(self, animation,square):
+        def get_layout_type(geometry_id) :
+            if int(geometry_id) >= self.bar_start_geometry_id :
+                return 'icon'
+            else : 
+                return self.geometry[ str(geometry_id) ][2]
+
+        #get target layout
+        target_layout = get_layout_type(square.geometry_id)
+        square.layout_type = target_layout
+        square.layout_type2function(target_layout, False)
  
     def mute(self,uid):
         #mute all the square, unmute the given one
