@@ -772,23 +772,31 @@ class Field(Widget):
 
     def switch(self, square, matcher) :    
         #switch position with another widget
+        #self.activate_animations = False
 
         def get_layout_type(geometry_id) :
             if int(geometry_id) >= self.bar_start_geometry_id :
                 return 'icon'
             else : 
                 return self.geometry[ str(geometry_id) ][2]
+
+        def switch_layouts():
+            square.layout_type = target_layout
+            target.layout_type = current_layout
+            #if square.layout_type <> target.layout_type :
+            square.layout_type2function(target_layout, False)
+            target.layout_type2function(current_layout, False)
  
         #get current properties of the target empty square to switch with
         target = self.geometry_squares[matcher]
         target_layout = get_layout_type(int(matcher))
-        target_pos = target.pos
+        target_pos = target.center
         target_size = target.size #target_size = self.get_size(target_layout)        
 
         #get current square properties
         #current_layout = square.layout_type #this way was buggy
         current_layout = get_layout_type(square.geometry_id)
-        current_pos = self.geometry_squares[str(square.geometry_id)].pos
+        current_pos = self.geometry_squares[str(square.geometry_id)].center
         current_size = square.size #current_size = self.get_size(current_layout)#target.size
 
         #get the target square
@@ -796,17 +804,45 @@ class Field(Widget):
         for key,val in self.squares.iteritems() :
             if val.geometry_id == int(matcher) : 
                 target = self.squares[key]
-        #if empty location
+                break
         
+        #adjust square pos in order to avoid jumping while changing layout
+        if not target_size == current_size :    
+            if target_size > current_size : 
+                d = 1#and not target_size == current_size :
+            elif target_size < current_size :
+                d = -1
+            #get differencial vector between current square pos and future layout square pos
+            #case of an empty destination 
+            if target == 0 and not target_layout == 'icon':
+                if target_size > current_size :
+                    delta_square = Vector( (-d*target_size[0]*0.4, -d*target_size[1]*0.4) )
+                elif target_size < current_size :
+                    delta_square = Vector( (-d*target_size[0]*0.9, -d*target_size[1]*0.9) )
+            #case of an empty destination in the margin
+            elif target_layout == 'icon':
+                delta_square = Vector( (-d*current_size[0]*0.7, -d*current_size[1]*0.7) )
+            else : 
+                delta_square = ( d*Vector( target.pos ) - d*Vector( target.center ) )
+            rot = round(square.rotation,0)
+            #print rot, delta_square
+            a = (1,1)
+            if rot == 90 : a = (-1,1)
+            elif rot == 180 : a = (-1,-1)
+            elif rot == 270 : a= (1,-1)
+            b,c = a
+            square.x += b * delta_square.x/2
+            square.y += c * delta_square.y/2           
+
         def place_square():
             #move to there
-            if target_layout == 'icon' and square.rotation_90d ==0 : square.pos = target_pos
+            #if target_layout == 'icon' and square.rotation_90d ==0 : square.center = target_pos
             if self.activate_animations : 
-                animation = Animation(pos = target_pos, size = target_size, duration = 0.9,t='in_out_back')
+                animation = Animation(center = target_pos, size = target_size, duration = 0.9,t='in_out_back')
                 animation.start(square)
             else : 
                 square.size = target_size
-                square.pos = target_pos
+                square.center = target_pos
                 
             #resize
             square.layout_type2function(target_layout, False)
@@ -814,38 +850,59 @@ class Field(Widget):
         
         #fake a different pos to match user behaviour (i.e. placing the square in the center of the target)
         #square.center = square.pos #(changes with rotation .. )        
- 
+        
+        #if empty location
         if target == 0 :
             place_square()
             return
         
         #switch pos and size
+        #square
         if self.activate_animations : 
-            animation = Animation(pos = target_pos, size = target_size, duration = 0.9,t='in_out_back')
+            animation = Animation(size = target_size, center = target_pos, duration = 0.5,t='in_out_back')  
             animation.start(square)
+            #animation.bind(on_complete = self.switch_layouts)
         else :
             square.size = target_size
-            square.pos = target_pos
-            
-        if self.activate_animations : 
-            animation = Animation(pos = current_pos, size = current_size, duration = 0.9,t='in_out_back')
-            animation.start(target)
-        else :
-            target.size = current_size
-            target.pos = current_pos
-            
+            square.center = target_pos
 
         #switch layouts
-        square.layout_type = target_layout
-        target.layout_type = current_layout
-        #if square.layout_type <> target.layout_type :
-        square.layout_type2function(target_layout, False)
-        target.layout_type2function(current_layout, False)
+        switch_layouts() 
+
+        #adjust square pos in order to avoid jumping while changing layout
+        if not target_size == current_size and not current_layout == 'icon':
+            #case of an empty destination 
+            #if target == 0:
+            if target_size > current_size :
+                d = 1
+            elif target_size < current_size :
+                d = -1 
+            delta_target = d*Vector( target_pos ) - d*Vector( target.pos )
+            rot = round(target.rotation,0)
+            a = (1,1)
+            if rot == 90 : 
+                if target_size > current_size : a = (1,1)
+                elif target_size < current_size : a = (-2,1)
+            elif rot == 180 : a = (-1,-1)
+            elif rot == 270 : a= (1,-1)
+            b,c = a
+            target.x += b * delta_target.x/2
+            target.y += c * delta_target.y/2 
+        
+        #target
+        if self.activate_animations : 
+            animation = Animation(size = current_size, center = current_pos, duration = 0.6,t='in_out_back') 
+            animation.start(target)
+            #animation.bind(on_complete = self.switch_layouts)
+        else :
+            target.size = current_size
+            target.center = current_pos
+              
         #store pos
         target.geometry_id = square.geometry_id
-        square.geometry_id = int(matcher) 
-             
-         
+        square.geometry_id = int(matcher)    
+    
+ 
     def mute(self,uid):
         #mute all the square, unmute the given one
         for i in self.squares.itervalues():
