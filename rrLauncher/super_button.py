@@ -6,6 +6,7 @@ from kivy.properties import ObjectProperty, NumericProperty, StringProperty, \
 class SuperButton(Image):
     app = ObjectProperty( None )
     background_normal = StringProperty( '' )
+    background_down = StringProperty( '' )
 
     def __init__(self, **kwargs):
         super(SuperButton,self).__init__(**kwargs)
@@ -34,6 +35,8 @@ class SuperButton(Image):
         touch.ud[self] = True
         self._do_press()
         self.dispatch('on_press')
+        if self.background_down !='' : 
+            self.source = self.background_down
         return True
 
     def on_touch_move(self, touch):
@@ -46,6 +49,8 @@ class SuperButton(Image):
         touch.ungrab(self)
         self._do_release()
         self.dispatch('on_release')
+        if self.background_down !='' : 
+            self.source = self.background_normal
         return True
 
     def on_press(self):

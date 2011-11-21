@@ -238,14 +238,15 @@ class Square(Scatter):
         #Bottom part : buttons
         self.box_bottom = BoxLayout(orientation = 'horizontal', size_hint = param['box_bottom_size_hint'] )
         self.box_bottom.padding = int( param['box_bottom_padding'] ) #box.height*0.15
-        self.vote_button = Button(text = 'voter', size_hint = (None,None), size=param["vote_button_size"] ) #, size = (box.width*0.25 - margin[0], box.height - 2*margin[1]), pos=margin) #size_hint = (0.5,1) )
+        #self.vote_button = Button(text = 'voter', size_hint = (None,None), size=param["vote_button_size"] ) 
+        self.vote_button = SuperButton(background_normal = 'style/bouton-vote-T2-off.png', size_hint = (None,None), size=param["vote_button_size"] )
         self.vote_button.bind( on_press = self.vote )
         self.box_bottom.add_widget( self.vote_button ) 
-        self.launch_button = Button(text = 'lancer', size_hint = (None,None), size=param["launch_button_size"] ) #, size = (box.width*0.25, box.height - 2*margin[1]), pos=(box.width - margin[0], margin[1]) )
-        #self.launch_button = SuperButton(source = 'style/square_icon.png', size_hint = (None,None), size=param["launch_button_size"] ) 
+        #self.launch_button = Button(text = 'lancer', size_hint = (None,None), size=param["launch_button_size"] ) 
+        self.launch_button = SuperButton(background_normal = 'style/bouton-lancer-T2-on.png', size_hint = (None,None), size=param["launch_button_size"] ) 
         self.launch_button.bind( on_press = self.launch ) 
         self.box_bottom.add_widget( self.launch_button )
-        self.box_bottom.spacing = (self.layout.width - self.vote_button.width - self.launch_button.width)#*0.97
+        self.box_bottom.spacing = (self.layout.width - self.vote_button.width - self.launch_button.width)*0.97
         self.layout.add_widget( self.box_bottom )
 
         self.add_widget(self.layout)
@@ -741,7 +742,7 @@ class Field(Widget):
             animation = Animation(size_hint = param['box_bottom_size_hint'], **kwargs)
             animation.start(square.box_bottom)
             #animation.bind(on_complete = self.switch_layouts)
-            box_bottom_spacing = (self.get_size(layout_type)[0] -2*square.padding - param['vote_button_size'][0] - param['launch_button_size'][0]) #* 0.97
+            box_bottom_spacing = (self.get_size(layout_type)[0] -2*square.padding - param['vote_button_size'][0] - param['launch_button_size'][0]) * 0.97
             animation = Animation(spacing = box_bottom_spacing, **kwargs)
             animation.start(square.box_bottom)
           else :
@@ -887,74 +888,7 @@ class Field(Widget):
         self.video.video.volume = 0
         self.remove_widget(self.video )
 
-"""
-class Bar(ScrollView):
-    app = ObjectProperty(None)
-    style = DictProperty( {'texture_path':'style/border31.png', 'geometry_square_margin' : 13} )
-    geometry = DictProperty( {} )
-    icon_size = ObjectProperty( None )
-    start_geometry_id = NumericProperty( None ) #so that there's no common index with the field
-    geometry_squares = DictProperty( {} )
 
-    def __init__(self,**kwargs) :
-        super(Bar, self).__init__(**kwargs) 
-        Rectangle(texture = texture, size =self.size)
-        
-        m = self.style['geometry_square_margin']
-        self.layout = Widget(size_x = 72, size_hint_y=None)
-        self.init_geometry()
-
-        #starting index
-        min = self.start_geometry_id
-        #calculate the nb of squares that could it in there without scrolling
-        max = int( (self.height - m)/(self.icon_size[1]+m) )
-        
-        for i in xrange(0,max):
-            self.geometry_squares[min+i] = GeometrySquare(
-                           geometry_id = min+int(i), 
-                           pos = (m,m+(self.icon_size[1]+m)*i), 
-                           size = self.icon_size, 
-                           layout_type = "icon", 
-                           do_scale = False, 
-                           do_rotation = True, 
-                           do_translation = False, 
-                           auto_bring_to_front = False
-                           )
-            self.layout.add_widget( self.geometry_squares[min+i] ) 
-                           
-        self.add_widget(self.layout)
-    
-    def init_geometry(self):
-        #Import the json file that defines it
-        file_path = join(dirname(__file__), 'field_geometry')
-                
-        with open(file_path, 'r') as fd:
-            self.geometry = loads(fd.read())
-
-        if self.geometry is None:
-            print 'Unable to load', file_path
-            return
-
-        self.icon_size = self.geometry["icon_px"]
-        print self.icon_size
-
-        #get the nb of squares in the field
-        max = 0
-        for i in self.geometry :
-             if i not in ["screen_size","vertical", "icon_px","small","medium", "large"]:
-                 i = int(i)
-                 if i > max : max = i 
-        self.start_geometry_id = max + 1
-
-    def process_touch_up(self, square) :
-        #check a drag n drop to the field occured
-        if square.center[0] > self.width :
-            print "out"
-        else : print "in" 
-        
-    def add_square(self,square):
-        self.layout.add_widget(square)
-"""
 
 class AppView(FloatLayout):
     app = ObjectProperty(None)
@@ -965,14 +899,15 @@ class AppView(FloatLayout):
         super(AppView, self).__init__(**kwargs)
          
         from kivy.core.image import Image
-        tex = Image('style/sidebar.png').texture
+        tex = Image('style/slider-fond.png').texture
         tex.wrap = 'repeat'
         self.texture_sidebar = tex
-        tex = Image('style/1.png').texture
+        #tex = Image('style/1.png').texture
         if tex is not None:
             tex.wrap = 'repeat'
             self.texture = tex
-
+        
+        
              
 
 

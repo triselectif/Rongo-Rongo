@@ -10,7 +10,7 @@
         "box_middle2_size_hint":[0.3,1],
 	"box_bottom_size_hint":[1,0.38],
 	"box_bottom_padding":"10",
-        "vote_button_size":[60,30],
+        "vote_button_size":[30,30],
         "launch_button_size":[60,30]
 
 }
