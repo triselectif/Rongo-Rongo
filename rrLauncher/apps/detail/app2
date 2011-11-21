@@ -6,7 +6,7 @@
         "color_down" : [1,0,0,1],
         "authors": "Realise par Lapin\n Michel Marie-Rose1",
         "main_media_type" : "video",
-        "image_path" : "apps/pic.png", 
+        "image_path" : "apps/tranches.png", 
         "video_path" : "apps/tranches.mp4",
         "layer_large" : "apps/layers/xyz/large.png",
         "layer_medium" : "apps/layers/xyz/medium.png",

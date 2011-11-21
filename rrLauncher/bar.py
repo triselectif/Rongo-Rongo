@@ -18,6 +18,7 @@ class Bar(FloatLayout):
         self.apps = self.app.field.init_apps()
         self.size_hint = (None,1)
         self.width = 155
+        self.padding_left = int((self.width - self.element_size[0])/2) 
         self.geometry_squares = {}
         self.images = {}
         self.sorting = []  
@@ -47,12 +48,13 @@ class Bar(FloatLayout):
         for key,val in self.apps.iteritems() :
             #get destination gs
             g = gs[ str( s.index(key) ) ]
-            center = g.center 
-            self.add_app(key,val,center)    
+            center = g.center
+            pos = g.pos
+            self.add_app(key,val,center,pos)    
 
-    def add_app(self, key, app, center):
+    def add_app(self, key, app, center, pos):
         # Nop.
-        self.images[key] = BarImage( source= str(app["image_path"]) , app =self.app, bar=self, key=key, center =center, initial_center = center )
+        self.images[key] = BarImage( source= str(app["image_path"]) , app =self.app, bar=self, key=key, pos =pos, initial_center = center, size = self.element_size )
         #self.images[key].center = center
         
         self.layout.add_widget(self.images[key])
@@ -60,7 +62,7 @@ class Bar(FloatLayout):
     def draw_empty_squares(self):
         apps = self.apps
         m = self.app.field.style['geometry_square_margin']
-        padding_left = int((self.width - self.element_size[0])/2) 
+        padding_left = self.padding_left
         max = len(apps)       
 
         for i in xrange(0,max):
