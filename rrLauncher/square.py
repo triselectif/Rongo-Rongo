@@ -198,7 +198,7 @@ class Square(Scatter):
         if self.collide_point(touch.x,touch.y):
             self.touches[touch.id] = touch
             #enlarge a bit
-            self.reshape_when_touch_down(touch, 2)     
+            self.reshape_when_touch_down(touch, 0)     
         super(Square, self).on_touch_down(touch)  
     
     def on_touch_up(self, touch):

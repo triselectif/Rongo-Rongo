@@ -7,7 +7,7 @@
         "authors": "Realise par Lapin\n Michel Marie-Rose1",
         "main_media_type" : "video",
         "image_path" : "apps/pic.png", 
-        "video_path" : "apps/vid.avi",
+        "video_path" : "apps/tranches.mp4",
         "layer_large" : "apps/layers/xyz/large.png",
         "layer_medium" : "apps/layers/xyz/medium.png",
         "layer_small" : "apps/layers/xyz/small.png",
