@@ -192,6 +192,9 @@ class Field(Widget):
                 self.remove_square2(1,square)
 
     def remove_square2(self,a,square):
+            #avoid sound running after widget being removed and deleted
+            if square.main_media_type == 'video':
+                    square.video.mute(1)
             self.remove_widget( square )
             id = str(square.id)
             if id in self.squares.keys():
@@ -214,6 +217,7 @@ class Field(Widget):
                             id = key,
                             title = apps[key]['title'],
                             app_type = apps[key]['app_type'],
+                            #color_text = apps[key]['color_text'],
                             color_up = apps[key]['color_up'],
                             color_down = apps[key]['color_down'],
                             authors = apps[key]['authors'],

@@ -69,7 +69,12 @@ class VideoPlayer(Widget):
             self.last_touch_down_time = 0
             #fullscreen status
             self.full_screen = False
-                        
+            """
+            #main play button
+            self.main_play_button = SuperButton2(text ='', background_normal= 'style/A-play-T3.png', background_down= 'style/1318898242_media-play.png', size_hint = (None, None), size = (40, 40), center = self.video.center )#, size_hint = (1,0.5) )
+            self.play_button.bind( on_press = self.start_stop_button )
+            self.video.add_widget( self.main_play_button )
+            """          
             #refresh bar position and size
             Clock.schedule_interval(self.refresh_player,0.005)    
 

@@ -18,6 +18,7 @@ class Square(Scatter):
     title = StringProperty(None)
     app_type = StringProperty(None) #'info', 'service', 'jeu'
     color = ObjectProperty( (.82,.82,.82,1) )
+    color_text = ObjectProperty( (.82,.82,.82,1) )
     color_down = ObjectProperty( (1,1,0,1) )
     color_up = ObjectProperty( (.1,.1,.1,1) )
     authors = StringProperty(None)
@@ -111,11 +112,11 @@ class Square(Scatter):
         #top part : Title, app_type, authors
         self.box_top = BoxLayout(orientation = 'horizontal', size_hint = param['box_top_size_hint'] )
         font_size = self.process_font_size( self.title, int( param['title_label_font_size']) )
-        self.title_label = Label(text=self.title, font_size = font_size, color = self.color_down, halign = 'left')#, padding_x = 5  )
+        self.title_label = Label(text=self.title, font_size = font_size, color = self.color_text, halign = 'left')#, padding_x = 5  )
         self.box2 = BoxLayout(orientation = 'vertical', size_hint = param['box2_size_hint'], padding = 2 )
         from kivy.uix.image import Image
         self.app_type_pic = Image(source = str(self.app_type), size_hint = (1,3) )      
-        self.authors_label = Label(text = self.authors, font_size = int( param['authors_label_font_size'] ), color = self.color_up, halign = 'right' )
+        self.authors_label = Label(text = self.authors, font_size = int( param['authors_label_font_size'] ), color = self.color_text, halign = 'right' )
         self.box2.add_widget(self.app_type_pic)
         self.box2.add_widget(self.authors_label)
         self.box_top.add_widget(self.title_label)
@@ -218,7 +219,7 @@ class Square(Scatter):
         self.color = self.color_down
         self.pos = (self.x + intensity, self.y + intensity)
         self.title_label.color = self.color_up
-        self.texture_path = 'style/square_large_touch_down.png'
+        self.texture_path = 'style/square_'+str(self.layout_type)+'_touch_down.png'
         #self.app_type_label.color = self.color_up
         #self.size = (self.width + 3, self.height + 3)
         #a = Animation(center = self.center, size = self.size)
@@ -228,7 +229,7 @@ class Square(Scatter):
         self.color = self.color_up
         self.title_label.color = self.color_down
         #self.app_type_label.color = self.color_up
-        self.texture_path = 'style/square_large.png'
+        self.texture_path = 'style/square_'+str(self.layout_type)+'.png'
         pass
 
     

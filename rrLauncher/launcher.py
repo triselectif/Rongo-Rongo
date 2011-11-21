@@ -1,3 +1,5 @@
+#import os
+#os.environ['KIVY_VIDEO'] = 'ffmpeg'
 from kivy.app import App
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.scrollview import ScrollView
