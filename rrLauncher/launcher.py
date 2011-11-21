@@ -719,7 +719,8 @@ class Field(Widget):
             square.process_touch_up_forbidden = True            
             #switch pos and size 
             animation = Animation(pos = pos, size = size, **kwargs) #+ Animation(size = target_size, duration = 0.5,t='in_quart') 
-            animation.bind(on_complete = self.allow_process_touch_up) 
+            animation.bind(on_complete = self.adjust_position) 
+            animation.bind(on_complete = self.allow_process_touch_up)
             animation.start(square)
             #title size
             font_size = square.process_font_size( square.title ,int( param['title_label_font_size'] ) )
@@ -818,7 +819,7 @@ class Field(Widget):
  
         #switch layouts
         switch_layouts() 
-        
+        """
         #adjust square pos in order to avoid jumping while changing layout
         if not target_size == current_size and not current_layout == 'icon':
             #case of an empty destination 
@@ -838,7 +839,7 @@ class Field(Widget):
             b,c = a
             target.x += b * delta_target.x/2
             target.y += c * delta_target.y/2 
-        
+        """
         #target
         animate_square(target, current_layout, current_param, current_pos, current_size)
         
@@ -857,7 +858,15 @@ class Field(Widget):
         target_layout = get_layout_type(square.geometry_id)
         square.layout_type = target_layout
         square.refresh_layout(target_layout)
- 
+
+    def adjust_position(self,a,square):
+        gs= self.geometry_squares
+        key = str(square.geometry_id)
+        if not key in gs.keys():return
+        match = gs[key]
+        anim = Animation(pos = match.pos, size = match.size, duration = 0.1)
+        anim.start(square) 
+
     def mute(self,uid):
         #mute all the square, unmute the given one
         for i in self.squares.itervalues():
