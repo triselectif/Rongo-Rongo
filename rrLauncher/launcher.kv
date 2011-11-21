@@ -54,7 +54,7 @@
 	
 
 	
-<AppView>:
+<AppView2>:
 	
 	ScrollView:
 		scroll_timeout: 200
@@ -72,5 +72,18 @@
 				size: self.size
 
 		
-		
+<AppView>:
+	
+	width: 155
+	size_hint_x: None
+	do_scroll_x: False
+
+	canvas.before:
+		Color:
+			rgb: 1, 1, 1
+		Rectangle:
+			texture: root.texture_sidebar
+			tex_coords: [root.texture_sidebar, 0, 0, 1, 0, 1, self.height / 5, 0, self.height / 5][1:]
+			pos: self.pos
+			size: self.size
 

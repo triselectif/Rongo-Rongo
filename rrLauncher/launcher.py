@@ -42,10 +42,6 @@ class LauncherApp(App):
         self.bar = Bar(app = self )
         self.appview.add_widget(self.bar)
 
-        #self.field.load_bank() 
-        
-        #self.theoric_field_setup() 
-
         return self.appview    
 
 
