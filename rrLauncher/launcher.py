@@ -1,6 +1,7 @@
 from json import loads
 from os.path import join, dirname, exists
 from os import walk
+
 from kivy.app import App
 from kivy.animation import Animation
 #from kivy.clock import Clock
@@ -13,17 +14,112 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.button import Button
 from kivy.uix.widget import Widget
-from kivy.uix.video import Video
+#from kivy.uix.video import Video
+from kivy.uix.scrollview import ScrollView
 from kivy.properties import ObjectProperty, NumericProperty, StringProperty, \
     BooleanProperty, DictProperty, ListProperty
 from kivy.core.image import Image
-from kivy.graphics import Color, Line, Rectangle, LineWidth, BorderImage
+from kivy.graphics import Color, Line, Rectangle, BorderImage#LineWidth, 
 from kivy.vector import Vector
 from kivy.clock import Clock
+from kivy.utils import interpolate
 
 from datetime import datetime, timedelta
 from random import random
-       
+
+from video_player import VideoPlayer
+from bar_image import BarImage
+from super_button import SuperButton
+
+class VideoPlayer2(VideoPlayer):
+    def on_touch_down(self,touch):
+        super(VideoPlayer2,self).on_touch_down(touch)  
+        return True      
+
+class Bar(FloatLayout):
+    objects = DictProperty( {} )
+    app = ObjectProperty(None)
+    apps = DictProperty( {} )
+    element_size = ObjectProperty( (70,70) )
+    sorting_condition = StringProperty( 'app_type' )
+    
+    """
+    def init_geometry(self):
+        #Import the json file that defines it
+        file_path = join(dirname(__file__), 'field_geometry')
+        with open(file_path, 'r') as fd:
+            self.geometry = loads(fd.read())
+        if self.geometry is None:
+            print 'Unable to load', file_path
+            return
+        self.icon_size = self.geometry["icon_px"]
+    """
+    def __init__(self,**kwargs):
+        super(Bar,self).__init__(**kwargs)
+        self.apps = self.app.field.init_apps()
+        self.size_hint = (None,1)
+        self.width = 155
+        self.geometry_squares = {}
+        self.images = {}
+        self.sorting = []  
+        #self.scroll = ScrollView( size_hint=(1, None), height = 1500 )
+        #self.add_widget(self.scroll) 
+        self.layout = Widget(size_hint = (1,1) )#self.add_widget(self.layout)
+        self.add_widget(self.layout)
+        self.draw_empty_squares()
+        self.sort()
+        self.fill()
+
+    def sort(self):
+        #list of app keys in order
+        #if self.sorting_condition == 'app_type':
+        self.sorting = self.apps.keys()
+
+    def resort(condition):
+        self.sorting_condition = condition
+        self.sort()
+        #animate icons now
+
+    def fill(self):
+        #print 'apps'
+        #print self.apps
+        gs = self.geometry_squares 
+        s = self.sorting
+        for key,val in self.apps.iteritems() :
+            #get destination gs
+            g = gs[ str( s.index(key) ) ]
+            center = g.center 
+            self.add_app(key,val,center)    
+
+    def add_app(self, key, app, center):
+        # Nop.
+        self.images[key] = BarImage( source= str(app["image_path"]) , app =self.app, bar=self, key=key, center =center, initial_center = center )
+        #self.images[key].center = center
+        
+        self.layout.add_widget(self.images[key])
+
+    def draw_empty_squares(self):
+        apps = self.apps
+        m = self.app.field.style['geometry_square_margin']
+        padding_left = int((self.width - self.element_size[0])/2) 
+        max = len(apps)       
+
+        for i in xrange(0,max):
+            self.geometry_squares[str(i)] = GeometrySquare(
+                           geometry_id = i, 
+                           pos = (padding_left,m+(self.element_size[1]+m)*i), 
+                           size = self.element_size, 
+                           layout_type = "icon", 
+                           do_scale = False, 
+                           do_rotation = False, 
+                           do_translation = False, 
+                           auto_bring_to_front = False
+                           )
+            self.layout.add_widget( self.geometry_squares[str(i)] ) 
+
+    def put_on_field(self, key, touch):
+        self.app.field.add_app(key, touch)
+   
 
 class Square(Scatter):
     geometry_id = NumericProperty(None)#location on the field where the Square sits
@@ -31,23 +127,29 @@ class Square(Scatter):
     id = StringProperty('')
     title = StringProperty(None)
     app_type = StringProperty(None) #'info', 'service', 'jeu'
-    color = ObjectProperty( (1,1,0,1) )
+    color = ObjectProperty( (.82,.82,.82,1) )
+    color_down = ObjectProperty( (1,1,0,1) )
+    color_up = ObjectProperty( (.1,.1,.1,1) )
     authors = StringProperty(None)
     main_media_type = StringProperty(None) #'image' or 'video'
     image_path = StringProperty(None)
     video_path = StringProperty(None)
+    """ 
     alternative_image_path = StringProperty(None)
     main_description = StringProperty(None)
     long_description = StringProperty(None)
     info_title = StringProperty(None)
     info_text = StringProperty(None)
     info_conclusion = StringProperty(None)
+    """
     #shape
     rotation_90d = NumericProperty(0)
+    """
     style = DictProperty( {
                           'square_texture_path' : 'style/border31.png',
                           'color' : '0,0,0,0'
                           } )
+    """
     layout_type = StringProperty(None) #'icon'/'small'/'medium' or 'large'
     icon_size = ObjectProperty( None )
     small_size = ObjectProperty( None )
@@ -56,372 +158,163 @@ class Square(Scatter):
     #internal variables
     touches = DictProperty( {} ) #current active touches on the widget
     #buttons = DictProperty( {} ) #store buttons widgets
+    square_parameters = DictProperty( {} ) #initial parameters of the square
+    texture_path = StringProperty("")
+    layout = ObjectProperty( None )#base layout for all the widgets
+    layers = DictProperty( {} )#stores background text layers of each size
+    layer_texture_path = StringProperty( '' )
+    process_touch_up_forbidden = BooleanProperty(False)
+    padding = NumericProperty(10) #square layout padding
 
     def __init__(self,**kwargs) :
-        super(Square,self).__init__(**kwargs)
-        
+        super(Square,self).__init__(**kwargs)  
+
         if self.main_media_type == 'video' :
-            self.video = Video(source = self.video_path, play=False, options = {'eos':'loop'} )
-            Clock.schedule_once(self.start_video,0.2)
-            Clock.schedule_once(self.start_video,2.4) 
-            #self.add_widget(self.video)
-            #self.play_but = Button(text = 'play')
-            
-            self.buttons = BoxLayout(orientation = 'vertical' )
-            self.buttons.padding = 5 #box.height*0.15
-            self.buttons.spacing = 5# self.layout_type2size(text)[0]*0.46
-            self.play_button = Button(text ='', background_normal= 'style/1318898242_media-play.png', background_down= 'style/1318898242_media-play.png')#, size_hint = (1,0.5) )
-            self.play_button.bind( on_press = self.start_video )
-            """
-            from kivy.core.image import Image
-            texture = Image('style/play.png').texture
-            with self.play_button.canvas:
-                Color(1., 1., 0)
-                Rectangle(size=self.play_button.size, texture = texture)
-            #self.play_button.texture = texture
-            """
-            self.buttons.add_widget( self.play_button )
-            self.sound_button = Button(text ='', background_normal = 'style/1318898261_media-volume-0.png', background_down = 'style/1318898261_media-volume-0.png')#, size_hint = (1,0.5)
-            self.sound_button.bind( on_press = self.unmute )
-            self.buttons.add_widget( self.sound_button )
-            
-             
-        self.init_layouts()  
+            self.video = VideoPlayer(source = self.video_path)
+            self.video.bind(on_unmute =self.on_unmute)
+            self.video.bind(on_start=self.on_start)
+            self.video.bind(on_fullscreen = self.on_fullscreen)
+            self.video.bind(on_leave_fullscreen = self.on_leave_fullscreen)
+        
+        l,h = self.size
+        pad = self.padding
+        self.layout = BoxLayout(orientation = 'vertical', size = (l -2*pad,h -2*pad), pos = (pad,pad) )           
+        self.init_layouts() 
+    
+    def on_start(self, a):
+        try :
+            self.parent.mute(self.uid) #mute other parents' video players
+        except:
+            pass
+        self.video.unmute(1) #unmute the player
 
-        #init video to the front at the right location
-        #self.layout_type2function(self.layout_type)
-
-
-    def start_video(self,a) :
-            m = self.video 
-            if m.play == False : 
-                m.play=True
-                self.unmute(self.uid)
-                #self.play_button.text = 'stop'
-                self.play_button.background_normal = 'style/1318898221_media-stop.png'
-                
-            else : 
-                m.play=False
-                #self.play_button.text = 'play'
-                self.play_button.background_normal = 'style/1318898242_media-play.png'
+    def on_unmute(self,a):
+        try :
+            self.parent.mute(self.uid)                
+        except : 
+            pass
 
     def mute(self):
-        if self.main_media_type == 'video' :
-            self.video.volume = 0
-            #self.sound_button.text = 'unmute'
-            self.sound_button.background_normal = 'style/1318898286_media-volume-3.png'
-   
-    def unmute(self,a):
-        if self.main_media_type == 'video' :
-            if self.video.volume == 1:
-                self.video.volume = 0
-                #self.sound_button.text = 'unmute'
-                self.sound_button.background_normal = 'style/1318898286_media-volume-3.png'
-            else :     
-                self.video.volume = 1
-                self.parent.mute(self.uid)
-                #self.sound_button.text = 'mute'
-                self.sound_button.background_normal = 'style/1318898261_media-volume-0.png'
-  
+        if self.main_media_type == 'video':
+            self.video.mute(1)
+ 
+    def on_fullscreen(self, a):
+        self.video.stop(1)
+        vid = self.video
+        self.parent.play_video_fullscreen(self.video_path, self.to_parent(vid.x,vid.y) , self.video.size, self.video.video.position)
+        
+    def on_leave_fullscreen(self, a):
+        pass 
+    """
+    def create_layout(self, layout_type, texture_path):
+        a,b,c,d = self.color_up
+        with self.layout.canvas :
+                Color(a, b, c)
+                BorderImage(source = texture_path, border = (12,12,12,12), size = self.layout.size)#_type2size(layout_type) ) 
+    """
+
+    def process_font_size(self, text, font_size):
+        #in case the text is multiline, reduce the font size
+        multiline = False
+        for i in text : 
+            if i == '\n' : multiline = True
+        if not multiline : return font_size
+        else : return font_size - 6            
+
     def init_layouts(self):
-        #create a layout for each size so that we can switch
-        #easily from one to another 
-    
-        texture_path = self.style['square_texture_path']
-        from kivy.core.image import Image
-        texture = Image(texture_path).texture
+        
         layout_type = self.layout_type
-
-        def create_layout(text):
-            with self.layout_type2layout(text).canvas :
-                Color(a, b, c)
-                BorderImage(source = texture_path,border = (12,12,12,12), size = self.layout_type2size(text) )        
-                #Rectangle(texture = texture, size = self.layout_type2size(text) )
-            #l = Label(text=text)
-            #l.pos = self.center
-            #self.layout_type2layout(text).add_widget( l )
-
-        def app_type2name(app_type):
-            if app_type == 'info' : return 'Info'
-            elif app_type == 'service' : return 'Service'
-            elif app_type == 'jeu' : return 'Jeu'
-            else : return ''
-
+        param = self.square_parameters[layout_type] #load parameters specific to that size (small, medium, large)
         
-
         #color
-        a,b,c,d = self.color
-        ######################### ICON LAYOUT ############################################################
-        texture_path = 'style/square_icon.png'#self.style['square_texture_path']
-        from kivy.core.image import Image
-        texture = Image(texture_path).texture
-  
-        self.icon_layout = BoxLayout(orientation = 'vertical', size = self.icon_size)
-        #create_layout('icon')
-        text = 'icon'
-        with self.layout_type2layout(text).canvas :
-                Color(a, b, c)
-                BorderImage(source = texture_path,border = (12,12,12,12), size = self.layout_type2size(text) )        
-                #Rectangle(texture = texture, size = self.layout_type2size(text) )
-        l = Label(text=self.title, font_size = 8)
-        self.layout_type2layout(text).add_widget( l )
+        a,b,c,d = self.color_up
+        
+        ######################### LAYOUT ##########################################################
+        
+        self.texture_path = texture_path = str(param['texture_path']) #self.style['square_texture_path']
+        #text layer
+        self.layer_texture_path = self.layers[layout_type]
+        """
         from kivy.uix.image import Image
-        alternative_image = Image(source = self.alternative_image_path)
-        self.layout_type2layout(text).add_widget( alternative_image )
-
-        ######################### LARGE LAYOUT ##########################################################
-        """
-        #self.large_layout = BoxLayout(orientation = 'vertical', size = self.large_size)
-        create_layout('large')   
-        """
-        texture_path='style/square_large.png'#self.style['square_texture_path']
-        from kivy.core.image import Image
-        texture = Image(texture_path).texture
+        self.layer = Image(source = "apps/layers/xyz/large.png", size_hint = (1,1))
+        self.layout.add_widget(self.layer)
+        """         
+        #top part : Title, app_type, authors
+        self.box_top = BoxLayout(orientation = 'horizontal', size_hint = param['box_top_size_hint'] )
+        font_size = self.process_font_size( self.title, int( param['title_label_font_size']) )
+        self.title_label = Label(text=self.title, font_size = font_size, color = self.color_down, halign = 'left')#, padding_x = 5  )
+        self.box2 = BoxLayout(orientation = 'vertical', size_hint = param['box2_size_hint'], padding = 2 )
+        from kivy.uix.image import Image
+        self.app_type_pic = Image(source = str(self.app_type), size_hint = (1,3) )      
+        self.authors_label = Label(text = self.authors, font_size = int( param['authors_label_font_size'] ), color = self.color_up, halign = 'right' )
+        self.box2.add_widget(self.app_type_pic)
+        self.box2.add_widget(self.authors_label)
+        self.box_top.add_widget(self.title_label)
+        self.box_top.add_widget(self.box2)
+        self.layout.add_widget( self.box_top ) 
         
-        self.large_layout = BoxLayout(orientation = 'vertical', size = self.large_size)
-        create_layout('large')        
-        text = 'large'
-        
-        with self.layout_type2layout(text).canvas :
-                Color(a, b, c)
-                #BorderImage(source = 'style/square_medium.png',border = (12,12,12,12), size = self.layout_type2size(text) )        
-                Rectangle(texture = texture, size = self.layout_type2layout(text).size )
-
-        box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.10) )
-        l1 = Label(text=self.title, font_size = 28 )
-        box2 = BoxLayout(orientation = 'vertical', size_hint = (0.4,1) )
-        l2 = Label(text = app_type2name(self.app_type), font_size = 16, halign = 'right' )
-        l3 = Label(text = self.authors, font_size = 10, halign = 'right' )
-        box2.add_widget(l2)
-        box2.add_widget(l3)
-        box.add_widget(l1)
-        box.add_widget(box2)
-        self.layout_type2layout(text).add_widget( box )
-
-        main_box = BoxLayout(orientation = 'vertical', size_hint = (1,0.8) )
-
-        box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.70) )
+        #middle part : Image or Video
+        self.box_middle = BoxLayout(orientation = 'horizontal', size_hint = param['box_middle_size_hint'] )
+        self.box_middle1 = BoxLayout(orientation = 'horizontal', size_hint = param['box_middle1_size_hint'], padding = 0, spacing = 0 )
+        self.box_middle2 = BoxLayout(orientation = 'horizontal', size_hint = param['box_middle2_size_hint'], padding = 0, spacing = 0 )
+        self.box_middle.add_widget( self.box_middle1 ) 
+        self.box_middle.add_widget( self.box_middle2 ) 
         if self.main_media_type == 'image' : 
             from kivy.uix.image import Image
-            image_large = Image(source = self.alternative_image_path, size_hint = (1,1) )
-            box.add_widget( image_large ) 
+            image = Image(source = self.alternative_image_path, size_hint = (1,1) )
+            self.box_middle1.add_widget( image ) 
         elif self.main_media_type == 'video' : 
-            box2 = BoxLayout(orientation = 'vertical', size_hint = (1,1) )
-            self.video_box_large = BoxLayout(orientation = 'horizontal', size_hint = (1,1) )
-            box2.add_widget( self.video_box_large)
-            box.add_widget( box2 )            
+            self.box_middle1.add_widget( self.video ) 
+        self.layout.add_widget( self.box_middle ) 
 
-        main_box.add_widget(box)   
+        #Bottom part : buttons
+        self.box_bottom = BoxLayout(orientation = 'horizontal', size_hint = param['box_bottom_size_hint'] )
+        self.box_bottom.padding = int( param['box_bottom_padding'] ) #box.height*0.15
+        self.vote_button = Button(text = 'voter', size_hint = (None,None), size=param["vote_button_size"] ) #, size = (box.width*0.25 - margin[0], box.height - 2*margin[1]), pos=margin) #size_hint = (0.5,1) )
+        self.vote_button.bind( on_press = self.vote )
+        self.box_bottom.add_widget( self.vote_button ) 
+        self.launch_button = Button(text = 'lancer', size_hint = (None,None), size=param["launch_button_size"] ) #, size = (box.width*0.25, box.height - 2*margin[1]), pos=(box.width - margin[0], margin[1]) )
+        #self.launch_button = SuperButton(source = 'style/square_icon.png', size_hint = (None,None), size=param["launch_button_size"] ) 
+        self.launch_button.bind( on_press = self.launch ) 
+        self.box_bottom.add_widget( self.launch_button )
+        self.box_bottom.spacing = (self.layout.width - self.vote_button.width - self.launch_button.width)#*0.97
+        self.layout.add_widget( self.box_bottom )
 
-        box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.33) )
-        #alternative image
-        from kivy.uix.image import Image
-        alternative_image = Image(source = self.alternative_image_path, size_hint = (0.25,1) )
-        box.add_widget( alternative_image )
-        #main description
-        box2 = BoxLayout(orientation = 'vertical', size_hint = (0.25,1) )
-        l = Label(text = self.main_description, halign = 'left',font_size = 12, test_size = (300,300) )
-        box2.add_widget( l )
-        box.add_widget( box2 )
-        #long description        
-        box3 = BoxLayout(orientation = 'horizontal', size_hint = (0.5,1) )
-        l = Label(text = self.long_description, halign = 'left',font_size = 12, test_size = (box3.width,box3.height) )
-        box3.add_widget( l )
-        box.add_widget(box3)    
-
-        main_box.add_widget(box)
-
-        self.layout_type2layout(text).add_widget( main_box ) 
-
-        box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.04) )
-        box.padding = 10 #box.height*0.15
-        box.spacing = self.layout_type2size(text)[0]*0.72
-        vote_button = Button(text = 'vote') #, size = (box.width*0.25 - margin[0], box.height - 2*margin[1]), pos=margin) #size_hint = (0.5,1) )
-        vote_button.bind( on_press = self.vote )
-        box.add_widget( vote_button ) 
-        launch_button = Button(text = 'lancer') #, size = (box.width*0.25, box.height - 2*margin[1]), pos=(box.width - margin[0], margin[1]) ) 
-        launch_button.bind( on_press = self.launch ) 
-        box.add_widget( launch_button )
-
-        self.layout_type2layout(text).add_widget( box )
-        
-        
-        ######################### MEDIUM LAYOUT ##########################################################
-        """
-        #self.medium_layout = BoxLayout(orientation = 'vertical', size = self.medium_size)
-        create_layout('medium')
-        """
-        texture_path = 'style/square_medium.png'#self.style['square_texture_path']
-        from kivy.core.image import Image
-        texture = Image(texture_path).texture
-        
-        self.medium_layout = BoxLayout(orientation = 'vertical', size = self.medium_size)
-        create_layout('medium')
-        text = 'medium'
-        
-        with self.layout_type2layout(text).canvas :
-                Color(a, b, c)
-                #BorderImage(source = 'style/square_medium.png',border = (12,12,12,12), size = self.layout_type2size(text) )        
-                Rectangle(texture = texture, size = self.medium_layout.size )
-        
-        box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.13) )
-        l1 = Label(text=self.title, font_size = 20 )
-        box2 = BoxLayout(orientation = 'vertical', size_hint = (0.4,1) )
-        l2 = Label(text = app_type2name(self.app_type), font_size = 12, halign = 'right' )
-        l3 = Label(text = self.authors, font_size = 8, halign = 'right' )
-        box2.add_widget(l2)
-        box2.add_widget(l3)
-        box.add_widget(l1)
-        box.add_widget(box2)
-        self.layout_type2layout(text).add_widget( box ) 
-
-        box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.8) )
-        if self.main_media_type == 'image' : 
-            from kivy.uix.image import Image
-            image_medium = Image(source = self.alternative_image_path, size_hint = (1,1) )
-            box.add_widget( image_medium ) 
-        elif self.main_media_type == 'video' : 
-            box2 = BoxLayout(orientation = 'horizontal', size_hint = (1,1) )
-            self.video_box_medium = BoxLayout(orientation = 'horizontal', size_hint = (1,1) )
-            box2.add_widget( self.video_box_medium )
-            box.add_widget( box2 ) 
-
-        self.layout_type2layout(text).add_widget( box ) 
-
-        box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.1) )
-        box.padding = 5 #box.height*0.15
-        box.spacing = self.layout_type2size(text)[0]*0.46
-        vote_button = Button(text = 'voter') #, size = (box.width*0.25 - margin[0], box.height - 2*margin[1]), pos=margin) #size_hint = (0.5,1) )
-        vote_button.bind( on_press = self.vote )
-        box.add_widget( vote_button ) 
-        launch_button = Button(text = 'lancer') #, size = (box.width*0.25, box.height - 2*margin[1]), pos=(box.width - margin[0], margin[1]) ) 
-        launch_button.bind( on_press = self.launch ) 
-        box.add_widget( launch_button )
-        
-        self.medium_layout.add_widget( box )
-        
-        ######################### SMALL LAYOUT ##########################################################
-        texture_path = 'style/square_small.png'#self.style['square_texture_path']
-        from kivy.core.image import Image
-        texture = Image(texture_path).texture
-        
-        self.small_layout = BoxLayout(orientation = 'vertical', size = self.small_size)
-        #create_layout('icon')
-        text = 'small'
-        
-        with self.layout_type2layout(text).canvas :
-                Color(a, b, c)
-                #BorderImage(source = 'style/square_medium.png',border = (12,12,12,12), size = self.layout_type2size(text) )        
-                Rectangle(texture = texture, size = self.small_layout.size )
-        
-        box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.2) )
-        l1 = Label(text=self.title, font_size = 13 )
-        box2 = BoxLayout(orientation = 'vertical', size_hint = (0.4,1) )
-        l2 = Label(text = app_type2name(self.app_type), font_size = 10, halign = 'right' )
-        box2.add_widget(l2)
-        box.add_widget(l1)
-        box.add_widget(box2)
-        self.small_layout.add_widget( box )
-        from kivy.uix.image import Image
-        alternative_image = Image(source = self.alternative_image_path, size_hint = (1,0.6) )
-        self.small_layout.add_widget( alternative_image )
-        
-        box = BoxLayout(orientation = 'horizontal', size_hint = (1,0.2) )
-        box.padding = 2 #box.height*0.15
-        box.spacing = self.layout_type2size(text)[0]*0.5
-        vote_button = Button(text = 'vote') #, size = (box.width*0.25 - margin[0], box.height - 2*margin[1]), pos=margin) #size_hint = (0.5,1) )
-        vote_button.bind( on_press = self.vote )
-        box.add_widget( vote_button ) 
-        launch_button = Button(text = 'lancer') #, size = (box.width*0.25, box.height - 2*margin[1]), pos=(box.width - margin[0], margin[1]) ) 
-        launch_button.bind( on_press = self.launch ) 
-        box.add_widget( launch_button )
-        
-        self.small_layout.add_widget( box )
-        
-        #add a random layout so that it can be removed by the next function
-        #self.layout = BoxLayout()
-        #self.add_widget(self.layout) 
-        #display the right layout
-        self.layout_type2function(layout_type, True)        
-
-    def layout_type2layout(self,layout_type) :
-        #print layout_type
-        if layout_type == 'large': l = self.large_layout
-        elif layout_type == 'medium': l = self.medium_layout
-        elif layout_type == 'small': l = self.small_layout
-        elif layout_type == 'icon': l = self.icon_layout
-        return l
+        self.add_widget(self.layout)
+    
 
     def layout_type2size(self,layout_type) :
         #print layout_type
-        if layout_type == 'large': s = self.large_size
-        elif layout_type == 'medium': s = self.medium_size
-        elif layout_type == 'small': s = self.small_size
-        elif layout_type == 'icon': s = self.icon_size
-        return s
+        pad = self.padding
+        if layout_type == 'large':
+            l,h = self.large_size
+            s = (l -2*pad,h -2*pad)
+        elif layout_type == 'medium': 
+            l,h = self.medium_size
+            s = (l -2*pad,h -2*pad)
+        elif layout_type == 'small': 
+            l,h = self.small_size
+            s = (l -2*pad,h -2*pad)
+        elif layout_type == 'icon': 
+            l,h = self.icon_size
+            s = (l -2*pad,h -2*pad)
+        return s     
 
-    def layout_type2function(self,layout_type, startup) :
-        layout = self.layout_type2layout(layout_type)
-        #self.layout_type = layout_type
-        return self.set_new_layout( layout, layout_type, startup )
-    
-    def set_new_layout(self, new_layout, layout_type, startup) :
-        #self.new_layout = new_layout
-        """
-        animation = Animation(size = new_layout.size, duration = 1,t='in_quad')
-        animation.bind(on_complete = self.set_new_layout2)
-        animation.start(self.layout)
-        """
-        #def set_new_layout2(self,a,b) :
-        #self.remove_widget(self.layout)
-        self.clear_widgets()
-        self.layout = new_layout
-        self.add_widget(self.layout)
-        self.size = self.layout.size
+    def refresh_layout(self, layout_type) :
+        size = self.layout_type2size(layout_type)
+        pad = self.padding
+        self.layout_type = layout_type
         
-        if self.main_media_type == 'video':
-            self.fit_video(layout_type, startup)
+        kwargs = {'duration' : 1.1,'t':'in_quart'}
+        anim = Animation(pos = (pad,pad), size = size, **kwargs)
+        anim.start(self.layout)
         
-        """
-        buttons = self.buttons
-        for key,val in buttons.iteritems(): 
-            val.size = self.get_launch_button_size(key) 
-            self.add_widget( buttons[key] )
-        """
+        #refresh background texture
+        Clock.schedule_once(self.refresh_background, 1.1)
 
-    def fit_video(self, layout_type, startup):
-        if not startup == True : 
-            if layout_type == 'medium':
-                self.video.pos = self.video_box_medium.pos
-                self.video.size = self.video_box_medium.size
-            elif layout_type == 'large':
-                self.video.pos = self.video_box_large.pos
-                self.video.size = self.video_box_large.size
-            elif layout_type in ['small','icon']:
-                self.video.size = (0,0)
-        else : #self.video_box_large.size is nul at startup..
-            #print self.video_box_large.size  
-            if layout_type == 'medium':
-                #self.video.pos = self.video_box_medium.pos
-                #print self.video_box_medium.size
-                self.video.size = self.size
-            elif layout_type == 'large':
-                #self.video.pos = self.video_box_large.pos
-                self.video.size = self.size
-            elif layout_type in ['small','icon']:
-                self.video.size = (0,0)
-                
-        #video back to the front on top of the layout
-        self.remove_widget(self.video)
-        self.add_widget(self.video)
-        
-        self.buttons.pos = self.video.pos
-        self.buttons.width = 70#self.video.width /8
-        self.buttons.height = 140#self.video.height /2
-        self.remove_widget(self.buttons)
-        if not layout_type in ['small','icon']:
-            self.add_widget(self.buttons)
-
+    def refresh_background(self, a):
+        self.texture_path = str( self.square_parameters[self.layout_type]['texture_path'] )
+        self.layer_texture_path = self.layers[self.layout_type]
 
     def launch(self,a):
         print 'launch app ' + self.title 
@@ -434,7 +327,9 @@ class Square(Scatter):
         #square was concerned by the touch_up 
         if self.collide_point(touch.x,touch.y):
             self.touches[touch.id] = touch
-        super(Square, self).on_touch_down(touch)       
+            #enlarge a bit
+            self.reshape_when_touch_down(touch, 2)     
+        super(Square, self).on_touch_down(touch)  
     
     def on_touch_up(self, touch):
         super(Square, self).on_touch_up(touch)
@@ -443,13 +338,34 @@ class Square(Scatter):
 
         if self.collide_point(touch.x,touch.y):
             #print self.rotation
-            self.parent.process_touch_up(self)
-            return True
-            
+            if not self.process_touch_up_forbidden : 
+                self.parent.process_touch_up(self)
+            #reduce size a bit
+            self.reshape_when_touch_up(touch)  
+            return True   
     
+    def reshape_when_touch_down(self, touch, intensity):
+        self.color = self.color_down
+        self.pos = (self.x + intensity, self.y + intensity)
+        self.title_label.color = self.color_up
+        self.texture_path = 'style/square_large_touch_down.png'
+        #self.app_type_label.color = self.color_up
+        #self.size = (self.width + 3, self.height + 3)
+        #a = Animation(center = self.center, size = self.size)
+        #a.start(self)
+
+    def reshape_when_touch_up(self, touch):
+        self.color = self.color_up
+        self.title_label.color = self.color_down
+        #self.app_type_label.color = self.color_up
+        self.texture_path = 'style/square_large.png'
+        pass
+
+    
+        
          
 class GeometrySquare(Scatter):
-    style = DictProperty({'color':(0.5,0.5,0.5,0.5), 'texture_path':'style/border31.png' })
+    style = DictProperty({'texture_path':'style/slider-sous-tommette2.png' })
     layout_type = StringProperty('')
     geometry_id = NumericProperty(0)#location on the field
     
@@ -457,15 +373,7 @@ class GeometrySquare(Scatter):
         super(GeometrySquare, self).__init__(**kwargs)
         #draw
         style = self.style
-        color = style['color']
-        a,b,c,d = color
-        texture_path = style['texture_path']
-        texture = Image(texture_path).texture      
-
-        with self.canvas :
-            Color(a, b, c)        
-            #Rectangle(texture = texture, size =self.size)
-            BorderImage(source = texture_path,border = (5,5,5,5), size = self.size )    
+        texture_path = style['texture_path']    
         
 
 class Field(Widget):
@@ -476,22 +384,28 @@ class Field(Widget):
     squares = DictProperty( {} )#stores all the squares widgets
     geometry = DictProperty( {} )#geometry = squares' target relative positions and sizes on the field
     geometry_detailed = DictProperty( {} ) #real positions on the field
-    geometry_squares = DictProperty( {} ) 
+    geometry_squares = DictProperty( {} )
+    square_parameters = DictProperty( {} ) #defines the details of the square 
     #stores all the geometry empty squares as widgets so that we can easily
     #compare their positions with the real squares
     apps = DictProperty( {} )#stores all the apps information
+    video = ObjectProperty( None )
+    video_size_pos = DictProperty( {} )
 
     #bar variables
     bar_width = NumericProperty(155)
-    bar_start_geometry_id = NumericProperty(0)
+
+    square_padding = NumericProperty(10)
 
     def __init__(self,**kwargs) :
         super(Field, self).__init__(**kwargs)
         self.init_geometry()
         self.init_geometry_detailed()
         self.draw_geometry()
-        self.init_apps()
+        self.apps = self.init_apps()
+        self.init_square_parameters()
         self.init_squares()
+        
 
     def get_size(self, layout_type) :
         if layout_type == 'icon':
@@ -502,15 +416,17 @@ class Field(Widget):
         #width,height = self.size
         width,height = self.geometry["screen_size"]
         l,h = self.geometry[layout_type]
-        l = l * width - 2*margin
-        h = h * height - 2*margin
+        l = l * width - 2*margin 
+        h = h * height - 2*margin 
         return (l,h) 
 
     def square_is_in_the_bar(self,square):
+        return False
+        """
         if square.geometry_id < self.bar_start_geometry_id :
             return False
         else : return True
-    
+        """
     def init_geometry(self):
         #Import the json file that defines it
         file_path = join(dirname(__file__), 'field_geometry')
@@ -529,8 +445,9 @@ class Field(Widget):
              if i not in ["screen_size","vertical", "icon_px","small","medium", "large"]:
                  i = int(i)
                  if i > max : max = i 
-        self.bar_start_geometry_id = max + 1
+        #self.bar_start_geometry_id = max + 1
 
+    
     def init_geometry_detailed(self):
         #calculates detailed geometry
         style = self.style
@@ -568,100 +485,188 @@ class Field(Widget):
                            do_scale = False, 
                            do_rotation = False, 
                            do_translation = False, 
-                           auto_bring_to_front = False
+                           auto_bring_to_front = False, 
                            )
                 self.add_widget( self.geometry_squares[id] )
-
-        #in the bar
-        bar_width = self.bar_width
-        m = self.style['geometry_square_margin']
-        icon_size = self.get_size('icon')
-        padding_left = int((bar_width - icon_size[0])/2) 
-        #starting index
-        min = self.bar_start_geometry_id
-        #calculate the nb of squares that could fit in there without scrolling
-        max = int( (self.height - m)/(icon_size[1]+m) )       
-
-        for i in xrange(0,max):
-            self.geometry_squares[str(min+i)] = GeometrySquare(
-                           geometry_id = min+int(i), 
-                           pos = (padding_left,m+(icon_size[1]+m)*i), 
-                           size = icon_size, 
-                           layout_type = "icon", 
-                           do_scale = False, 
-                           do_rotation = False, 
-                           do_translation = False, 
-                           auto_bring_to_front = False
-                           )
-            self.add_widget( self.geometry_squares[str(min+i)] ) 
+        print self.geometry_squares
     
+    def init_square_parameters(self):
+        #Import the json files that defines each type of square
+        for i in ['small','medium','large']:
+            file_path = join(dirname(__file__), i)
+            print file_path
+                
+            with open(file_path, 'r') as fd:
+                self.square_parameters[i] = loads(fd.read())
+                print self.square_parameters[i]
+
+            if self.square_parameters[i] is None:
+                print 'Unable to load', file_path
+                return
+        #print self.square_parameters 
+
     def init_apps(self):
         #Import the json file that defines apps
-
         file_path = join(dirname(__file__), 'apps','detail')
-        self.apps = {}
+        apps = {}
         nb = 0
         for subdir, dirs, files in walk(file_path):
             for file in files:
                 print file
                 with open(file_path +'/'+file, 'r') as fd:
                     t = loads(fd.read())
-                    self.apps[str(nb)] = t 
+                    apps[str(nb)] = t 
                 nb +=1
 
-        if self.apps is None:
+        if apps is None:
             print 'Unable to load', file_path
             return
-        print self.apps
-        
-
-        
-        
+        return apps    
 
     def init_squares(self):
         #create and display squares
-        apps = self.apps
-        
+               
         for key,val in self.geometry_detailed.iteritems():
-                id = key
-                pos = val['pos']
-                size = val['size']
-                layout_type = val['layout_type']
-                self.squares[id] = Square(
+            id = key
+            pos = val['pos']
+            size = val['size']
+            layout_type = val['layout_type']
+            square = self.init_square(self.apps, key, pos, size, layout_type)
+            self.add_square(square)
+
+    def add_square(self, square):
+            id = str(square.id)
+            self.squares[id] = square
+            self.add_widget( self.squares[id] )
+
+            #in case the screen is displayed vertically
+            if self.geometry["vertical"] == 'True' :
+                self.squares[id].rotation_90d -= 90
+                self.rotate(self.squares[id], -90)
+    """ 
+    def remove_square(self,square):
+            id = str(square.id)
+            self.remove_widget( self.squares[id] )
+            del(self.squares[id])
+    """        
+    def remove_square(self,square, animation, touch):
+            if animation :
+                #remove some elements
+                for i in square.children :
+                    square.remove_widget(i)
+                kwargs = {'duration' : 1.1,'t':'in_quart'} 
+                anim = Animation(pos = touch.pos, size = (0,0), **kwargs )
+                anim.bind(on_complete = self.remove_square2 )
+                anim.start(square)
+                
+            else :
+                self.remove_square2(1,square)
+
+    def remove_square2(self,a,square):
+            self.remove_widget( square )
+            id = str(square.id)
+            if id in self.squares.keys():
+                del(self.squares[id] )
+                     
+
+    def init_square(self,apps,key,pos,size, layout_type):
+
+            return Square(
                             pos = pos, 
                             size = size, 
                             layout_type = layout_type, 
                             do_scale = False, 
-                            geometry_id = int(id),
+                            geometry_id = int(key),
                             icon_size = self.get_size('icon'),
                             small_size = self.get_size('small'),
                             medium_size = self.get_size('medium'),
                             large_size = self.get_size('large'),
 
-                            id = apps[key]['id'],
+                            id = key,
                             title = apps[key]['title'],
                             app_type = apps[key]['app_type'],
-                            color = apps[key]['color'],
+                            color_up = apps[key]['color_up'],
+                            color_down = apps[key]['color_down'],
                             authors = apps[key]['authors'],
                             main_media_type = apps[key]['main_media_type'],
                             image_path = apps[key]['image_path'],
                             video_path = apps[key]['video_path'],
+                            layers = {
+                                      "large" : str( apps[key]['layer_large'] ), 
+                                      "medium" : str( apps[key]['layer_medium'] ), 
+                                      "small": str( apps[key]["layer_small"] )
+                                     },
+ 
                             alternative_image_path = apps[key]['alternative_image_path'],
                             main_description = apps[key]['main_description'] ,
                             long_description = apps[key]['long_description'],
                             info_title = apps[key]['info_title'],
                             info_text = apps[key]['info_text'],
-                            info_conclusion = apps[key]['info_conclusion']
-                            )
-                
-                self.add_widget(self.squares[id])
+                            info_conclusion = apps[key]['info_conclusion'],
 
-                #in case the screen is displayed vertically
-                if self.geometry["vertical"] == 'True' :
-                    self.squares[id].rotation_90d -= 90
-                    self.rotate(self.squares[id], -90)
+                            square_parameters = self.square_parameters,
+                            padding = self.square_padding
+                            )
+
+    def geometry_square2square(self,key):
+        ret = None
+        g = self.geometry_squares
+        for i,val in self.squares.iteritems() :
+            #print val.geometry_id
+            if g[key].collide_point(*val.center) :
+                #if int(key) == val.geometry_id : 
+                ret = i
+        return ret
+                
+    def add_app(self, key, touch):
+            #function to be used by the bar to add an app to the field
+            #print 'add_app_key :'+ key
+            if key in self.squares.keys():
+                square  = self.squares[key]
+                square.reshape_when_touch_down(touch,6)
+                square.reshape_when_touch_up(touch)
+                self.process_touch_up( square )
+            else : 
+                #create the square 
+                square = self.init_square(self.apps,key,touch.pos, self.get_size('small'), 'small')
+                      
+                #find matching location
+                #focus on translation
+                matcher = self.find_matcher(square)#matcher = the key of geometry_squares that fits the best
+                
+                if matcher is not None :
+                    #find the square that sits on matcher
+                    matching_square = self.geometry_square2square(matcher)
+                    #print "matcher: "+matcher
+                    #sq = geometry_id = str(square.geometry_id)
+                    self.add_square(square)
+                    print 'add square '+key  
+                    self.switch(square, matcher)
+                    if matching_square in self.squares.keys():
+                        self.remove_square( self.squares[str(matching_square)], True, touch )
+                        print 'remove square '+matching_square
+                    else :
+                        print matching_square +' not in self.squares'
+                else : 
+                    #destroy square
+                    self.remove_square(square, False, touch)
+            #print self.squares.keys()  
+            #switch
+            #remove current app from the field
+            #send back the bar icon to its location
+            
+                            
 
     def process_touch_up(self, square) :
+            if square.process_touch_up_forbidden : return
+            
+            #focus on translation
+            matcher = self.find_matcher(square)
+            if matcher is not None :
+                self.switch(square, matcher)
+            else : 
+                self.push_back_into_place(square)
+
             #focus on rotation
             #calculate angle between previous pos and now
             a = square.rotation
@@ -670,18 +675,15 @@ class Field(Widget):
                 square.rotation_90d +=90
             elif a < (b - 45) : 
                 square.rotation_90d -=90
-            self.rotate(square, square.rotation_90d)
+            rot = square.rotation_90d
             #fix an issue : flip 180 when smallest angle is negative
             smallest_angle = min( (180 - abs(a - b), abs(a - b)) )
             if smallest_angle <0 : 
-                self.rotate(square, square.rotation_90d + 180)
+                rot = rot + 180
+            
+            self.rotate(square, rot)
 
-            #focus on translation
-            matcher = self.find_matcher(square)
-            if matcher is not None :
-                self.switch(square, matcher)
-            else : 
-                self.push_back_into_place(square)
+            
 
         
     def push_back_into_place(self,square) :
@@ -693,6 +695,8 @@ class Field(Widget):
             square.pos = self.geometry_squares[id].pos
 
     def rotate(self,square, rotation) :
+        #animation = Animation(rotation = rotation, duration =0.2)
+        #animation.start(square)
         square.rotation = rotation  
         
     """
@@ -718,11 +722,12 @@ class Field(Widget):
                     if target_is_bar is False :
                         if val.collide_point(x1,y1) :
                             matching_list.append(key)
+                    """
                     else :
                         #all the icons are possibly a potential location   
                         if key >= self.bar_start_geometry_id :
                             matching_list.append(key)
-
+                    """
             l = len(matching_list)
             #one matches
             if l == 1:
@@ -746,12 +751,9 @@ class Field(Widget):
         #the center of the current widget is the reference
         x1,y1 = square.center
         m = find(x1,y1, False)
-        
-        if m == None and not self.square_is_in_the_bar(square) :
+        """
+        if m == None :
             #one more try if square comes from outside of the bar
-            #check if within the fast launcher bar
-            #if yes, better use the left border than the center
-            #the left border center becomes the reference
             bar_width = self.bar_width
             #rot = square.rotation_90d
             
@@ -765,38 +767,89 @@ class Field(Widget):
                 m = find(x1,y1,True)
                 return m 
             else : 
-                return None
+               return None
         else : 
-            return m 
-
+            return m
+        """
+        return m
 
     def switch(self, square, matcher) :    
         #switch position with another widget
         #self.activate_animations = False
 
         def get_layout_type(geometry_id) :
+            """
             if int(geometry_id) >= self.bar_start_geometry_id :
                 return 'icon'
-            else : 
-                return self.geometry[ str(geometry_id) ][2]
+            else :
+            """ 
+            return self.geometry[ str(geometry_id) ][2]
 
         def switch_layouts():
             square.layout_type = target_layout
             target.layout_type = current_layout
             #if square.layout_type <> target.layout_type :
-            square.layout_type2function(target_layout, False)
-            target.layout_type2function(current_layout, False)
- 
+            square.refresh_layout(target_layout)
+            target.refresh_layout(current_layout)
+        
+        def place_square(square):
+            animate_square(square, target_layout, target_param,target_pos, target_size)
+            square.refresh_layout(target_layout)
+            square.geometry_id = int(matcher)
+
+        def animate_square(square,layout_type,param,pos,size):#move, resize etc
+          if self.activate_animations :
+            kwargs = {'duration' : 1.1,'t':'in_quart'}
+            square.process_touch_up_forbidden = True            
+            #switch pos and size 
+            animation = Animation(pos = pos, size = size, **kwargs) #+ Animation(size = target_size, duration = 0.5,t='in_quart') 
+            animation.bind(on_complete = self.allow_process_touch_up) 
+            animation.start(square)
+            #title size
+            font_size = square.process_font_size( square.title ,int( param['title_label_font_size'] ) )
+            animation = Animation(font_size = font_size, **kwargs)
+            animation.start(square.title_label)
+            #authors
+            animation = Animation(font_size = int( param['authors_label_font_size'] ), **kwargs)
+            animation.start(square.authors_label)
+            #box top size
+            animation = Animation(size_hint = param['box_top_size_hint'], **kwargs)
+            animation.start(square.box_top)
+            #box middle size
+            animation = Animation(size_hint = param['box_middle_size_hint'], **kwargs)
+            animation.start(square.box_middle)
+            animation = Animation(size_hint = param['box_middle1_size_hint'], **kwargs)
+            animation.start(square.box_middle1)
+            animation = Animation(size_hint = param['box_middle2_size_hint'], **kwargs)
+            animation.start(square.box_middle2)
+            #box bottom size
+            animation = Animation(size_hint = param['box_bottom_size_hint'], **kwargs)
+            animation.start(square.box_bottom)
+            #animation.bind(on_complete = self.switch_layouts)
+            box_bottom_spacing = (self.get_size(layout_type)[0] -2*square.padding - param['vote_button_size'][0] - param['launch_button_size'][0]) #* 0.97
+            animation = Animation(spacing = box_bottom_spacing, **kwargs)
+            animation.start(square.box_bottom)
+          else :
+            square.size = size
+            square.center = pos                           
+            
         #get current properties of the target empty square to switch with
         target = self.geometry_squares[matcher]
         target_layout = get_layout_type(int(matcher))
-        target_pos = target.center
-        target_size = target.size #target_size = self.get_size(target_layout)        
+        target_param = self.square_parameters[target_layout]
+        target_pos = target.pos
+        target_size = target.size #target_size = self.get_size(target_layout) 
+        
+        #if current place cannot be found
+        if str(square.geometry_id) not in self.geometry.keys():
+            place_square(square)
+            return
 
         #get current square properties
         #current_layout = square.layout_type #this way was buggy
-        current_layout = get_layout_type(square.geometry_id)
-        current_pos = self.geometry_squares[str(square.geometry_id)].center
+        current_layout = square.layout_type#get_layout_type(square.geometry_id)
+        current_param = self.square_parameters[current_layout]
+        current_pos = self.geometry_squares[str(square.geometry_id)].pos
         current_size = square.size #current_size = self.get_size(current_layout)#target.size
 
         #get the target square
@@ -805,7 +858,7 @@ class Field(Widget):
             if val.geometry_id == int(matcher) : 
                 target = self.squares[key]
                 break
-        
+        """
         #adjust square pos in order to avoid jumping while changing layout
         if not target_size == current_size :    
             if target_size > current_size : 
@@ -833,20 +886,8 @@ class Field(Widget):
             b,c = a
             square.x += b * delta_square.x/2
             square.y += c * delta_square.y/2           
-
-        def place_square():
-            #move to there
-            #if target_layout == 'icon' and square.rotation_90d ==0 : square.center = target_pos
-            if self.activate_animations : 
-                animation = Animation(center = target_pos, size = target_size, duration = 0.9,t='in_out_back')
-                animation.start(square)
-            else : 
-                square.size = target_size
-                square.center = target_pos
-                
-            #resize
-            square.layout_type2function(target_layout, False)
-            square.geometry_id = int(matcher)
+        """
+        
         
         #fake a different pos to match user behaviour (i.e. placing the square in the center of the target)
         #square.center = square.pos #(changes with rotation .. )        
@@ -856,19 +897,12 @@ class Field(Widget):
             place_square()
             return
         
-        #switch pos and size
         #square
-        if self.activate_animations : 
-            animation = Animation(size = target_size, center = target_pos, duration = 0.5,t='in_out_back')  
-            animation.start(square)
-            #animation.bind(on_complete = self.switch_layouts)
-        else :
-            square.size = target_size
-            square.center = target_pos
-
+        animate_square(square, target_layout, target_param, target_pos, target_size) 
+ 
         #switch layouts
         switch_layouts() 
-
+        
         #adjust square pos in order to avoid jumping while changing layout
         if not target_size == current_size and not current_layout == 'icon':
             #case of an empty destination 
@@ -890,36 +924,60 @@ class Field(Widget):
             target.y += c * delta_target.y/2 
         
         #target
-        if self.activate_animations : 
-            animation = Animation(center = current_pos, duration = 0.6,t='in_out_back') + Animation(size = current_size, duration = 0.6,t='in_out_back') 
-            animation.start(target)
-            #animation.bind(on_complete = self.switch_layouts)
-        else :
-            target.size = current_size
-            target.center = current_pos
-              
+        animate_square(target, current_layout, current_param, current_pos, current_size)
+        
         #store pos
         target.geometry_id = square.geometry_id
         square.geometry_id = int(matcher)    
     
+    def allow_process_touch_up(self,a,square):
+        square.process_touch_up_forbidden = False
+   
     def switch_layouts(self, animation,square):
         def get_layout_type(geometry_id) :
+            """
             if int(geometry_id) >= self.bar_start_geometry_id :
                 return 'icon'
-            else : 
-                return self.geometry[ str(geometry_id) ][2]
+            else :
+            """ 
+            return self.geometry[ str(geometry_id) ][2]
 
         #get target layout
         target_layout = get_layout_type(square.geometry_id)
         square.layout_type = target_layout
-        square.layout_type2function(target_layout, False)
+        square.refresh_layout(target_layout)
  
     def mute(self,uid):
         #mute all the square, unmute the given one
         for i in self.squares.itervalues():
             if not i.uid == uid :
                 i.mute()
+    
+    def play_video_fullscreen(self, video_path, pos, size, position):
+        self.video = VideoPlayer2(source = video_path, options = {'position':position} )
+        self.video.bind(on_leave_fullscreen = self.on_leave_fullscreen)
+        self.video.size = size
+        self.video.pos = pos
+        self.add_widget(self.video)
+        #store size and pos for later
+        self.video_size_pos = {'size':size, 'pos':pos}
+        Clock.schedule_once(self.video.start, 2.5)
+        window_size = (self.width - self.bar_width,self.height)#self.get_parent_window().size
+        anim = Animation(size = window_size, pos = (self.x +self.bar_width, self.y) )
+        anim.start(self.video)
 
+    def on_leave_fullscreen(self,a):
+        size = self.video_size_pos['size']
+        pos = self.video_size_pos['pos']
+        anim = Animation(size = size, pos = pos)
+        anim.bind(on_complete = self.after_leaving_fullscreen)
+        anim.start(self.video)
+
+    def after_leaving_fullscreen(self,a,b):
+        self.video.video.volume = 0
+        self.remove_widget(self.video )
+
+"""
 class Bar(ScrollView):
     app = ObjectProperty(None)
     style = DictProperty( {'texture_path':'style/border31.png', 'geometry_square_margin' : 13} )
@@ -986,7 +1044,7 @@ class Bar(ScrollView):
         
     def add_square(self,square):
         self.layout.add_widget(square)
-
+"""
 
 class AppView(FloatLayout):
     app = ObjectProperty(None)
@@ -995,14 +1053,17 @@ class AppView(FloatLayout):
 
     def __init__(self, **kwargs):
         super(AppView, self).__init__(**kwargs)
-
+         
+        from kivy.core.image import Image
         tex = Image('style/sidebar.png').texture
         tex.wrap = 'repeat'
         self.texture_sidebar = tex
         tex = Image('style/1.png').texture
         if tex is not None:
             tex.wrap = 'repeat'
-            self.texture = tex     
+            self.texture = tex
+
+             
 
 
 class LauncherApp(App):
@@ -1010,12 +1071,12 @@ class LauncherApp(App):
     def build(self):
         self.appview = AppView(app=self)
         
-        #self.bar = Bar(app = self )
-        #self.appview.add_widget(self.bar)
-        
         self.field = Field(app=self, activate_animations = True)
         self.appview.add_widget(self.field)
         
+        self.bar = Bar(app = self )
+        self.appview.add_widget(self.bar)
+
         #self.field.load_bank() 
         
         #self.theoric_field_setup() 

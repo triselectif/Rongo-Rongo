@@ -1,13 +1,44 @@
 #:kivy 1.0
+		
 
-<Field>:
-	x: 0
-	width: 1280
-	height: 643
+<VideoPlayer2>:
 	
+	canvas.before: 
+		Color:
+			rgb: 0,0,0
+		Rectangle:
+			pos: self.pos
+			size: self.size
+
+<Square>:
+	
+	canvas.before: 
+		Color:
+			rgb: self.color[0],self.color[1],self.color[2]
+		BorderImage:
+			source: self.texture_path
+			border: 12,12,12,12
+			size: self.size
+		Color:
+			rgb: 1,1,1
+		BorderImage:
+			source: self.layer_texture_path
+			border: 12,12,12,12
+			size: self.size
+                        
+
+<GeometrySquare>:
+	
+	canvas.before: 
+		Color:
+			rgb: 1,1,1
+		BorderImage:
+			source: self.style['texture_path']
+			border: 12,12,12,12
+			size: self.size
 
 		
-<Var>:
+<Bar>:
 	height: 600
 	size_hint_y: None
 		
@@ -18,25 +49,12 @@
 			source: 'style/border.png'
 			border: 40, 40, 40, 40
 			pos: self.pos
-			size: 100, self.height
+			size: 155, self.height
 
-	GridLayout:
-		cols: 1
-		size_hint: None, None
-		pos: root.pos
-		spacing: 14
-		padding: 15
-		on_children: self.size = (0, 0)
+	
 
-		Label:
-			text: 'bleh'
-<Bar>:
-	height: 620
-	size_hint_y: None
-		
 	
-	
-<AppView>:
+<AppView2>:
 	
 	ScrollView:
 		scroll_timeout: 200
@@ -53,10 +71,6 @@
 				pos: self.pos
 				size: self.size
 
-		BoxLayout:
-			padding: 14
-			spacing: 14
-			size_hint_y: None
-			on_size: print 'SIZE', args
+		
 		
 
