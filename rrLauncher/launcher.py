@@ -43,17 +43,6 @@ class Bar(FloatLayout):
     element_size = ObjectProperty( (70,70) )
     sorting_condition = StringProperty( 'app_type' )
     
-    """
-    def init_geometry(self):
-        #Import the json file that defines it
-        file_path = join(dirname(__file__), 'field_geometry')
-        with open(file_path, 'r') as fd:
-            self.geometry = loads(fd.read())
-        if self.geometry is None:
-            print 'Unable to load', file_path
-            return
-        self.icon_size = self.geometry["icon_px"]
-    """
     def __init__(self,**kwargs):
         super(Bar,self).__init__(**kwargs)
         self.apps = self.app.field.init_apps()
@@ -134,22 +123,8 @@ class Square(Scatter):
     main_media_type = StringProperty(None) #'image' or 'video'
     image_path = StringProperty(None)
     video_path = StringProperty(None)
-    """ 
-    alternative_image_path = StringProperty(None)
-    main_description = StringProperty(None)
-    long_description = StringProperty(None)
-    info_title = StringProperty(None)
-    info_text = StringProperty(None)
-    info_conclusion = StringProperty(None)
-    """
     #shape
     rotation_90d = NumericProperty(0)
-    """
-    style = DictProperty( {
-                          'square_texture_path' : 'style/border31.png',
-                          'color' : '0,0,0,0'
-                          } )
-    """
     layout_type = StringProperty(None) #'icon'/'small'/'medium' or 'large'
     icon_size = ObjectProperty( None )
     small_size = ObjectProperty( None )
@@ -205,13 +180,6 @@ class Square(Scatter):
         
     def on_leave_fullscreen(self, a):
         pass 
-    """
-    def create_layout(self, layout_type, texture_path):
-        a,b,c,d = self.color_up
-        with self.layout.canvas :
-                Color(a, b, c)
-                BorderImage(source = texture_path, border = (12,12,12,12), size = self.layout.size)#_type2size(layout_type) ) 
-    """
 
     def process_font_size(self, text, font_size):
         #in case the text is multiline, reduce the font size
@@ -391,10 +359,7 @@ class Field(Widget):
     apps = DictProperty( {} )#stores all the apps information
     video = ObjectProperty( None )
     video_size_pos = DictProperty( {} )
-
-    #bar variables
     bar_width = NumericProperty(155)
-
     square_padding = NumericProperty(10)
 
     def __init__(self,**kwargs) :
@@ -404,8 +369,7 @@ class Field(Widget):
         self.draw_geometry()
         self.apps = self.init_apps()
         self.init_square_parameters()
-        self.init_squares()
-        
+        self.init_squares()       
 
     def get_size(self, layout_type) :
         if layout_type == 'icon':
@@ -422,11 +386,7 @@ class Field(Widget):
 
     def square_is_in_the_bar(self,square):
         return False
-        """
-        if square.geometry_id < self.bar_start_geometry_id :
-            return False
-        else : return True
-        """
+        
     def init_geometry(self):
         #Import the json file that defines it
         file_path = join(dirname(__file__), 'field_geometry')
@@ -543,12 +503,7 @@ class Field(Widget):
             if self.geometry["vertical"] == 'True' :
                 self.squares[id].rotation_90d -= 90
                 self.rotate(self.squares[id], -90)
-    """ 
-    def remove_square(self,square):
-            id = str(square.id)
-            self.remove_widget( self.squares[id] )
-            del(self.squares[id])
-    """        
+            
     def remove_square(self,square, animation, touch):
             if animation :
                 #remove some elements
@@ -699,18 +654,7 @@ class Field(Widget):
         #animation.start(square)
         square.rotation = rotation  
         
-    """
-    def add_to_bar(self,square) :
-        bar = self.app.bar
-        #geometry id to unfill
-        geometry_id = square.geometry_id
-        self.remove_widget(square)
-        bar.layout.add_widget(square)
-        square.layout_type2function("icon")
-        #square.size = self.get_size("icon")
-        square.geometry_id = 1000
-        print 'added to bar'        
-    """
+    
     def find_matcher(self,square):
         geometry_id = str(square.geometry_id)
         geometry_squares = self.geometry_squares
@@ -722,12 +666,7 @@ class Field(Widget):
                     if target_is_bar is False :
                         if val.collide_point(x1,y1) :
                             matching_list.append(key)
-                    """
-                    else :
-                        #all the icons are possibly a potential location   
-                        if key >= self.bar_start_geometry_id :
-                            matching_list.append(key)
-                    """
+                    
             l = len(matching_list)
             #one matches
             if l == 1:
@@ -751,26 +690,7 @@ class Field(Widget):
         #the center of the current widget is the reference
         x1,y1 = square.center
         m = find(x1,y1, False)
-        """
-        if m == None :
-            #one more try if square comes from outside of the bar
-            bar_width = self.bar_width
-            #rot = square.rotation_90d
-            
-            #chosen to be independant from the rotation
-            x1 = square.x + square.width/2
-            y1 = square.y + square.height/2
-            
-            if x1 < bar_width :
-                #print "in the bar"
-                #find the most accurate position
-                m = find(x1,y1,True)
-                return m 
-            else : 
-               return None
-        else : 
-            return m
-        """
+
         return m
 
     def switch(self, square, matcher) :    
@@ -778,11 +698,6 @@ class Field(Widget):
         #self.activate_animations = False
 
         def get_layout_type(geometry_id) :
-            """
-            if int(geometry_id) >= self.bar_start_geometry_id :
-                return 'icon'
-            else :
-            """ 
             return self.geometry[ str(geometry_id) ][2]
 
         def switch_layouts():
@@ -935,11 +850,6 @@ class Field(Widget):
    
     def switch_layouts(self, animation,square):
         def get_layout_type(geometry_id) :
-            """
-            if int(geometry_id) >= self.bar_start_geometry_id :
-                return 'icon'
-            else :
-            """ 
             return self.geometry[ str(geometry_id) ][2]
 
         #get target layout
