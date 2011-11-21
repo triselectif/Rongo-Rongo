@@ -27,36 +27,41 @@ class SuperButton(Image):
         self.state = 'normal'
 
     def on_touch_down(self, touch):
+        #touch
         if not self.collide_point(touch.x, touch.y):
             return False
         if self in touch.ud:
             return False
         touch.grab(self)
         touch.ud[self] = True
+        #dispatch
         self._do_press()
         self.dispatch('on_press')
-        if self.background_down !='' : 
-            self.source = self.background_down
         return True
 
     def on_touch_move(self, touch):
         return self in touch.ud
 
     def on_touch_up(self, touch):
+        #touch
         if touch.grab_current is not self:
             return
         assert(self in touch.ud)
         touch.ungrab(self)
+        #dispatch
         self._do_release()
         self.dispatch('on_release')
-        if self.background_down !='' : 
-            self.source = self.background_normal
+        
         return True
 
     def on_press(self):
-        pass
+        #background image
+        if self.background_down !='' : 
+            self.source = self.background_down
 
     def on_release(self):
-        pass
+        #background image
+        if self.background_down !='' : 
+            self.source = self.background_normal
         
 

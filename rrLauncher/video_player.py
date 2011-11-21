@@ -12,6 +12,11 @@ from kivy.uix.progressbar import ProgressBar
 
 from super_button import SuperButton
 
+class SuperButton2(SuperButton):
+    def on_press(self):
+        pass
+    def on_release(self):
+        pass  
 
 class VideoPlayer(Widget):
 
@@ -43,11 +48,11 @@ class VideoPlayer(Widget):
             self.buttons.spacing = 5# self.layout_type2size(text)[0]*0.46
 
             #play button
-            self.play_button = SuperButton(text ='', background_normal= 'style/1318898242_media-play.png', background_down= 'style/1318898242_media-play.png', size_hint = (None, None), size = (20, 20) )#, size_hint = (1,0.5) )
+            self.play_button = SuperButton2(text ='', background_normal= 'style/1318898242_media-play.png', background_down= 'style/1318898242_media-play.png', size_hint = (None, None), size = (20, 20) )#, size_hint = (1,0.5) )
             self.play_button.bind( on_press = self.start_stop_button )
             self.buttons.add_widget( self.play_button )
             #sound button
-            self.sound_button = SuperButton(text ='', background_normal = 'style/1318898261_media-volume-0.png', background_down = 'style/1318898261_media-volume-0.png', size_hint = (None, None), size = (20, 20) )#, size_hint = (1,0.5)
+            self.sound_button = SuperButton2(text ='', background_normal = 'style/1318898261_media-volume-0.png', background_down = 'style/1318898261_media-volume-0.png', size_hint = (None, None), size = (20, 20) )#, size_hint = (1,0.5)
             self.sound_button.bind( on_press = self.mute_unmute_button )
             self.buttons.add_widget( self.sound_button )
             #fullscreen 
