@@ -864,8 +864,16 @@ class Field(Widget):
         key = str(square.geometry_id)
         if not key in gs.keys():return
         match = gs[key]
-        anim = Animation(pos = match.pos, size = match.size, duration = 0.1)
-        anim.start(square) 
+        #pos size
+        anim = Animation(pos = match.pos, size = match.size, duration = 0.2)
+        anim.start(square)
+        #layout
+        #square.layout.pos = (square.padding, square.padding)
+        #box bottom
+        param = self.square_parameters[square.layout_type]
+        box_bottom_spacing = (self.get_size(square.layout_type)[0] -2*square.padding - param['vote_button_size'][0] - param['launch_button_size'][0]) * 0.97
+        anim = Animation(pos = square.layout.pos, spacing = box_bottom_spacing, duration = 0.2)
+        anim.start(square.box_bottom) 
 
     def mute(self,uid):
         #mute all the square, unmute the given one
