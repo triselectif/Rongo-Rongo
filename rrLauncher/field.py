@@ -273,6 +273,7 @@ class Field(Widget):
     def init_square(self,apps,key,pos,size, layout_type):
 
             return Square(
+                            app =self.app,
                             pos = pos, 
                             size = size, 
                             layout_type = layout_type, 

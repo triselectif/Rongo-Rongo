@@ -13,6 +13,7 @@ from super_button import SuperButton
 
 
 class Square(Scatter):
+    app = ObjectProperty( None )
     geometry_id = NumericProperty(None)#location on the field where the Square sits
     #content
     id = StringProperty('')
@@ -192,7 +193,8 @@ class Square(Scatter):
         self.layer_texture_path = self.layers[self.layout_type]
 
     def launch(self,a):
-        print 'launch app ' + self.title 
+        print 'launch app ' + self.title
+        self.app.appview.move_bar_to_right() 
 
     def vote(self,a):
         print 'vote for app ' + self.title       
