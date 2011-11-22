@@ -103,8 +103,8 @@ class Field(Widget):
         for key,val in self.geometry.iteritems() :
             if not key in ["screen_size","icon_px","large","medium","small","vertical"]: 
                 x,y,square_layout_type = val
-                x = x * width + self.x + bar_width #+ margin
-                y = y * height + self.y #+ margin
+                x = x * width + bar_width #+ self.x #+ margin
+                y = y * height #+ self.y #+ margin
                 l,h = self.get_size(square_layout_type)
                 #print (l,h)
  
