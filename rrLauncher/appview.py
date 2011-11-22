@@ -21,7 +21,7 @@ class AppView(Scatter):
 
     def __init__(self, **kwargs):
         super(AppView, self).__init__(**kwargs)    
-        
+        print self.size
         #internal variables
         self.touches2 = {}
         self.translation_allowed = False
@@ -29,7 +29,7 @@ class AppView(Scatter):
         self.position_left = True
 
         #from kivy.core.image import Image
-        tex = Image('style/slider-fond.png').texture
+        tex = Image('style/bar/slider-fond.png').texture
         tex.wrap = 'repeat'
         self.texture_sidebar = tex
         #tex = Image('style/1.png').texture

@@ -146,11 +146,11 @@ class Square(Scatter):
         self.box_bottom = BoxLayout(orientation = 'horizontal', size_hint = param['box_bottom_size_hint'] )
         self.box_bottom.padding = int( param['box_bottom_padding'] ) #box.height*0.15
         #self.vote_button = Button(text = 'voter', size_hint = (None,None), size=param["vote_button_size"] ) 
-        self.vote_button = SuperButton(background_normal = 'style/bouton-vote-T2-off.png', size_hint = (None,None), size=param["vote_button_size"] )
+        self.vote_button = SuperButton(background_normal = 'style/square/bouton-vote-T2-off.png', background_down = 'style/square/bouton-vote-T2-on.png', size_hint = (None,None), size=param["vote_button_size"] )
         self.vote_button.bind( on_press = self.vote )
         self.box_bottom.add_widget( self.vote_button ) 
         #self.launch_button = Button(text = 'lancer', size_hint = (None,None), size=param["launch_button_size"] ) 
-        self.launch_button = SuperButton(background_normal = 'style/bouton-lancer-T2-on.png', size_hint = (None,None), size=param["launch_button_size"] ) 
+        self.launch_button = SuperButton(background_normal = 'style/square/bouton-lancer-T2-off.png',background_down = 'style/square/bouton-lancer-T2-on.png', size_hint = (None,None), size=param["launch_button_size"] ) 
         self.launch_button.bind( on_press = self.launch ) 
         self.box_bottom.add_widget( self.launch_button )
         self.box_bottom.spacing = (self.layout.width - self.vote_button.width - self.launch_button.width)*0.97
@@ -225,7 +225,7 @@ class Square(Scatter):
         self.color = self.color_down
         self.pos = (self.x + intensity, self.y + intensity)
         #self.title_label.color = self.color_up
-        self.texture_path = 'style/square_'+str(self.layout_type)+'_touch_down.png'
+        self.texture_path = 'style/square/square_'+str(self.layout_type)+'_touch_down.png'
         #self.app_type_label.color = self.color_up
         #self.size = (self.width + 3, self.height + 3)
         #a = Animation(center = self.center, size = self.size)
@@ -235,14 +235,14 @@ class Square(Scatter):
         self.color = self.color_up
         #self.title_label.color = self.color_down
         #self.app_type_label.color = self.color_up
-        self.texture_path = 'style/square_'+str(self.layout_type)+'.png'
+        self.texture_path = 'style/square/square_'+str(self.layout_type)+'.png'
         pass
 
     
         
          
 class GeometrySquare(Scatter):
-    style = DictProperty({'texture_path':'style/slider-sous-tommette2.png' })
+    style = DictProperty({'texture_path':'style/square/slider-sous-tommette2.png' })
     layout_type = StringProperty('')
     geometry_id = NumericProperty(0)#location on the field
     

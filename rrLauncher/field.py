@@ -5,6 +5,7 @@ from os import walk
 from kivy.properties import ObjectProperty, NumericProperty,StringProperty, \
     BooleanProperty, DictProperty, ListProperty
 from kivy.uix.widget import Widget
+from kivy.uix.label import Label
 from kivy.vector import Vector
 from kivy.animation import Animation
 from kivy.clock import Clock
@@ -37,11 +38,13 @@ class Field(Widget):
     bar_width = NumericProperty(155)
     spacing = NumericProperty(0.02)
     square_padding = NumericProperty(10)
+    title = StringProperty('')
 
     def __init__(self,**kwargs) :
         super(Field, self).__init__(**kwargs)
         
         self.init_geometry()
+        self.init_app()
         self.init_geometry_detailed()
         self.draw_geometry()
         self.apps = self.init_apps()
@@ -99,6 +102,23 @@ class Field(Widget):
 
     def square_is_in_the_bar(self,square):
         return False
+
+    def init_app(self):
+        #Import the json file that defines it
+        file_path = join(dirname(__file__), 'config')
+                
+        with open(file_path, 'r') as fd:
+            config = loads(fd.read())
+            #print self.geometry
+
+        if config is None:
+            print 'Unable to load', file_path
+            return
+
+        self.title = config['title']
+        width,height,sm,me,la = self.get_field_size()  
+        self.title_label = Label(text = self.title, pos = (width*0.85,-20), font_size = 22, color = (.3,.3,.3,1), halign = 'right' )
+        self.add_widget(self.title_label)
         
     def init_geometry(self):
         #Import the json file that defines it
@@ -132,13 +152,16 @@ class Field(Widget):
         #Current screen size is applied
         #width,height = self.size
         width,height,sm,me,la = self.get_field_size()   
-        spacing = self.spacing
+        margin_height = (int(self.geometry['screen_size'][1]) - height)*0.5
+        if margin_height < 0: margin_height = 0
+        #print self.geometry['screen_size'][1], height, margin_height
+        #spacing = self.spacing
         
         for key,val in self.geometry.iteritems() :
             if not key in ["screen_size","icon_px","vertical","bar_width","spacing"]:
                 x,y,square_layout_type = val
                 x = x * width + bar_width #+ self.x #+ margin
-                y = y * height #+ self.y #+ margin
+                y = y * height +margin_height#+ self.y #+ margin
                 l,h = self.get_size(square_layout_type)
                 #print (l,h)
  

@@ -1,0 +1,22 @@
+{
+        "id" : "app1",
+        "title" : "NOM XY",
+        "app_type" : "app_types/info.png",
+        "color_text": [0.1,0.1,0.1,1],
+        "color_up" : [0.93,0.5,0,1],
+        "color_down" : [0.93,0.5,0,1],
+        "authors": "Realise par Lapin\n Michel Marie-Rose",
+        "main_media_type" : "video",
+        "image_path" : "apps/tranches.png", 
+        "video_path" : "apps/tranches.mp4",
+        "layer_large" : "apps/layers/app1/Fond-info-T3.png",
+        "layer_medium" : "apps/layers/app1/Fond-info-T2.png",
+        "layer_small" : "apps/layers/app1/Fond-info-T1.png", 
+        "alternative_image_path" : "apps/pic.png", 
+        "main_description" : "Lapein oindoziuhboiuhq\nvoiuhb oiuhbqdsoiuhbv oiuh\nbqosiduhb oiuhbv" , 
+        "long_description" : "Lapein oindoziuhboiuhq\nvoiuhb oiuhbqdsoiuhbv oiuh\nbqosiduhb oiuhbv", 
+        "info_title" : "oiuhnoiuhn oiuhn", 
+        "info_text" : " uuhu", 
+        "info_conclusion":"conclude"
+}
+

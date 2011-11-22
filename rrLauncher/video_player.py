@@ -48,15 +48,15 @@ class VideoPlayer(Widget):
             self.buttons.spacing = 5# self.layout_type2size(text)[0]*0.46
 
             #play button
-            self.play_button = SuperButton2(text ='', background_normal= 'style/1318898242_media-play.png', background_down= 'style/1318898242_media-play.png', size_hint = (None, None), size = (20, 20) )#, size_hint = (1,0.5) )
+            self.play_button = SuperButton2(text ='', background_normal= 'video_player/style/1318898242_media-play.png', background_down= 'video_player/style/1318898242_media-play.png', size_hint = (None, None), size = (20, 20) )#, size_hint = (1,0.5) )
             self.play_button.bind( on_press = self.start_stop_button )
             self.buttons.add_widget( self.play_button )
             #sound button
-            self.sound_button = SuperButton2(text ='', background_normal = 'style/1318898261_media-volume-0.png', background_down = 'style/1318898261_media-volume-0.png', size_hint = (None, None), size = (20, 20) )#, size_hint = (1,0.5)
+            self.sound_button = SuperButton2(text ='', background_normal = 'video_player/style/1318898261_media-volume-0.png', background_down = 'video_player/style/1318898261_media-volume-0.png', size_hint = (None, None), size = (20, 20) )#, size_hint = (1,0.5)
             self.sound_button.bind( on_press = self.mute_unmute_button )
             self.buttons.add_widget( self.sound_button )
             #fullscreen 
-            self.fullscreen_button = SuperButton(text ='', background_normal = 'style/1318898261_media-volume-0.png', background_down = 'style/1318898261_media-volume-0.png', size_hint = (None, None), size = (20, 20) )
+            self.fullscreen_button = SuperButton(text ='', background_normal = 'video_player/style/1318898261_media-volume-0.png', background_down = 'video_player/style/1318898261_media-volume-0.png', size_hint = (None, None), size = (20, 20) )
             self.fullscreen_button.bind(on_press = self.fullscreen_button_down )
             self.buttons.add_widget( self.fullscreen_button )
             #duration bar
@@ -92,12 +92,12 @@ class VideoPlayer(Widget):
 
     def start(self, a):
         self.video.play = True
-        self.play_button.source = 'style/1318898221_media-stop.png'
+        self.play_button.source = 'video_player/style/1318898221_media-stop.png'
         self.dispatch('on_start')
 
     def stop(self, a):
         self.video.play=False
-        self.play_button.source = 'style/1318898242_media-play.png'
+        self.play_button.source = 'video_player/style/1318898242_media-play.png'
         self.dispatch('on_stop')
 
     def mute_unmute_button(self,a):
@@ -108,12 +108,12 @@ class VideoPlayer(Widget):
 
     def mute(self, a):
         self.video.volume = 0
-        self.sound_button.source = 'style/1318898286_media-volume-3.png'
+        self.sound_button.source = 'video_player/style/1318898286_media-volume-3.png'
         self.dispatch('on_mute')    
 
     def unmute(self, a):
         self.video.volume = 1
-        self.sound_button.source = 'style/1318898261_media-volume-0.png'
+        self.sound_button.source = 'video_player/style/1318898261_media-volume-0.png'
         self.dispatch('on_unmute')
 
     def fullscreen_button_down(self, a):

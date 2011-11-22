@@ -79,7 +79,7 @@
 				size: self.size
 
 		
-<AppView>:
+<AppView2>:
 	width: 1458
 	size_hint_x: None
 
@@ -95,6 +95,18 @@
 			pos: (0,0)
 			size: (self.bar_width,self.height)
 
+<AppView>:
+	canvas.before:
+		Color:
+			rgb: .24, .24, .25
+		Rectangle:
+			pos: (0,0)
+			size: self.size
+		Rectangle:
+			texture: root.texture_sidebar
+			tex_coords: [root.texture_sidebar, 0, 0, 1, 0, 1, self.height / 5, 0, self.height / 5][1:]
+			pos: (0,0)
+			size: (self.bar_width,self.height)
 
 <AppView3>:
 	size_hint_x: None

@@ -1,5 +1,5 @@
 {
-        "texture_path":"style/square_large.png",
+        "texture_path":"style/square/square_large.png",
         "box_top_size_hint":[1,0.1],
 	"title_label_font_size" : "28",
 	"box2_size_hint" : [0.4,1],
