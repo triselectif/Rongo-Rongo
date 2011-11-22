@@ -2,9 +2,10 @@ from json import loads
 from os.path import join, dirname, exists
 from os import walk
 
-from kivy.properties import ObjectProperty, NumericProperty, StringProperty, \
+from kivy.properties import ObjectProperty, NumericProperty,StringProperty, \
     BooleanProperty, DictProperty, ListProperty
 from kivy.uix.widget import Widget
+from kivy.vector import Vector
 from kivy.animation import Animation
 from kivy.clock import Clock
 
@@ -34,6 +35,7 @@ class Field(Widget):
     video = ObjectProperty( None )
     video_size_pos = DictProperty( {} )
     bar_width = NumericProperty(155)
+    spacing = NumericProperty(0.02)
     square_padding = NumericProperty(10)
 
     def __init__(self,**kwargs) :
@@ -48,24 +50,52 @@ class Field(Widget):
 
     def get_field_size(self):
         width,height = self.geometry["screen_size"]
-        large = self.geometry['large']
-        height = width * float(large[0])
-        return width,height
+        spacing = s= 0.012#self.spacing# = 0.02
+        bar = self.bar_width / width
+        width_wb = 0.87 #width without bar
+        """
+        #Explanation of the math calculation
+        #1)
+        large = 3*small + 2*s
+        large = 2*medium + s
+        small = 2/3*medium - 1/3*s
+        #2)
+        width_wb = 4*s + large + medium + small
+        #inject 1 into 2
+        width_wb = 4*s + 2*medium + s + medium + 2/3*medium - 1/3*s
+        width_wb = s*(5 -1/3) + medium * (3+ 2/3)
+        """
+        medium = (width_wb - s*(5 -1/3)) / (3+ 2/3)  
+        #get the rest
+        large = 2*medium + s 
+        small = 0.66666*medium - 0.33333*s
+               
+        #large = self.geometry['large']
+        height = large *width# * float(large[0])
+        return width,height,small,medium,large
 
     def get_size(self, layout_type) :
         if layout_type == 'icon':
             l,h = self.geometry["icon_px"]
             return (l,h) 
-        margin = self.style['geometry_square_margin']
+        #margin = self.style['geometry_square_margin']
         #Current screen size is applied
         #win = self.get_root_window()
         #width = win.width
-        width,height = self.get_field_size()
+        width,height,small,medium,large = self.get_field_size()
+        #in px
+        small = small * width
+        medium = medium * width
+        large = large * width  
+        """
         #print height
         l,h = self.geometry[layout_type]
         l = l * width #- 2*margin 
         h = h * height #- 2*margin 
-        return (l,h) 
+        """
+        x = eval(layout_type)
+        return (x,x)
+        #return (l,h) 
 
     def square_is_in_the_bar(self,square):
         return False
@@ -82,6 +112,9 @@ class Field(Widget):
             print 'Unable to load', file_path
             return
 
+        self.bar_width = int(self.geometry['bar_width'])
+        #self.spacing = float(self.geometry['spacing'])
+        """
         #get the nb of squares in the field
         max = 0
         for i in self.geometry :
@@ -89,19 +122,20 @@ class Field(Widget):
                  i = int(i)
                  if i > max : max = i 
         #self.bar_start_geometry_id = max + 1
-
+        """
     
     def init_geometry_detailed(self):
         #calculates detailed geometry
         style = self.style
-        margin = style['geometry_square_margin']
+        #margin = style['geometry_square_margin']
         bar_width = self.bar_width
         #Current screen size is applied
         #width,height = self.size
-        width,height = self.get_field_size()   
+        width,height,sm,me,la = self.get_field_size()   
+        spacing = self.spacing
         
         for key,val in self.geometry.iteritems() :
-            if not key in ["screen_size","icon_px","large","medium","small","vertical"]: 
+            if not key in ["screen_size","icon_px","vertical","bar_width","spacing"]:
                 x,y,square_layout_type = val
                 x = x * width + bar_width #+ self.x #+ margin
                 y = y * height #+ self.y #+ margin
@@ -111,6 +145,31 @@ class Field(Widget):
                 #update geometry_detailed
                 self.geometry_detailed[key] = {'pos':(x,y),'size':(l,h),'layout_type':square_layout_type}
         
+        """
+        #MODE AUTO
+        #draw small
+        arrow = { 0:["small","small","small"], 1:["medium","medium"], 2:["large"] }
+        x_hint = 0
+        key = 0
+        for i,list in arrow.iteritems():
+            size = self.get_size( list[0] )  
+            x_hint = x_hint + spacing 
+            index = 0
+            y_hint = 0
+            for j in list:
+                l,h = size  
+                #update geometry_detailed
+                self.geometry[str(key)] = [x_hint,y_hint,list[0]]
+                x = x_hint *width + bar_width
+                y = y_hint *height
+                self.geometry_detailed[str(key)] = {'pos':(x,y),'size':(l,h),'layout_type':list[0]}
+                y_hint = y_hint + index * (size[1]/width+spacing)
+                index += 1
+                key += 1
+            x = x + size[0]
+        print self.geometry_detailed
+        """
+
     def draw_geometry(self):
         self.draw_empty_squares()
     
@@ -582,8 +641,8 @@ class Field(Widget):
         #store size and pos for later
         self.video_size_pos = {'size':size, 'pos':pos}
         Clock.schedule_once(self.video.start, 2.5)
-        window_size = self.get_field_size()#(self.width - self.bar_width,self.height)#
-        anim = Animation(size = window_size, pos = (self.x +self.bar_width, self.y) )
+        w,h,s,m,l = self.get_field_size()#(self.width - self.bar_width,self.height)#
+        anim = Animation(size = (w,h), pos = (self.x +self.bar_width, self.y) )
         anim.start(self.video)
 
     def on_leave_fullscreen(self,a):

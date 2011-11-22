@@ -11,6 +11,7 @@ class Bar(FloatLayout):
     app = ObjectProperty(None)
     apps = DictProperty( {} )
     element_size = ObjectProperty( (70,70) )
+    spacing = NumericProperty(10)
     sorting_condition = StringProperty( 'app_type' )
     
     def __init__(self,**kwargs):
@@ -59,7 +60,7 @@ class Bar(FloatLayout):
 
     def draw_empty_squares(self):
         apps = self.apps
-        m = self.app.field.style['geometry_square_margin']
+        m = self.spacing#self.app.field.style['geometry_square_margin']
         padding_left = self.padding_left
         max = len(apps)       
 
