@@ -17,13 +17,13 @@
 			rgb: self.color[0],self.color[1],self.color[2]
 		BorderImage:
 			source: self.texture_path
-			border: 12,12,12,12
+			border: 22,22,22,22
 			size: self.size
 		Color:
 			rgb: 1,1,1
 		BorderImage:
 			source: self.layer_texture_path
-			border: 12,12,12,12
+			border: 22,22,22,22
 			size: self.size
                         
 
@@ -51,8 +51,15 @@
 			pos: self.pos
 			size: 155, self.height
 
-	
-
+<Field2>:
+	canvas.before:
+		Color:
+			rgb: .24, .24, .25	
+		BorderImage:
+			source: 'style/border.png'
+			border: 40, 40, 40, 40
+			pos: self.pos
+			size: self.size
 	
 <AppView2>:
 	
@@ -73,10 +80,8 @@
 
 		
 <AppView>:
-	
-	width: 155
+	width: 145
 	size_hint_x: None
-	do_scroll_x: False
 
 	canvas.before:
 		Color:
@@ -86,4 +91,26 @@
 			tex_coords: [root.texture_sidebar, 0, 0, 1, 0, 1, self.height / 5, 0, self.height / 5][1:]
 			pos: self.pos
 			size: self.size
+
+
+<AppView3>:
+	size_hint_x: None
+        width: 2000
+
+	canvas.before:
+		Color:
+			rgb: 1, 1, 1
+		Rectangle:
+			texture: root.texture_sidebar
+			tex_coords: [root.texture_sidebar, 0, 0, 1, 0, 1, self.height / 5, 0, self.height / 5][1:]
+			pos: self.pos
+			size: self.size
+                Color:
+			rgb: 1, 1, 1
+		Rectangle:
+			texture: root.texture_sidebar
+			tex_coords: [root.texture_sidebar, 0, 0, 1, 0, 1, self.height / 5, 0, self.height / 5][1:]
+			pos: self.pos
+			size: self.size
+
 

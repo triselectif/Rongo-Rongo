@@ -25,6 +25,7 @@ class BarImage(Scatter):
         if not self.collide_point(*touch.pos):
             return False
         super(BarImage,self).on_touch_down(touch)
+        self.app.bar.on_image_touch_down(touch,self.key)
     
     def on_touch_up(self,touch):
         if not self.collide_point(*touch.pos):

@@ -20,7 +20,7 @@ class VideoPlayer2(VideoPlayer):
 
 class Field(Widget):
     app = ObjectProperty(None)
-    style = DictProperty({'geometry_square_margin':13  })
+    style = DictProperty({'geometry_square_margin':0  })
     activate_animations = BooleanProperty( False )
     #internal variables
     squares = DictProperty( {} )#stores all the squares widgets
@@ -38,6 +38,7 @@ class Field(Widget):
 
     def __init__(self,**kwargs) :
         super(Field, self).__init__(**kwargs)
+        
         self.init_geometry()
         self.init_geometry_detailed()
         self.draw_geometry()
@@ -45,17 +46,25 @@ class Field(Widget):
         self.init_square_parameters()
         self.init_squares()       
 
+    def get_field_size(self):
+        width,height = self.geometry["screen_size"]
+        large = self.geometry['large']
+        height = width * float(large[0])
+        return width,height
+
     def get_size(self, layout_type) :
         if layout_type == 'icon':
             l,h = self.geometry["icon_px"]
             return (l,h) 
         margin = self.style['geometry_square_margin']
         #Current screen size is applied
-        #width,height = self.size
-        width,height = self.geometry["screen_size"]
+        #win = self.get_root_window()
+        #width = win.width
+        width,height = self.get_field_size()
+        #print height
         l,h = self.geometry[layout_type]
-        l = l * width - 2*margin 
-        h = h * height - 2*margin 
+        l = l * width #- 2*margin 
+        h = h * height #- 2*margin 
         return (l,h) 
 
     def square_is_in_the_bar(self,square):
@@ -89,14 +98,15 @@ class Field(Widget):
         bar_width = self.bar_width
         #Current screen size is applied
         #width,height = self.size
-        width,height = self.geometry["screen_size"]       
+        width,height = self.get_field_size()   
         
         for key,val in self.geometry.iteritems() :
             if not key in ["screen_size","icon_px","large","medium","small","vertical"]: 
                 x,y,square_layout_type = val
-                x = x * width + margin + self.x + bar_width
-                y = y * height + margin + self.y
+                x = x * width + self.x + bar_width #+ margin
+                y = y * height + self.y #+ margin
                 l,h = self.get_size(square_layout_type)
+                #print (l,h)
  
                 #update geometry_detailed
                 self.geometry_detailed[key] = {'pos':(x,y),'size':(l,h),'layout_type':square_layout_type}
@@ -122,17 +132,17 @@ class Field(Widget):
                            auto_bring_to_front = False, 
                            )
                 self.add_widget( self.geometry_squares[id] )
-        print self.geometry_squares
+        #print self.geometry_squares
     
     def init_square_parameters(self):
         #Import the json files that defines each type of square
         for i in ['small','medium','large']:
             file_path = join(dirname(__file__), i)
-            print file_path
+            #print file_path
                 
             with open(file_path, 'r') as fd:
                 self.square_parameters[i] = loads(fd.read())
-                print self.square_parameters[i]
+                #print self.square_parameters[i]
 
             if self.square_parameters[i] is None:
                 print 'Unable to load', file_path
@@ -217,7 +227,7 @@ class Field(Widget):
                             id = key,
                             title = apps[key]['title'],
                             app_type = apps[key]['app_type'],
-                            #color_text = apps[key]['color_text'],
+                            color_text = apps[key]['color_text'],
                             color_up = apps[key]['color_up'],
                             color_down = apps[key]['color_down'],
                             authors = apps[key]['authors'],
@@ -250,15 +260,18 @@ class Field(Widget):
                 #if int(key) == val.geometry_id : 
                 ret = i
         return ret
+
+    def shake_square(self, touch, key, intensity):
+        square  = self.squares[key]
+        square.reshape_when_touch_down(touch,intensity)
+        square.reshape_when_touch_up(touch)
+        self.process_touch_up( square )
                 
     def add_app(self, key, touch):
             #function to be used by the bar to add an app to the field
             #print 'add_app_key :'+ key
             if key in self.squares.keys():
-                square  = self.squares[key]
-                square.reshape_when_touch_down(touch,6)
-                square.reshape_when_touch_up(touch)
-                self.process_touch_up( square )
+                self.shake_square(touch,key,6)
             else : 
                 #create the square 
                 square = self.init_square(self.apps,key,touch.pos, self.get_size('small'), 'small')
@@ -288,8 +301,6 @@ class Field(Widget):
             #remove current app from the field
             #send back the bar icon to its location
             
-                            
-
     def process_touch_up(self, square) :
             if square.process_touch_up_forbidden : return
             
@@ -315,9 +326,6 @@ class Field(Widget):
                 rot = rot + 180
             
             self.rotate(square, rot)
-
-            
-
         
     def push_back_into_place(self,square) :
         id = str(square.geometry_id)
@@ -328,7 +336,7 @@ class Field(Widget):
             square.pos = self.geometry_squares[id].pos
 
     def rotate(self,square, rotation) :
-        #animation = Animation(rotation = rotation, duration =0.2)
+        #animation = Animation(rotation = rotation, duration =0.3)
         #animation.start(square)
         square.rotation = rotation  
         
@@ -420,6 +428,13 @@ class Field(Widget):
             animation = Animation(size_hint = param['box_bottom_size_hint'], **kwargs)
             animation.start(square.box_bottom)
             #animation.bind(on_complete = self.switch_layouts)
+            #launch button size
+            animation = Animation(size = param["launch_button_size"], **kwargs)
+            animation.start(square.launch_button)
+            #vote button size
+            animation = Animation(size = param["vote_button_size"], **kwargs)
+            animation.start(square.vote_button)
+            #spacing
             box_bottom_spacing = (self.get_size(layout_type)[0] -2*square.padding - param['vote_button_size'][0] - param['launch_button_size'][0]) * 0.97
             animation = Animation(spacing = box_bottom_spacing, **kwargs)
             animation.start(square.box_bottom)
@@ -567,7 +582,7 @@ class Field(Widget):
         #store size and pos for later
         self.video_size_pos = {'size':size, 'pos':pos}
         Clock.schedule_once(self.video.start, 2.5)
-        window_size = (self.width - self.bar_width,self.height)#self.get_parent_window().size
+        window_size = self.get_field_size()#(self.width - self.bar_width,self.height)#
         anim = Animation(size = window_size, pos = (self.x +self.bar_width, self.y) )
         anim.start(self.video)
 

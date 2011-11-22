@@ -2,6 +2,7 @@
         "id" : "app1",
         "title" : "NOM XY\nMONTPELLIER LAPIN",
         "app_type" : "app_types/info.png",
+        "color_text": [0.1,0.1,0.1,1],
         "color_up" : [0.82,0.82,0.82,1],
         "color_down" : [0.2,0.5,0,1],
         "authors": "Realise par Lapin\n Michel Marie-Rose3",

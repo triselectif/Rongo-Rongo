@@ -7,6 +7,7 @@ from kivy.properties import ObjectProperty, NumericProperty, StringProperty, \
     BooleanProperty, DictProperty, ListProperty
 from kivy.core.image import Image
 from kivy.graphics import Color, Line, Rectangle, BorderImage#LineWidth, 
+from kivy.animation import Animation
 
 from random import random
 
@@ -32,6 +33,7 @@ class AppView(FloatLayout):
             tex.wrap = 'repeat'
             self.texture = tex
 
+   
 
 class LauncherApp(App):
 
@@ -46,6 +48,9 @@ class LauncherApp(App):
 
         return self.appview    
 
+        self.background = ScrollView()
+        self.background.add_widget(self.appview)
+        #return self.background
 
 if __name__ in ('__android__', '__main__'):
     LauncherApp().run()

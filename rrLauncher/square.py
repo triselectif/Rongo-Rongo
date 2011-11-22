@@ -2,6 +2,7 @@ from kivy.properties import ObjectProperty, NumericProperty, StringProperty, \
     BooleanProperty, DictProperty, ListProperty
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.scatter import Scatter
 from kivy.animation import Animation
 from kivy.clock import Clock
@@ -112,16 +113,19 @@ class Square(Scatter):
         #top part : Title, app_type, authors
         self.box_top = BoxLayout(orientation = 'horizontal', size_hint = param['box_top_size_hint'] )
         font_size = self.process_font_size( self.title, int( param['title_label_font_size']) )
-        self.title_label = Label(text=self.title, font_size = font_size, color = self.color_text, halign = 'left')#, padding_x = 5  )
+        self.title_label = Label(text=self.title, font_size = font_size, color = self.color_text, halign = 'left',valign ='bottom')#, padding_x = 5  )
         self.box2 = BoxLayout(orientation = 'vertical', size_hint = param['box2_size_hint'], padding = 2 )
+        #self.al = AnchorLayout(anchor_x='right', anchor_y='top')
         from kivy.uix.image import Image
-        self.app_type_pic = Image(source = str(self.app_type), size_hint = (1,3) )      
+        self.app_type_pic = Image(source = str(self.app_type), pos_hint={'top': 1,'right':1}, size_hint = (1,3) )      
         self.authors_label = Label(text = self.authors, font_size = int( param['authors_label_font_size'] ), color = self.color_text, halign = 'right' )
-        self.box2.add_widget(self.app_type_pic)
-        self.box2.add_widget(self.authors_label)
+        
+        #self.box2.add_widget(self.al)
+        #self.box2.add_widget(self.app_type_pic)
+        #self.box2.add_widget(self.authors_label)
         self.box_top.add_widget(self.title_label)
         self.box_top.add_widget(self.box2)
-        self.layout.add_widget( self.box_top ) 
+        self.layout.add_widget( self.box_top )
         
         #middle part : Image or Video
         self.box_middle = BoxLayout(orientation = 'horizontal', size_hint = param['box_middle_size_hint'] )
@@ -218,7 +222,7 @@ class Square(Scatter):
     def reshape_when_touch_down(self, touch, intensity):
         self.color = self.color_down
         self.pos = (self.x + intensity, self.y + intensity)
-        self.title_label.color = self.color_up
+        #self.title_label.color = self.color_up
         self.texture_path = 'style/square_'+str(self.layout_type)+'_touch_down.png'
         #self.app_type_label.color = self.color_up
         #self.size = (self.width + 3, self.height + 3)
@@ -227,7 +231,7 @@ class Square(Scatter):
 
     def reshape_when_touch_up(self, touch):
         self.color = self.color_up
-        self.title_label.color = self.color_down
+        #self.title_label.color = self.color_down
         #self.app_type_label.color = self.color_up
         self.texture_path = 'style/square_'+str(self.layout_type)+'.png'
         pass

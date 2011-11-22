@@ -54,9 +54,7 @@ class Bar(FloatLayout):
 
     def add_app(self, key, app, center, pos):
         # Nop.
-        self.images[key] = BarImage( source= str(app["image_path"]) , app =self.app, bar=self, key=key, pos =pos, initial_center = center, size = self.element_size )
-        #self.images[key].center = center
-        
+        self.images[key] = BarImage( source= str(app["image_path"]) , app =self.app, bar=self, key=key, pos =pos, initial_center = center, size = self.element_size )   
         self.layout.add_widget(self.images[key])
 
     def draw_empty_squares(self):
@@ -80,3 +78,10 @@ class Bar(FloatLayout):
 
     def put_on_field(self, key, touch):
         self.app.field.add_app(key, touch)
+
+    def on_image_touch_down(self, touch, key):
+        #check if already on field
+        squares = self.app.field.squares
+        if key in squares.keys() :
+            self.app.field.shake_square( touch,key,10)
+            
