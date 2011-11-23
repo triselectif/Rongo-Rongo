@@ -16,12 +16,12 @@ class AppView(Scatter):
     app = ObjectProperty(None)
     texture_sidebar = ObjectProperty(None)
     texture = ObjectProperty(None)
-    bar_width = NumericProperty(155)
+    bar_width = NumericProperty(135)
     bar_translation_min_distance = NumericProperty(400)
 
     def __init__(self, **kwargs):
         super(AppView, self).__init__(**kwargs)    
-        print self.size
+        
         #internal variables
         self.touches2 = {}
         self.translation_allowed = False
@@ -91,7 +91,7 @@ class AppView(Scatter):
      
     def move_bar_to_right(self):
         if self.position_left :
-            a = Animation(x = self.width - 1.5*self.bar_width, duration = 1.5)
+            a = Animation(x = self.width - self.bar_width, duration = 1.5)
             a.start(self)
             self.position_left = False
         

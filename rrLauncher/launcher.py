@@ -15,7 +15,7 @@ class LauncherApp(App):
         self.field = Field(app=self, activate_animations = True)
         self.appview.add_widget(self.field)
         
-        self.bar = Bar(app = self, element_size = self.field.geometry['icon_px'] )
+        self.bar = Bar(app = self, element_size = self.field.geometry['icon_px'])
         self.appview.add_widget(self.bar)
 
         return self.appview    

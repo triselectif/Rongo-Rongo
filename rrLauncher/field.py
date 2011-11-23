@@ -35,8 +35,8 @@ class Field(Widget):
     apps = DictProperty( {} )#stores all the apps information
     video = ObjectProperty( None )
     video_size_pos = DictProperty( {} )
-    bar_width = NumericProperty(155)
-    spacing = NumericProperty(0.02)
+    #bar_width = NumericProperty(135)
+    spacing = NumericProperty(0.0)
     square_padding = NumericProperty(10)
     title = StringProperty('')
 
@@ -53,9 +53,9 @@ class Field(Widget):
 
     def get_field_size(self):
         width,height = self.geometry["screen_size"]
-        spacing = s= 0.012#self.spacing# = 0.02
-        bar = self.bar_width / width
-        width_wb = 0.87 #width without bar
+        spacing = s= self.spacing#0.012# = 0.02
+        #bar = self.bar_width / width
+        width_wb = 0.90 #int(width) - bar#width without bar
         """
         #Explanation of the math calculation
         #1)
@@ -75,27 +75,19 @@ class Field(Widget):
                
         #large = self.geometry['large']
         height = large *width# * float(large[0])
-        return width,height,small,medium,large
+        return width*width_wb, height*width_wb, small*width_wb, medium*width_wb, large*width_wb
 
     def get_size(self, layout_type) :
         if layout_type == 'icon':
             l,h = self.geometry["icon_px"]
             return (l,h) 
-        #margin = self.style['geometry_square_margin']
         #Current screen size is applied
-        #win = self.get_root_window()
-        #width = win.width
         width,height,small,medium,large = self.get_field_size()
         #in px
         small = small * width
         medium = medium * width
         large = large * width  
-        """
-        #print height
-        l,h = self.geometry[layout_type]
-        l = l * width #- 2*margin 
-        h = h * height #- 2*margin 
-        """
+        
         x = eval(layout_type)
         return (x,x)
         #return (l,h) 
@@ -117,7 +109,7 @@ class Field(Widget):
 
         self.title = config['title']
         width,height,sm,me,la = self.get_field_size()  
-        self.title_label = Label(text = self.title, pos = (width*0.85,-20), font_size = 22, color = (.3,.3,.3,1), halign = 'right' )
+        self.title_label = Label(text = self.title, pos = (width*0.835,-20), font_size = 22, color = (.3,.3,.3,1), halign = 'right' )
         self.add_widget(self.title_label)
         
     def init_geometry(self):
@@ -134,29 +126,51 @@ class Field(Widget):
 
         self.bar_width = int(self.geometry['bar_width'])
         #self.spacing = float(self.geometry['spacing'])
-        """
-        #get the nb of squares in the field
-        max = 0
-        for i in self.geometry :
-             if i not in ["screen_size","vertical", "icon_px","small","medium", "large"]:
-                 i = int(i)
-                 if i > max : max = i 
-        #self.bar_start_geometry_id = max + 1
-        """
     
     def init_geometry_detailed(self):
         #calculates detailed geometry
         style = self.style
         #margin = style['geometry_square_margin']
-        bar_width = self.bar_width
+        #bar_width = self.bar_width
+        
         #Current screen size is applied
         #width,height = self.size
-        width,height,sm,me,la = self.get_field_size()   
-        margin_height = (int(self.geometry['screen_size'][1]) - height)*0.5
+        width,height,sm,me,la = self.get_field_size()
+        screen_size = self.geometry['screen_size']   
+        bar_width = int(screen_size[0]) - width
+        margin_height = (int(screen_size[1]) - height*0.9)*0.5
+        print bar_width,height,margin_height
         if margin_height < 0: margin_height = 0
         #print self.geometry['screen_size'][1], height, margin_height
-        #spacing = self.spacing
+        spacing = self.spacing
         
+        #MODE AUTO : calculates every dimensions based on screen size, but for a specific arrow
+        #draw small
+        array = { 0:["small","small","small"], 1:["medium","medium"], 2:["large"] }
+        x_hint = 0
+        key = 0
+        for i,list in array.iteritems():
+            size = self.get_size( list[0] )
+            l,h = size   
+            x_hint = x_hint + spacing
+            index = 0
+            y_hint = 0
+            for j in list:
+                #update geometry_detailed
+                self.geometry[str(key)] = [x_hint,y_hint,list[0]]
+                x = x_hint *width + bar_width
+                y = y_hint *height + margin_height
+                self.geometry_detailed[str(key)] = {'pos':(x,y),'size':(l,h),'layout_type':list[0]}
+                index += 1
+                y_hint = (index) * (float(h)/height+spacing)
+                key += 1
+            x = x + size[0]
+            x_hint = x_hint + float(l)/width
+        #print self.geometry #:insert that into field_geometry for specific array
+        #and apply code below instead 
+
+        """
+        #in case we refer to all the dimensions inside the field_geometry file
         for key,val in self.geometry.iteritems() :
             if not key in ["screen_size","icon_px","vertical","bar_width","spacing"]:
                 x,y,square_layout_type = val
@@ -166,31 +180,8 @@ class Field(Widget):
                 #print (l,h)
  
                 #update geometry_detailed
-                self.geometry_detailed[key] = {'pos':(x,y),'size':(l,h),'layout_type':square_layout_type}
+                self.geometry_detailed[key] = {'pos':(x,y),'size':(l,h), 'layout_type':square_layout_type }
         
-        """
-        #MODE AUTO
-        #draw small
-        arrow = { 0:["small","small","small"], 1:["medium","medium"], 2:["large"] }
-        x_hint = 0
-        key = 0
-        for i,list in arrow.iteritems():
-            size = self.get_size( list[0] )  
-            x_hint = x_hint + spacing 
-            index = 0
-            y_hint = 0
-            for j in list:
-                l,h = size  
-                #update geometry_detailed
-                self.geometry[str(key)] = [x_hint,y_hint,list[0]]
-                x = x_hint *width + bar_width
-                y = y_hint *height
-                self.geometry_detailed[str(key)] = {'pos':(x,y),'size':(l,h),'layout_type':list[0]}
-                y_hint = y_hint + index * (size[1]/width+spacing)
-                index += 1
-                key += 1
-            x = x + size[0]
-        print self.geometry_detailed
         """
 
     def draw_geometry(self):

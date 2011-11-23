@@ -22,7 +22,7 @@ class Bar(FloatLayout):
         super(Bar,self).__init__(**kwargs)
         self.apps = self.app.field.init_apps()
         self.size_hint = (None,1)
-        self.width = 155
+        #self.width = 135
         self.padding_left = int((self.width - self.element_size[0])/2) 
         self.geometry_squares = {}
         self.images = {}

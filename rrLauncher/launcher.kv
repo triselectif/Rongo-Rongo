@@ -51,6 +51,13 @@
 			pos: self.pos
 			size: 155, self.height
 
+<Bar>:
+	width:135
+
+<Field>:
+	size:self.size
+	bar_width:135	
+	
 <Field2>:
 	canvas.before:
 		Color:
@@ -96,6 +103,7 @@
 			size: (self.bar_width,self.height)
 
 <AppView>:
+	bar_width:135
 	canvas.before:
 		Color:
 			rgb: .24, .24, .25
