@@ -41,6 +41,7 @@ class Bar(FloatLayout):
             self.remove_widget(i)
 
     def sort(self):
+
         #list of app keys in order
         condition = self.sorting_condition
         self.sorting = self.apps.keys()
@@ -75,7 +76,7 @@ class Bar(FloatLayout):
         #self.clear()
         #animate icons now
         gs = self.geometry_squares
-        print gs
+        
         for key,val in gs.iteritems() :
             im_key = self.sorting[int(key)]
             if not im_key == 'b': #exception for buttons

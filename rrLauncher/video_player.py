@@ -69,18 +69,19 @@ class VideoPlayer(Widget):
             self.last_touch_down_time = 0
             #fullscreen status
             self.full_screen = False
-            """
+            
             #main play button
-            self.main_play_button = SuperButton2(text ='', background_normal= 'style/A-play-T3.png', background_down= 'style/1318898242_media-play.png', size_hint = (None, None), size = (40, 40), center = self.video.center )#, size_hint = (1,0.5) )
-            self.play_button.bind( on_press = self.start_stop_button )
-            self.video.add_widget( self.main_play_button )
-            """          
+            self.main_play_button = SuperButton(text ='', background_normal= 'video_player/style/A-play-T3.png', size_hint = (None, None), size = (50, 50) )#, size_hint = (1,0.5) )
+            self.main_play_button.bind( on_press = self.start )
+            self.add_widget( self.main_play_button )
+                      
             #refresh bar position and size
             Clock.schedule_interval(self.refresh_player,0.005)    
 
             self.add_widget(self.video)
             #self.add_widget(self.buttons)
             #self.add_widget(self.progress_bar)
+
 
     def start_stop_button(self,a) :
             #actually does start and stop (both functions on same button)
@@ -93,11 +94,13 @@ class VideoPlayer(Widget):
     def start(self, a):
         self.video.play = True
         self.play_button.source = 'video_player/style/1318898221_media-stop.png'
+        self.remove_widget( self.main_play_button )
         self.dispatch('on_start')
 
     def stop(self, a):
         self.video.play=False
         self.play_button.source = 'video_player/style/1318898242_media-play.png'
+        self.add_widget( self.main_play_button )
         self.dispatch('on_stop')
 
     def mute_unmute_button(self,a):
@@ -142,7 +145,8 @@ class VideoPlayer(Widget):
         #self.progress_bar.pos = self.pos
         self.video.pos = self.pos
         self.video.size = self.size
-        self.progress_bar.value = self.video.position 
+        self.progress_bar.value = self.video.position
+        self.main_play_button.center = self.video.center 
         
 
     def move_to_position(self, a, touch):
