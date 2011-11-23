@@ -17,7 +17,7 @@ class AppView(Scatter):
     texture_sidebar = ObjectProperty(None)
     texture = ObjectProperty(None)
     bar_width = NumericProperty(135)
-    bar_translation_min_distance = NumericProperty(400)
+    bar_translation_min_distance = NumericProperty(250)
 
     def __init__(self, **kwargs):
         super(AppView, self).__init__(**kwargs)    
@@ -36,14 +36,18 @@ class AppView(Scatter):
         if tex is not None:
             tex.wrap = 'repeat'
             self.texture = tex
+        
+        #add gestures
+        self.gdb = GestureDatabase()
+        self.create_gesture( [(0,0),(10,0)] )
+        self.create_gesture( [(0,0),(-10,0)] )        
 
+    def create_gesture(self,point_list):
         # Create a gesture
         g = Gesture()
-        g.add_stroke(point_list=[(0,0),(10,0)])
+        g.add_stroke(point_list)
         g.normalize()
-
         # Add it to database
-        self.gdb = GestureDatabase()
         self.gdb.add_gesture(g)
     
     def on_touch_down(self,touch):
@@ -68,9 +72,13 @@ class AppView(Scatter):
                 g.normalize()
                 gest = self.gdb.find(g)
                 try : 
-                    if gest[0] > 0.95 : #gesture found 
+                    if gest[0] > 0.95 : #gesture found
                         if len(self.touches2) == 1: #no touch left on bar 
-                            self.move_bar_to_right()              
+                            d = current[0] - origin[0]
+                            if d > 0:
+                                self.move_bar_to_right()
+                            else : 
+                                self.move_bar_to_left()              
                 except : 
                     self.move_back()
             else : self.move_back()
@@ -95,8 +103,11 @@ class AppView(Scatter):
             a.start(self)
             self.position_left = False
         
-    def move_bar_to_left(self):   
-        self.position_left = True
+    def move_bar_to_left(self): 
+        if self.position_left == False:
+            a = Animation(x = 0 , duration = 1.5)
+            a.start(self)  
+            self.position_left = True
 
     def move_back(self):
         if self.position_left :

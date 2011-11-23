@@ -38,18 +38,6 @@
 			size: self.size
 
 		
-<Bar2>:
-	height: 600
-	size_hint_y: None
-		
-	canvas.before:
-		Color:
-			rgb: .1, .1, .1
-		BorderImage:
-			source: 'style/border.png'
-			border: 40, 40, 40, 40
-			pos: self.pos
-			size: 155, self.height
 
 <Bar>:
 	width:135
@@ -58,49 +46,9 @@
 	size:self.size
 	bar_width:135	
 	
-<Field2>:
-	canvas.before:
-		Color:
-			rgb: .24, .24, .25	
-		BorderImage:
-			source: 'style/border.png'
-			border: 40, 40, 40, 40
-			pos: self.pos
-			size: self.size
+
 	
-<AppView2>:
-	
-	ScrollView:
-		scroll_timeout: 200
-		width: 155
-		size_hint_x: None
-		do_scroll_x: False
 
-		canvas.before:
-			Color:
-				rgb: .24, .24, .25
-			Rectangle:
-				texture: root.texture_sidebar
-				tex_coords: [root.texture_sidebar, 0, 0, 1, 0, 1, self.height / 5, 0, self.height / 5][1:]
-				pos: self.pos
-				size: self.size
-
-		
-<AppView2>:
-	width: 1458
-	size_hint_x: None
-
-	canvas.before:
-		Color:
-			rgb: .24, .24, .25
-		Rectangle:
-			pos: (0,0)
-			size: self.size
-		Rectangle:
-			texture: root.texture_sidebar
-			tex_coords: [root.texture_sidebar, 0, 0, 1, 0, 1, self.height / 5, 0, self.height / 5][1:]
-			pos: (0,0)
-			size: (self.bar_width,self.height)
 
 <AppView>:
 	bar_width:135
@@ -116,24 +64,6 @@
 			pos: (0,0)
 			size: (self.bar_width,self.height)
 
-<AppView3>:
-	size_hint_x: None
-        width: 2000
 
-	canvas.before:
-		Color:
-			rgb: 1, 1, 1
-		Rectangle:
-			texture: root.texture_sidebar
-			tex_coords: [root.texture_sidebar, 0, 0, 1, 0, 1, self.height / 5, 0, self.height / 5][1:]
-			pos: self.pos
-			size: self.size
-                Color:
-			rgb: 1, 1, 1
-		Rectangle:
-			texture: root.texture_sidebar
-			tex_coords: [root.texture_sidebar, 0, 0, 1, 0, 1, self.height / 5, 0, self.height / 5][1:]
-			pos: self.pos
-			size: self.size
 
 

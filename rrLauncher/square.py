@@ -4,11 +4,13 @@ from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.scatter import Scatter
+from kivy.uix.image import Image
 from kivy.animation import Animation
 from kivy.clock import Clock
 
 from video_player import VideoPlayer
 from super_button import SuperButton
+
 
 
 
@@ -144,11 +146,21 @@ class Square(Scatter):
 
         #Bottom part : buttons
         self.box_bottom = BoxLayout(orientation = 'horizontal', size_hint = param['box_bottom_size_hint'] )
+        self.subbox = BoxLayout(orientation = 'horizontal' )
         self.box_bottom.padding = int( param['box_bottom_padding'] ) #box.height*0.15
         #self.vote_button = Button(text = 'voter', size_hint = (None,None), size=param["vote_button_size"] ) 
         self.vote_button = SuperButton(background_normal = 'style/square/bouton-vote-T2-off.png', background_down = 'style/square/bouton-vote-T2-on.png', size_hint = (None,None), size=param["vote_button_size"] )
         self.vote_button.bind( on_press = self.vote )
-        self.box_bottom.add_widget( self.vote_button ) 
+        self.subbox.add_widget( self.vote_button )
+        """
+        self.fb1 = Image(source = 'style/square/feedback-vote-T3-entier.png', size_hint=(1,1) )
+        self.fb2 = Image(source = 'style/square/feedback-vote-T3-entier.png', size_hint=(1,1) )
+        self.fb3 = Image(source = 'style/square/feedback-vote-T3-entier.png', size_hint=(1,1) )
+        self.subbox.add_widget(self.fb1)
+        self.subbox.add_widget(self.fb2)
+        self.subbox.add_widget(self.fb3)
+        """
+        self.box_bottom.add_widget(self.subbox)
         #self.launch_button = Button(text = 'lancer', size_hint = (None,None), size=param["launch_button_size"] ) 
         self.launch_button = SuperButton(background_normal = 'style/square/bouton-lancer-T2-off.png',background_down = 'style/square/bouton-lancer-T2-on.png', size_hint = (None,None), size=param["launch_button_size"] ) 
         self.launch_button.bind( on_press = self.launch ) 
