@@ -11,6 +11,7 @@
 	"box_bottom_size_hint":[1,0.38],
 	"box_bottom_padding":"10",
         "vote_button_size":[43,43],
+        "vote_feedback_size":[110,43],
         "launch_button_size":[110,43]
 
 }

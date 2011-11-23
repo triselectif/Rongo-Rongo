@@ -508,6 +508,9 @@ class Field(Widget):
             #vote button size
             animation = Animation(size = param["vote_button_size"], **kwargs)
             animation.start(square.vote_button)
+            #vote feedback size
+            animation = Animation(size = param["launch_button_size"], **kwargs)
+            animation.start(square.fb)
             #spacing
             box_bottom_spacing = (self.get_size(layout_type)[0] -2*square.padding - param['vote_button_size'][0] - param['launch_button_size'][0]) * 0.97
             animation = Animation(spacing = box_bottom_spacing, **kwargs)

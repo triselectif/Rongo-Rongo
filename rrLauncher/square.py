@@ -29,6 +29,7 @@ class Square(Scatter):
     main_media_type = StringProperty(None) #'image' or 'video'
     image_path = StringProperty(None)
     video_path = StringProperty(None)
+    vote_feedback = NumericProperty(0) #value between 0 and 1
     #shape
     rotation_90d = NumericProperty(0)
     layout_type = StringProperty(None) #'icon'/'small'/'medium' or 'large'
@@ -147,21 +148,14 @@ class Square(Scatter):
         #Bottom part : buttons
         self.box_bottom = BoxLayout(orientation = 'horizontal', size_hint = param['box_bottom_size_hint'] )
         self.subbox = BoxLayout(orientation = 'horizontal' )
-        self.box_bottom.padding = int( param['box_bottom_padding'] ) #box.height*0.15
-        #self.vote_button = Button(text = 'voter', size_hint = (None,None), size=param["vote_button_size"] ) 
+        self.box_bottom.padding = int( param['box_bottom_padding'] ) #box.height*0.15 
         self.vote_button = SuperButton(background_normal = 'style/square/bouton-vote-T2-off.png', background_down = 'style/square/bouton-vote-T2-on.png', size_hint = (None,None), size=param["vote_button_size"] )
-        self.vote_button.bind( on_press = self.vote )
+        self.vote_button.bind( on_press = self.vote ) 
         self.subbox.add_widget( self.vote_button )
-        """
-        self.fb1 = Image(source = 'style/square/feedback-vote-T3-entier.png', size_hint=(1,1) )
-        self.fb2 = Image(source = 'style/square/feedback-vote-T3-entier.png', size_hint=(1,1) )
-        self.fb3 = Image(source = 'style/square/feedback-vote-T3-entier.png', size_hint=(1,1) )
-        self.subbox.add_widget(self.fb1)
-        self.subbox.add_widget(self.fb2)
-        self.subbox.add_widget(self.fb3)
-        """
+        #vote feedback
+        self.fb = Image(source = 'style/square/like'+self.convert_vote_feedback()+'.png', size_hint=(None,None), size=param["vote_feedback_size"])
+        self.subbox.add_widget( self.fb )
         self.box_bottom.add_widget(self.subbox)
-        #self.launch_button = Button(text = 'lancer', size_hint = (None,None), size=param["launch_button_size"] ) 
         self.launch_button = SuperButton(background_normal = 'style/square/bouton-lancer-T2-off.png',background_down = 'style/square/bouton-lancer-T2-on.png', size_hint = (None,None), size=param["launch_button_size"] ) 
         self.launch_button.bind( on_press = self.launch ) 
         self.box_bottom.add_widget( self.launch_button )
@@ -169,7 +163,13 @@ class Square(Scatter):
         self.layout.add_widget( self.box_bottom )
 
         self.add_widget(self.layout)
-    
+
+    def convert_vote_feedback(self):
+        vf = self.vote_feedback
+        if vf > 1 : vf =1
+        elif vf < 0 : vf = 0
+        vf = int(vf*6)
+        return str(vf)    
 
     def layout_type2size(self,layout_type) :
         #print layout_type
@@ -209,7 +209,9 @@ class Square(Scatter):
         self.app.appview.move_bar_to_right() 
 
     def vote(self,a):
-        print 'vote for app ' + self.title       
+        print 'vote for app ' + self.title
+        self.vote_feedback += 0.05
+        self.fb.source = 'style/square/like'+ self.convert_vote_feedback() +'.png'        
     
     def on_touch_down(self, touch):
         #analyse and store touches so that we know on_touch_up which
