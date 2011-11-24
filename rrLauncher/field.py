@@ -659,7 +659,9 @@ class Field(Widget):
         #store size and pos for later
         self.video_size_pos = {'size':size, 'pos':pos}
         Clock.schedule_once(self.video.start, 2.5)
-        w,h,s,m,l = self.get_field_size()#(self.width - self.bar_width,self.height)#
+        w,h = self.geometry['screen_size'] #(self.width - self.bar_width,self.height)#w,h,s,m,l = self.get_field_size()##
+        #self.video._set_rotation(90)
+        w = w - self.bar_width
         anim = Animation(size = (w,h), pos = (self.x +self.bar_width, self.y) )
         anim.start(self.video)
 

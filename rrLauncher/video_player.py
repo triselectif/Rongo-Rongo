@@ -3,6 +3,7 @@ from kivy.app import App
 from kivy.clock import Clock
 
 from kivy.uix.widget import Widget
+#from kivy.uix.scatter import Scatter
 from kivy.uix.video import Video
 from kivy.uix.button import Button
 from kivy.properties import ObjectProperty, NumericProperty, StringProperty, \
@@ -27,6 +28,7 @@ class VideoPlayer(Widget):
 
     def __init__(self,**kwargs) :
             super(VideoPlayer,self).__init__(**kwargs)
+
             #new events
             self.register_event_type('on_mute')
             self.register_event_type('on_unmute')
@@ -34,7 +36,12 @@ class VideoPlayer(Widget):
             self.register_event_type('on_stop')
             self.register_event_type('on_fullscreen')
             self.register_event_type('on_leave_fullscreen')            
-    
+            """
+            #avoid manual transform
+            self.do_translation = False
+            self.do_rotation = False
+            self.do_scale = False
+            """
             self.video = Video(source = self.source, play=self.play, options = self.options , size_hint = (1,1))
             #self.video.bind(size = self.setter('size'))
             #delay to load the video before launching it
@@ -176,7 +183,7 @@ class VideoPlayer(Widget):
         self.add_widget(self.buttons)
         #self.add_widget(self.progress_bar)
         Clock.schedule_once(self.hide_buttons, self.hide_buttons_time_out)
-
+    
     def on_mute(self):
         pass
 
