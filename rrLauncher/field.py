@@ -660,8 +660,27 @@ class Field(Widget):
         self.video_size_pos = {'size':size, 'pos':pos}
         Clock.schedule_once(self.video.start, 2.5)
         w,h = self.geometry['screen_size'] #(self.width - self.bar_width,self.height)#w,h,s,m,l = self.get_field_size()##
-        #self.video._set_rotation(90)
         w = w - self.bar_width
+        
+        if self.geometry['vertical'] == "True":
+            from kivy.graphics import Rotate
+            """
+            rot = Rotate()
+            rot.angle =  90
+            rot.axis =(0,0,1)
+            """
+            #self.video.video.canvas.add(Rotate( 45,0,0,1 ))
+            '''
+            with self.video.video.canvas :
+                Rotate( 45,0,0,1 )
+            self.video.video.canvas.ask_update()
+            #self.video.canvas.draw()
+            '''
+            
+            width = w
+            w = h
+            h = width
+            
         anim = Animation(size = (w,h), pos = (self.x +self.bar_width, self.y) )
         anim.start(self.video)
 
