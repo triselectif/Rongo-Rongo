@@ -5,6 +5,7 @@ from os import walk
 from kivy.properties import ObjectProperty, NumericProperty,StringProperty, \
     BooleanProperty, DictProperty, ListProperty
 from kivy.uix.widget import Widget
+from kivy.uix.scatter import Scatter
 from kivy.uix.label import Label
 from kivy.vector import Vector
 from kivy.animation import Animation
@@ -34,6 +35,7 @@ class Field(Widget):
     #compare their positions with the real squares
     apps = DictProperty( {} )#stores all the apps information
     video = ObjectProperty( None )
+    video_scatter = ObjectProperty( None )
     video_size_pos = DictProperty( {} )
     #bar_width = NumericProperty(135)
     spacing = NumericProperty(0.0)
@@ -651,19 +653,22 @@ class Field(Widget):
                 i.mute()
     
     def play_video_fullscreen(self, video_path, pos, size, position):
+        
         self.video = VideoPlayer2(source = video_path, options = {'position':position} )
         self.video.bind(on_leave_fullscreen = self.on_leave_fullscreen)
         self.video.size = size
-        self.video.pos = pos
-        self.add_widget(self.video)
+        #self.video.pos = pos
+        self.video_scatter = Scatter(size = size, pos = pos)
+        self.video_scatter.add_widget(self.video)
+        self.add_widget(self.video_scatter)
         #store size and pos for later
         self.video_size_pos = {'size':size, 'pos':pos}
         Clock.schedule_once(self.video.start, 2.5)
         w,h = self.geometry['screen_size'] #(self.width - self.bar_width,self.height)#w,h,s,m,l = self.get_field_size()##
-        w = w - self.bar_width
+        
         
         if self.geometry['vertical'] == "True":
-            from kivy.graphics import Rotate
+            #from kivy.graphics import Rotate
             """
             rot = Rotate()
             rot.angle =  90
@@ -676,22 +681,33 @@ class Field(Widget):
             self.video.video.canvas.ask_update()
             #self.video.canvas.draw()
             '''
-            
+            self.video_scatter.rotation = -90
             width = w
             w = h
             h = width
-            
-        anim = Animation(size = (w,h), pos = (self.x +self.bar_width, self.y) )
-        anim.start(self.video)
+            self.video_scatter.center = (self.x +self.bar_width, w/2)
+            self.video_scatter.size = (w,h)
+            self.video.size = (w,h)
+        else : 
+            w = w - self.bar_width
+            anim = Animation(size = (w,h),pos = (self.x +self.bar_width, self.y) )
+            anim.start(self.video_scatter)
+            anim = Animation(size = (w,h) )
+            anim.start(self.video) 
 
     def on_leave_fullscreen(self,a):
+        if self.geometry['vertical'] == "True":
+            self.video_scatter.rotation = 90
         size = self.video_size_pos['size']
         pos = self.video_size_pos['pos']
         anim = Animation(size = size, pos = pos)
         anim.bind(on_complete = self.after_leaving_fullscreen)
+        anim.start(self.video_scatter)
+        anim = Animation(size = size)
         anim.start(self.video)
 
     def after_leaving_fullscreen(self,a,b):
         self.video.video.volume = 0
-        self.remove_widget(self.video )
+        self.video_scatter.remove_widget(self.video )
+        self.remove_widget(self.video_scatter )
 

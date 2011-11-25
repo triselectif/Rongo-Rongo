@@ -83,7 +83,8 @@ class Square(Scatter):
     def on_fullscreen(self, a):
         self.video.stop(1)
         vid = self.video
-        self.parent.play_video_fullscreen(self.video_path, self.to_parent(vid.x,vid.y) , self.video.size, self.video.video.position)
+        x,y = vid.pos
+        self.parent.play_video_fullscreen(self.video_path, self.to_parent(x,y) , self.video.size, self.video.video.position)
         
     def on_leave_fullscreen(self, a):
         pass 
