@@ -485,11 +485,15 @@ class Field(Widget):
             animation.start(square)
             #title size
             font_size = square.process_font_size( square.title ,int( param['title_label_font_size'] ) )
+            #text_size = (len(square.title)*font_size,None )
+            #text_size = (len(square.title)*font_size +100,None)
             animation = Animation(font_size = font_size, **kwargs)
             animation.start(square.title_label)
+            #animation = Animation(width = len(square.title)*font_size, **kwargs)
+            #animation.start(square.box2)
             #authors
-            animation = Animation(font_size = int( param['authors_label_font_size'] ), **kwargs)
-            animation.start(square.authors_label)
+            #animation = Animation(font_size = int( param['authors_label_font_size'] ), **kwargs)
+            #animation.start(square.authors_label)
             #box top size
             animation = Animation(size_hint = param['box_top_size_hint'], **kwargs)
             animation.start(square.box_top)
@@ -681,11 +685,13 @@ class Field(Widget):
             self.video.video.canvas.ask_update()
             #self.video.canvas.draw()
             '''
+            self.video_scatter.pos = self.pos #= (self.bar_width,0)
             self.video_scatter.rotation = -90
             width = w
             w = h
             h = width
-            self.video_scatter.center = (self.x +self.bar_width, w/2)
+            #self.video_scatter.pos = self.center
+            self.video_scatter.pos = (self.bar_width,w/2+self.bar_width/2)#center = (h/2,w/2-self.bar_width/2)#(self.center[0] +2*self.bar_width -25, w/2 +self.bar_width+25)#
             self.video_scatter.size = (w,h)
             self.video.size = (w,h)
         else : 

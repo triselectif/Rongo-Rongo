@@ -45,16 +45,21 @@
 <Field>:
 	size:self.size
 	bar_width:135	
-	
 
-	
-
+<Label3>:
+	canvas.before:
+		Color:
+			rgb: .24,.24,.24
+		Rectangle:
+			pos: self.pos
+			size: self.size
+		
 
 <AppView>:
 	bar_width:135
 	canvas.before:
 		Color:
-			rgb: .24, .24, .25
+			rgb: .24,.24,.24
 		Rectangle:
 			pos: (0,0)
 			size: self.size
@@ -64,6 +69,12 @@
 			pos: (0,0)
 			size: (self.bar_width,self.height)
 
-
+<VideoPlayer2>
+	canvas.before:
+		Color:
+			rgb: .24,.24,.24
+		Rectangle:
+			pos: (0,0)
+			size: self.size
 
 

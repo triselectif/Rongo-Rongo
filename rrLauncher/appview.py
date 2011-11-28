@@ -24,7 +24,7 @@ class AppView(Scatter):
  
         #internal variables
         self.touches2 = {}
-        self.translation_allowed = False
+        #self.translation_allowed = False
         self.gesture_found = False
         self.position_left = True
 
@@ -112,11 +112,12 @@ class AppView(Scatter):
             #print len(self.touches2), self.touches2[id], touch.pos, dist
             dist_c = False
             in_bar_c = False
-            2_touches_c = False
+            two_touches_c = False
+
             if dist >= self.bar_translation_min_distance : dist_cond = True
             if touch.x < self.x + self.bar_width : in_bar_cond = True #current touch not outside of bar
-            if len(self.touches2)==2 : 2_touches_c = True #still one more touch on bar
-            if dist_c==True and (in_bar_c==True and 2_touches_c == True ) :
+            if len(self.touches2)==2 : two_touches_c = True #still one more touch on bar
+            if dist_c==True and (in_bar_c==True and two_touches_c == True ) :
                 # try to find a gesture 
                 g = Gesture()
                 g.add_stroke(point_list=[origin,current])
@@ -144,14 +145,14 @@ class AppView(Scatter):
         if not len(self.touches2) > 1 :
             return True
         super(AppView, self).on_touch_move(touch)
-
+    """
     def allow_translation(self):
         if len(self._touches) < 2 :
             self.translation_allowed = False
         else : 
             self.translation_allowed = True
         #print self.translation_allowed
-     
+    """ 
     def move_bar_to_right(self):
         #return
         if self.position_left :

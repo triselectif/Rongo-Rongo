@@ -2,9 +2,11 @@ from kivy.properties import ObjectProperty, NumericProperty, StringProperty, \
     BooleanProperty, DictProperty, ListProperty
 from kivy.uix.label import Label
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.scatter import Scatter
 from kivy.uix.image import Image
+from kivy.uix.widget import Widget
 from kivy.animation import Animation
 from kivy.clock import Clock
 
@@ -116,20 +118,18 @@ class Square(Scatter):
         self.layout.add_widget(self.layer)
         """         
         #top part : Title, app_type, authors
-        self.box_top = BoxLayout(orientation = 'horizontal', size_hint = param['box_top_size_hint'] )
+        self.box_top = BoxLayout(size_hint = param['box_top_size_hint'] )#orientation = 'horizontal', 
         font_size = self.process_font_size( self.title, int( param['title_label_font_size']) )
-        self.title_label = Label(text=self.title, font_size = font_size, color = self.color_text, halign = 'left',valign ='bottom')#, padding_x = 5  )
-        self.box2 = BoxLayout(orientation = 'vertical', size_hint = param['box2_size_hint'], padding = 2 )
-        #self.al = AnchorLayout(anchor_x='right', anchor_y='top')
-        from kivy.uix.image import Image
-        self.app_type_pic = Image(source = str(self.app_type), pos_hint={'top': 1,'right':1}, size_hint = (1,3) )      
-        self.authors_label = Label(text = self.authors, font_size = int( param['authors_label_font_size'] ), color = self.color_text, halign = 'right' )
-        
-        #self.box2.add_widget(self.al)
-        #self.box2.add_widget(self.app_type_pic)
-        #self.box2.add_widget(self.authors_label)
-        self.box_top.add_widget(self.title_label)
+        text_size = (len(self.title)*font_size +100,None )
+        self.title_label = Label( text=self.title, font_size = font_size, color = self.color_text, halign = 'left', valign = 'top',text_size = text_size, padding = (5,0) ) #font_name = 'DEJAVU SANS CONDENSED', bold = False
+        self.box2 = BoxLayout(orientation = 'horizontal',  size_hint = (None,1) , width = self.title_label.text_size[0], pos_hint={'top': 1,'left':1} )
+        #self.app_type_pic = Image(source = str(self.app_type), pos_hint={'top': 1,'right':1}, size_hint = (1,3) )
+        #self.box3 = AnchorLayout( anchor_x = 'right', anchor_y = 'bottom')
+        #self.authors_label = Label(text = self.authors, font_size = int( param['authors_label_font_size'] ), pos_hint ={'right':1},  color = self.color_text, halign = 'right') #, pos_hint={'bottom': 1,'right':1} )        
+        self.box2.add_widget(self.title_label)
         self.box_top.add_widget(self.box2)
+        #self.box3.add_widget(self.authors_label)
+        #self.box_top.add_widget(self.box3)
         self.layout.add_widget( self.box_top )
         
         #middle part : Image or Video
@@ -154,6 +154,7 @@ class Square(Scatter):
         self.vote_button.bind( on_press = self.vote ) 
         self.subbox.add_widget( self.vote_button )
         #vote feedback
+        from kivy.uix.image import Image
         self.fb = Image(source = 'style/square/like'+self.convert_vote_feedback()+'.png', size_hint=(None,None), size=param["vote_feedback_size"])
         self.subbox.add_widget( self.fb )
         self.box_bottom.add_widget(self.subbox)

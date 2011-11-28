@@ -1,7 +1,7 @@
 {
         "texture_path":"style/square/square_medium.png",
         "box_top_size_hint":[1,0.13],
-	"title_label_font_size" : "20",
+	"title_label_font_size" : "21",
 	"box2_size_hint" : [0.4,1],
         "app_type_label_font_size" : "12",
         "authors_label_font_size" : "0",
