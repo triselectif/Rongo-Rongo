@@ -153,6 +153,7 @@ class AppView(Scatter):
             self.translation_allowed = True
         #print self.translation_allowed
     """
+    """
     def transform_with_touch(self, touch):
         # just do a simple one finger drag
         if len(self._touches) == 1:
@@ -195,7 +196,7 @@ class AppView(Scatter):
                 scale = 1.0
             self.apply_transform(Matrix().scale(scale, scale, scale),
                                  anchor=anchor)
- 
+    """
     def move_bar_to_right(self):
         #return
         if self.position_left :
