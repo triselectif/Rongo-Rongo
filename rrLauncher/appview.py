@@ -8,6 +8,7 @@ from kivy.graphics import Color, Line, Rectangle, BorderImage#LineWidth,
 from kivy.animation import Animation
 from kivy.gesture import Gesture, GestureDatabase
 from kivy.vector import Vector
+from kivy.graphics.transformation import Matrix
 
 from random import random
 
@@ -70,6 +71,7 @@ class AppView(Scatter):
         #if len(self._touches) <= 1 :
         #    return True
         #else :
+
         l = len(self.touches2)
         if l > 1 :
             #if several touches on the bar
@@ -105,14 +107,15 @@ class AppView(Scatter):
     def on_touch_up(self,touch):
         id = touch.id
         if id in self.touches2.keys():
-            #must be bar moved ?
+            #does the user want to translate the bar to the right or the left ?
             origin = self.touches2[id]#.pos
             current = touch.pos
             dist = Vector(origin).distance( Vector(current) )
             #print len(self.touches2), self.touches2[id], touch.pos, dist
-            dist_c = False
-            in_bar_c = False
-            two_touches_c = False
+            #3 conditions : 
+            dist_c = False #distance from side
+            in_bar_c = False #touches are in the bar
+            two_touches_c = False #more than one touch
 
             if dist >= self.bar_translation_min_distance : dist_cond = True
             if touch.x < self.x + self.bar_width : in_bar_cond = True #current touch not outside of bar
@@ -133,7 +136,9 @@ class AppView(Scatter):
                                 self.move_bar_to_left()              
                 except : 
                     self.move_back()
+
             else : self.move_back()
+
             del self.touches2[id]
             if len(self.touches2) <= 1 :
                 self.set_texture('style/bar/slider-fond.png') 
@@ -142,8 +147,8 @@ class AppView(Scatter):
 
     def on_touch_move(self,touch):
         #move only if several touches        
-        #if not len(self.touches2) > 1 :
-        #    return True
+        if not len(self.touches2) > 1 :
+            return True
         super(AppView, self).on_touch_move(touch)
     """
     def allow_translation(self):
@@ -153,9 +158,12 @@ class AppView(Scatter):
             self.translation_allowed = True
         #print self.translation_allowed
     """
-    """
+    
     def transform_with_touch(self, touch):
-        # just do a simple one finger drag
+        # PB : By default the kivy scatter does not translate if several touches are down
+        # TRICK : So we have to set do_rotation to True and avoid rotation to occur ... 
+
+        # just do a simple one finger drag DOES NOT OCCUR HERE
         if len(self._touches) == 1:
             # _last_touch_pos has last pos in correct parent space,
             # just like incoming touch
@@ -185,18 +193,19 @@ class AppView(Scatter):
         old_line = Vector(*touch.ppos) - anchor
         new_line = Vector(*touch.pos) - anchor
 
+        #HERE : compare to the regular scatter we avoid rotation here
         #angle = radians(new_line.angle(old_line)) * self.do_rotation
-        #angle = 0
-        #self.apply_transform(Matrix().rotate(angle, 0, 0, 1), anchor=anchor)
+        angle = 0
+        self.apply_transform(Matrix().rotate(angle, 0, 0, 1), anchor=anchor)
 
-        if self.do_scale:
+        if self.do_scale: #DOES NOT OCCUR HERE
             scale = new_line.length() / old_line.length()
             new_scale = scale * self.scale
             if new_scale < self.scale_min or new_scale > self.scale_max:
                 scale = 1.0
             self.apply_transform(Matrix().scale(scale, scale, scale),
                                  anchor=anchor)
-    """
+    
     def move_bar_to_right(self):
         #return
         if self.position_left :
