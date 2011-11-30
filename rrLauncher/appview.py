@@ -152,7 +152,50 @@ class AppView(Scatter):
         else : 
             self.translation_allowed = True
         #print self.translation_allowed
-    """ 
+    """
+    def transform_with_touch(self, touch):
+        # just do a simple one finger drag
+        if len(self._touches) == 1:
+            # _last_touch_pos has last pos in correct parent space,
+            # just like incoming touch
+            dx = (touch.x - self._last_touch_pos[touch][0]) \
+                    * self.do_translation_x
+            dy = (touch.y - self._last_touch_pos[touch][1]) \
+                    * self.do_translation_y
+            self.apply_transform(Matrix().translate(dx, dy, 0))
+            return
+
+        # we have more than one touch...
+        points = [Vector(self._last_touch_pos[t]) for t in self._touches]
+
+        # we only want to transform if the touch is part of the two touches
+        # furthest apart! So first we find anchor, the point to transform
+        # around as the touch farthest away from touch
+        anchor = max(points, key=lambda p: p.distance(touch.pos))
+
+        # now we find the touch farthest away from anchor, if its not the
+        # same as touch. Touch is not one of the two touches used to transform
+        farthest = max(points, key=anchor.distance)
+        if points.index(farthest) != self._touches.index(touch):
+            return
+
+        # ok, so we have touch, and anchor, so we can actually compute the
+        # transformation
+        old_line = Vector(*touch.ppos) - anchor
+        new_line = Vector(*touch.pos) - anchor
+
+        #angle = radians(new_line.angle(old_line)) * self.do_rotation
+        #angle = 0
+        #self.apply_transform(Matrix().rotate(angle, 0, 0, 1), anchor=anchor)
+
+        if self.do_scale:
+            scale = new_line.length() / old_line.length()
+            new_scale = scale * self.scale
+            if new_scale < self.scale_min or new_scale > self.scale_max:
+                scale = 1.0
+            self.apply_transform(Matrix().scale(scale, scale, scale),
+                                 anchor=anchor)
+ 
     def move_bar_to_right(self):
         #return
         if self.position_left :

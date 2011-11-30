@@ -10,7 +10,7 @@ from appview import AppView
 class LauncherApp(App):
 
     def build(self):
-        self.appview = AppView(app=self, do_rotation = False, do_scale = False, do_translation_y = False, size_hint =(1,1) )
+        self.appview = AppView(app=self, do_rotation = True, do_scale = False, do_translation_y = False, size_hint =(1,1) )
         
         self.field = Field(app=self, activate_animations = True)
         self.appview.add_widget(self.field)
