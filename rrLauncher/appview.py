@@ -142,8 +142,8 @@ class AppView(Scatter):
 
     def on_touch_move(self,touch):
         #move only if several touches        
-        if not len(self.touches2) > 1 :
-            return True
+        #if not len(self.touches2) > 1 :
+        #    return True
         super(AppView, self).on_touch_move(touch)
     """
     def allow_translation(self):
