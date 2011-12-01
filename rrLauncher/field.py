@@ -347,7 +347,8 @@ class Field(Widget):
             #function to be used by the bar to add an app to the field
             #print 'add_app_key :'+ key
             if key in self.squares.keys():
-                self.shake_square(touch,key,6)
+                pass
+                #self.shake_square(touch,key,6)
             else : 
                 #create the square 
                 square = self.init_square(self.apps,key,touch.pos, self.get_size('small'), 'small')

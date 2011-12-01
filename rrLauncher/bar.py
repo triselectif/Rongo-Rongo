@@ -169,8 +169,13 @@ class Bar(FloatLayout):
         self.app.field.add_app(key, touch)
 
     def on_image_touch_down(self, touch, key):
-        #check if already on field
         squares = self.app.field.squares
-        if key in squares.keys() :
+        if not key in squares.keys() : return
+        if self.app.appview.position_left == False:
+            if touch.is_double_tap :
+                square  = self.app.field.squares[key]
+                square.launch(1)
+        else : 
+            #check if already on field
             self.app.field.shake_square( touch,key,10)
             

@@ -208,7 +208,9 @@ class Square(Scatter):
     
     def launch(self,a):
         print 'launch app ' + self.title
-        self.app.appview.move_bar_to_right() 
+        appview = self.app.appview
+        if appview.position_left : 
+            appview.move_bar_to_right() 
 
     def vote(self,a):
         print 'vote for app ' + self.title
