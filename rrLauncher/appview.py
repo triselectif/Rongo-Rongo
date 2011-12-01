@@ -25,6 +25,7 @@ class AppView(Scatter):
  
         #internal variables
         self.touches2 = {}
+        self.last_touch_id = -1
         #self.translation_allowed = False
         self.gesture_found = False
         self.position_left = True
@@ -106,7 +107,8 @@ class AppView(Scatter):
     
     def on_touch_up(self,touch):
         id = touch.id
-        if id in self.touches2.keys():
+        if id in self.touches2.keys() and len(self.touches2) == 2: 
+            #still one more touch on bar
             #does the user want to translate the bar to the right or the left ?
             origin = self.touches2[id]#.pos
             current = touch.pos
@@ -117,37 +119,46 @@ class AppView(Scatter):
             in_bar_c = False #touches are in the bar
             two_touches_c = False #more than one touch
 
-            if dist >= self.bar_translation_min_distance : dist_cond = True
-            if touch.x < self.x + self.bar_width : in_bar_cond = True #current touch not outside of bar
-            if len(self.touches2)==2 : two_touches_c = True #still one more touch on bar
-            if dist_c==True and (in_bar_c==True and two_touches_c == True ) :
-                # try to find a gesture 
-                g = Gesture()
-                g.add_stroke(point_list=[origin,current])
-                g.normalize()
-                gest = self.gdb.find(g)
-                try : 
+            
+
+            #if touch.id in self.touches2.keys() :
+            if dist >= self.bar_translation_min_distance : 
+                    dist_c = True
+            """
+            if touch.x < self.x + self.bar_width : 
+                    in_bar_c = True #current touch not outside of bar
+                    #print "re"
+            """
+            if dist_c==True :#and in_bar_c==True :
+                  #print "enter it"
+                  # try to find a gesture 
+                  g = Gesture()
+                  g.add_stroke(point_list=[origin,current])
+                  g.normalize()
+                  gest = self.gdb.find(g)
+                  try : 
                     if gest[0] > 0.95 : #gesture found
-                        if len(self.touches2) == 1: #no touch left on bar 
+                        if len(self.touches2) == 2: #no touch left on bar 
                             d = current[0] - origin[0]
                             if d > 0:
                                 self.move_bar_to_right()
                             else : 
                                 self.move_bar_to_left()              
-                except : 
+                  except : 
                     self.move_back()
 
             else : self.move_back()
 
-            del self.touches2[id]
-            if len(self.touches2) <= 1 :
+        if id in self.touches2.keys():
+                del self.touches2[id]
+        if len(self.touches2) <= 0 :
                 self.set_texture('style/bar/slider-fond.png') 
             #self.allow_translation()      
         return super(AppView, self).on_touch_up(touch) 
 
     def on_touch_move(self,touch):
         #move only if several touches        
-        if not len(self.touches2) > 1 :
+        if len(self.touches2) <= 1 :
             return True
         super(AppView, self).on_touch_move(touch)
     """
@@ -164,16 +175,10 @@ class AppView(Scatter):
         # TRICK : So we have to set do_rotation to True and avoid rotation to occur ... 
 
         # just do a simple one finger drag DOES NOT OCCUR HERE
-        if len(self._touches) == 1:
-            # _last_touch_pos has last pos in correct parent space,
-            # just like incoming touch
-            dx = (touch.x - self._last_touch_pos[touch][0]) \
-                    * self.do_translation_x
-            dy = (touch.y - self._last_touch_pos[touch][1]) \
-                    * self.do_translation_y
-            self.apply_transform(Matrix().translate(dx, dy, 0))
-            return
-
+        #only the last touch moves it
+        if len(self._touches) == 1 or not self.last_touch_id == touch.id : return
+        
+        """
         # we have more than one touch...
         points = [Vector(self._last_touch_pos[t]) for t in self._touches]
 
@@ -187,24 +192,15 @@ class AppView(Scatter):
         farthest = max(points, key=anchor.distance)
         if points.index(farthest) != self._touches.index(touch):
             return
-
-        # ok, so we have touch, and anchor, so we can actually compute the
-        # transformation
-        old_line = Vector(*touch.ppos) - anchor
-        new_line = Vector(*touch.pos) - anchor
-
-        #HERE : compare to the regular scatter we avoid rotation here
-        #angle = radians(new_line.angle(old_line)) * self.do_rotation
-        angle = 0
-        self.apply_transform(Matrix().rotate(angle, 0, 0, 1), anchor=anchor)
-
-        if self.do_scale: #DOES NOT OCCUR HERE
-            scale = new_line.length() / old_line.length()
-            new_scale = scale * self.scale
-            if new_scale < self.scale_min or new_scale > self.scale_max:
-                scale = 1.0
-            self.apply_transform(Matrix().scale(scale, scale, scale),
-                                 anchor=anchor)
+        """
+        # _last_touch_pos has last pos in correct parent space,
+        # just like incoming touch
+        dx = (touch.x - self._last_touch_pos[touch][0]) \
+                    * self.do_translation_x
+        dy = (touch.y - self._last_touch_pos[touch][1]) \
+                    * self.do_translation_y
+        self.apply_transform(Matrix().translate(dx, dy, 0))
+        return
     
     def move_bar_to_right(self):
         #return
