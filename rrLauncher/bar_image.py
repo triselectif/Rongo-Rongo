@@ -38,6 +38,9 @@ class BarImage(Scatter):
         super(BarImage,self).on_touch_up(touch)
  
     def on_touch_move(self,touch):
+        touches2 = self.app.appview.touches2
+        if len(touches2)>1 : 
+            return
         """
         #get currrent touches 
         touches = self.app.appview.touches2

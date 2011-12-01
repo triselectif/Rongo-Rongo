@@ -157,35 +157,12 @@ class AppView(Scatter):
             #self.allow_translation()      
         return super(AppView, self).on_touch_up(touch) 
 
-    def on_touch_move2(self,touch):
+    def on_touch_move(self,touch):
         #move only if several touches        
         if len(self.touches2) <= 1 :
             return True
         super(AppView, self).on_touch_move(touch)
 
-    def on_touch_move(self, touch):
-        #move only if several touches        
-        if len(self.touches2) <= 1 :
-            return True
-
-        x, y = touch.x, touch.y
-        # let the child widgets handle the event if they want
-        if self.collide_point(x, y) and not touch.grab_current == self:
-            touch.push()
-            touch.apply_transform_2d(self.to_local)
-            if super(Scatter, self).on_touch_move(touch):
-                touch.pop()
-                return True
-            touch.pop()
-
-        # rotate/scale/translate
-        if touch in self._touches and touch.grab_current == self:
-            self.transform_with_touch(touch)
-            self._last_touch_pos[touch] = touch.pos
-
-        # stop propagating if its within our bounds
-        #if self.collide_point(x, y):
-        return True
     
     def transform_with_touch(self, touch):
         # PB : By default the kivy scatter does not translate if several touches are down
