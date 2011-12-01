@@ -68,6 +68,7 @@ class AppView(Scatter):
         id = touch.id
         if touch.x < self.x + self.bar_width :
             self.touches2[id] = touch.pos
+            self.last_touch_id = id
         #self.allow_translation()
         #if len(self._touches) <= 1 :
         #    return True
