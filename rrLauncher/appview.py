@@ -100,7 +100,7 @@ class AppView(Scatter):
             self._touches.append(touch)
             self._last_touch_pos[touch] = touch.pos
             
-            #return True
+            return True
         else :
             #regular behaviour 
             return super(AppView, self).on_touch_down(touch)
