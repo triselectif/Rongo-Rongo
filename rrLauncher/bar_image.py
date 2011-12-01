@@ -21,9 +21,17 @@ class BarImage(Scatter):
         self.do_translation = True
         self.auto_bring_to_front = True
 
+    def bar_is_moving(self):
+        touches2 = self.app.appview.touches2
+        if len(touches2)>1 : 
+            return True
+        else : return False
+
     def on_touch_down(self, touch):
         if not self.collide_point(*touch.pos):
             return False
+        if self.bar_is_moving() : 
+            return
         #self.app.appview.touches2[touch.id] = touch.pos
         super(BarImage,self).on_touch_down(touch)
         self.app.bar.on_image_touch_down(touch,self.key)
@@ -38,8 +46,7 @@ class BarImage(Scatter):
         super(BarImage,self).on_touch_up(touch)
  
     def on_touch_move(self,touch):
-        touches2 = self.app.appview.touches2
-        if len(touches2)>1 : 
+        if self.bar_is_moving() : 
             return
         """
         #get currrent touches 
