@@ -32,6 +32,7 @@ class BarImage(Scatter):
             return False
         if self.bar_is_moving() : 
             return False
+        #print len( self.app.appview.touches2 )
         #self.app.appview.touches2[touch.id] = touch.pos
         super(BarImage,self).on_touch_down(touch)
         self.app.bar.on_image_touch_down(touch,self.key)
