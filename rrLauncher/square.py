@@ -189,7 +189,7 @@ class Square(Scatter):
             l,h = self.icon_size
             s = (l -2*pad,h -2*pad)
         return s     
-
+    
     def refresh_layout(self, layout_type) :
         size = self.layout_type2size(layout_type)
         pad = self.padding
@@ -201,11 +201,11 @@ class Square(Scatter):
         
         #refresh background texture
         Clock.schedule_once(self.refresh_background, 1.1)
-
+    
     def refresh_background(self, a):
         self.texture_path = str( self.square_parameters[self.layout_type]['texture_path'] )
         self.layer_texture_path = self.layers[self.layout_type]
-
+    
     def launch(self,a):
         print 'launch app ' + self.title
         self.app.appview.move_bar_to_right() 

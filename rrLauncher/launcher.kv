@@ -21,10 +21,10 @@
 			size: self.size
 		Color:
 			rgb: 1,1,1
-		BorderImage:
+		Rectangle:
 			source: self.layer_texture_path
-			border: 22,22,22,22
-			size: self.size
+			size: (self.width - 2*self.padding, self.height - 2*self.padding)
+			pos: (self.padding,self.padding)
                         
 
 <GeometrySquare>:
