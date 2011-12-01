@@ -31,7 +31,7 @@ class BarImage(Scatter):
         if not self.collide_point(*touch.pos):
             return False
         if self.bar_is_moving() : 
-            return
+            return False
         #self.app.appview.touches2[touch.id] = touch.pos
         super(BarImage,self).on_touch_down(touch)
         self.app.bar.on_image_touch_down(touch,self.key)
@@ -40,6 +40,8 @@ class BarImage(Scatter):
     def on_touch_up(self,touch):
         if not self.collide_point(*touch.pos):
             return False
+        if self.bar_is_moving() : 
+            return False
         if not self.bar.collide_point(*touch.pos):
             self.bar.put_on_field(self.key, touch)
         self.go_back_to_pos()
@@ -47,7 +49,7 @@ class BarImage(Scatter):
  
     def on_touch_move(self,touch):
         if self.bar_is_moving() : 
-            return
+            return False
         """
         #get currrent touches 
         touches = self.app.appview.touches2
