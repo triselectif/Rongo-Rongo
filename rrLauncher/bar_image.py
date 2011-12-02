@@ -20,11 +20,11 @@ class BarImage(Scatter):
         self.do_scale = False
         self.do_translation = True
         self.auto_bring_to_front = True
-        self.down_before_bar_is_moving = []
+        #self.down_before_bar_is_moving = []
 
     def bar_is_moving(self):
         touches2 = self.app.appview.touches2
-        if len(touches2)>=1 : 
+        if len(touches2)>1 : 
             return True
         else : return False
 
@@ -33,10 +33,8 @@ class BarImage(Scatter):
             return False
         if self.bar_is_moving() : 
             return False
-        else :
-            self.down_before_bar_is_moving.append(touch.id) 
-        #print len( self.app.appview.touches2 )
-        #self.app.appview.touches2[touch.id] = touch.pos
+        #else :
+        #    self.down_before_bar_is_moving.append(touch.id) 
         super(BarImage,self).on_touch_down(touch)
         print 'barimage on: '+ str(touch.id)
         self.app.bar.on_image_touch_down(touch,self.key)
@@ -47,10 +45,10 @@ class BarImage(Scatter):
         if not self.collide_point(*touch.pos):
             return False
         if self.bar_is_moving() : 
-            if touch.id in self.down_before_bar_is_moving:
-                self.down_before_bar_is_moving.remove(touch.id) 
-            else : 
-                return False
+            #if touch.id in self.down_before_bar_is_moving:
+            #    self.down_before_bar_is_moving.remove(touch.id) 
+            #else : 
+            return False
         if not self.bar.collide_point(*touch.pos):
             self.bar.put_on_field(self.key, touch)
         self.go_back_to_pos()
