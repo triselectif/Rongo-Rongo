@@ -291,7 +291,7 @@ class Field(Widget):
         import os
         for key,path in layers.iteritems():
             fileName, fileExtension = os.path.splitext(path)
-            if fileExtension in ['.html','.htm'] :
+            if fileExtension in ['.org','.com','.fr','.html','.htm'] :
                 from kivy.ext import load
                 berkelium = load('berkelium', (1, 1))
                 url = path
