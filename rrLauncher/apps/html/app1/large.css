@@ -60,6 +60,7 @@ h5 {
     }     
 
 #wrap {
+	position: relative;	
 	background-color: #ECECED;
 	color: #111111;
 	margin: 0 auto;
@@ -86,12 +87,9 @@ h5 {
 	height: 66%;
 	text-align: left;
 	/*border: 1px solid #35526E;*/
-	margin: 0px 0px 5px 3px;
+	margin: 0px 0px 0px 0px;
 }
 
-html>body #left-side {
-	margin: 0px 5px 5px 5px;
-}
 
 #right-side {
 	float: right;
@@ -106,8 +104,11 @@ html>body #right-side {
 }
 
 #footer {
-	position: relative;
-	clear: both;
+	/*position: relative;
+	clear: both;*/
+        position:absolute;
+	bottom:0;
+	left:0;
 	width: 98%;
 	height: 10%;
 	text-align: left;
@@ -137,23 +138,18 @@ html>body #right-side {
 	width: 57%;
         height: 46%;
 	background-color: #EAD7BF;
-	margin: 0px 5px 0px 3px;
+	padding: 5px 5px 5px 5px;
 }
 
-html>body #sub-column1 {
-	margin: 0px 5px 5px 5px;
-	}
 
 #sub-column2 {
 	float: right;
 	width: 37%;
-        height: 46%;
+        height: 48%;
 	background-color: #A2A293;
-	margin: 0px 2px 0px 0px;
 }
 
 html>body #sub-column2 {
-	margin: 0px 5px 5px 0px;
 	width: 37%;
 	}
 
