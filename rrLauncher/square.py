@@ -46,7 +46,7 @@ class Square(Scatter):
     texture_path = StringProperty("")
     layout = ObjectProperty( None )#base layout for all the widgets
     layers = DictProperty( {} )#stores background text layers of each size
-    layer_texture_path = ObjectProperty( '' )
+    layer_texture_path = ObjectProperty( None )
     process_touch_up_forbidden = BooleanProperty(False)
     padding = NumericProperty(10) #square layout padding
 
