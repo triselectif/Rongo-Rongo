@@ -284,7 +284,25 @@ class Field(Widget):
             id = str(square.id)
             if id in self.squares.keys():
                 del(self.squares[id] )
-                     
+
+
+    def html2texture(self, layers):
+        converted_layers = {}
+        import os
+        for key,path in layers.iteritems():
+            fileName, fileExtension = os.path.splitext(path)
+            if fileExtension in ['.html','.htm'] :
+                from kivy.ext import load
+                berkelium = load('berkelium', (1, 1))
+                url = path
+                size = (600,600)
+                bk = berkelium.Webbrowser(url=url, size=size)
+                texture = bk._bk.texture
+                converted_layers[key] = texture  
+            else : 
+                converted_layers[key] = path
+        return converted_layers
+             
 
     def init_square(self,apps,key,pos,size, layout_type):
 

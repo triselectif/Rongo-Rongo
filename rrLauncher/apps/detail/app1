@@ -9,7 +9,7 @@
         "main_media_type" : "video",
         "image_path" : "apps/tranches.png", 
         "video_path" : "apps/tranches.mp4",
-        "layer_large" : "apps/layers/app1/Fond-info-T3.png",
+        "layer_large" : "apps/html/app1/large.html",
         "layer_medium" : "apps/layers/app1/Fond-info-T2.png",
         "layer_small" : "apps/layers/app1/Fond-info-T1.png", 
         "alternative_image_path" : "apps/pic.png", 
