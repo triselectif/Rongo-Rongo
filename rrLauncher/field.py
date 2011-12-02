@@ -14,6 +14,8 @@ from kivy.clock import Clock
 from video_player import VideoPlayer
 from square import Square, GeometrySquare
 
+from kivy.ext import load
+berkelium = load('berkelium', (1, 1))
 
 class VideoPlayer2(VideoPlayer):
     def on_touch_down(self,touch):
@@ -292,8 +294,6 @@ class Field(Widget):
         for key,path in layers.iteritems():
             fileName, fileExtension = os.path.splitext(path)
             if fileExtension in ['.org','.com','.fr','.html','.htm'] :
-                from kivy.ext import load
-                berkelium = load('berkelium', (1, 1))
                 url = path
                 size = (600,600)
                 bk = berkelium.Webbrowser(url=url, size=size)
