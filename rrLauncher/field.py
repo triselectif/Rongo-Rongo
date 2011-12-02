@@ -238,7 +238,7 @@ class Field(Widget):
         nb = 0
         for subdir, dirs, files in walk(file_path):
             for file in files:
-                print file
+                print 'Load app: '+str(file)
                 with open(file_path +'/'+file, 'r') as fd:
                     t = loads(fd.read())
                     apps[str(nb)] = t 
