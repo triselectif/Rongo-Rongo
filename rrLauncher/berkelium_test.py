@@ -14,9 +14,9 @@ from kivy.ext import load
 berkelium = load('berkelium', (1, 1))
 
 urls = (
-    "apps/html/app1/large.html",
-    "apps/html/app1/medium.html",
-    "apps/html/app1/small.html"
+    "/apps/html/app1/large.html",
+    "/apps/html/app1/medium.html",
+    "/apps/html/app1/small.html"
 )
 
 class BerkeliumBrowserApp(App):
