@@ -24,7 +24,7 @@ class BarImage(Scatter):
 
     def bar_is_moving(self):
         touches2 = self.app.appview.touches2
-        if len(touches2)>1 : 
+        if len(touches2)>=1 : 
             return True
         else : return False
 
