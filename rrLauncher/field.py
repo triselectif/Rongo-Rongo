@@ -298,7 +298,7 @@ class Field(Widget):
                 size = (600,600)
                 bk = berkelium.Webbrowser(url=url, size=size)
                 texture = bk._bk.texture
-                print url, texture
+                #print url, texture
                 converted_layers[key] = texture  
             else : 
                 converted_layers[key] = path
