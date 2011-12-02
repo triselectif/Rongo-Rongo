@@ -294,7 +294,7 @@ class Field(Widget):
         for key,path in layers.iteritems():
             #fileName, fileExtension = os.path.splitext(path)
             #if fileName[4] in ['http','file']: #fileExtension in ['.org','.com','.fr','.html','.htm'] :
-            if path[4] in ['http','file']:
+            if path[:4] in ['http','file']:
                 url = path
                 size = (600,600)
                 bk = berkelium.Webbrowser(url=url, size=size)
