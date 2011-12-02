@@ -15,8 +15,11 @@ from kivy.clock import Clock
 from video_player import VideoPlayer
 from square import Square, GeometrySquare
 
-from kivy.ext import load
-berkelium = load('berkelium', (1, 1))
+try : 
+    from kivy.ext import load
+    berkelium = load('berkelium', (1, 1))
+except : 
+    pass
 
 class VideoPlayer2(VideoPlayer):
     def on_touch_down(self,touch):
