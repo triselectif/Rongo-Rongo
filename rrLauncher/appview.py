@@ -150,6 +150,7 @@ class AppView(Scatter):
     
     def move_bar_to_right(self):
         if self.position_left :
+            print 'bar : r'
             a = Animation(x = self.width - self.bar_width, duration = 1.5)
             a.bind(on_complete=self.animation_is_over)
             a.start(self)
@@ -158,6 +159,7 @@ class AppView(Scatter):
         
     def move_bar_to_left(self):
         if self.position_left == False:
+            print 'bar : l'
             a = Animation(x = 0 , duration = 1.5)
             a.bind(on_complete=self.animation_is_over)
             a.start(self)  
@@ -168,10 +170,11 @@ class AppView(Scatter):
         self.anim = False 
 
     def move_back(self):
+        print 'bar : b'
         if self.position_left :
             x = 0
         else : 
-            x = self.width - 1.5*self.bar_width   
+            x = self.width - 1.0*self.bar_width   
         a = Animation(x = x, t='out_circ')
         a.start(self)
     
