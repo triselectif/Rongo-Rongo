@@ -18,7 +18,8 @@ from square import Square, GeometrySquare
 try : 
     from kivy.ext import load
     berkelium = load('berkelium', (1, 1))
-except : 
+except :
+    print "Warning : Berkelium not setup. Don't use html pagesas layouts"   
     pass
 
 class VideoPlayer2(VideoPlayer):
