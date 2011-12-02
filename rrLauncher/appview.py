@@ -170,6 +170,7 @@ class AppView(Scatter):
         self.anim = False 
 
     def move_back(self):
+        if self.anim : return
         print 'bar : b'
         if self.position_left :
             x = 0
