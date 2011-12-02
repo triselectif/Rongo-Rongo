@@ -68,7 +68,8 @@ class AppView(Scatter):
         if l > 1 :
             #if several touches on the bar
             #print str(l)+' touches on bar'
-            self.set_texture('style/bar/bouton-lancer-T2-off.png')   
+            self.set_texture('style/bar/bouton-lancer-T2-off.png')
+            """   
             x, y = touch.x, touch.y
             # if the touch isnt on the widget we do nothing
             if not self.collide_point(x, y):
@@ -85,8 +86,9 @@ class AppView(Scatter):
         else :
             #regular behaviour 
             return super(AppView, self).on_touch_down(touch)
-            
-    
+            """
+        return super(AppView, self).on_touch_down(touch)    
+
     def on_touch_up(self,touch):
         id = touch.id
         if id in self.touches2.keys() and len(self.touches2) == 2: 
@@ -129,7 +131,6 @@ class AppView(Scatter):
         if len(self.touches2) <= 1 :
             return True
         super(AppView, self).on_touch_move(touch)
-
     
     def transform_with_touch(self, touch):
         # PB : By default the kivy scatter does not translate if several touches are down
@@ -137,7 +138,7 @@ class AppView(Scatter):
 
         # just do a simple one finger drag DOES NOT OCCUR HERE
         #only the last touch moves it
-        if len(self._touches) <= 1 or not self.last_touch_id == touch.id : return
+        if not self.last_touch_id == touch.id : return
         
         # _last_touch_pos has last pos in correct parent space,
         # just like incoming touch
@@ -151,7 +152,7 @@ class AppView(Scatter):
     def move_bar_to_right(self):
         if self.position_left :
             #print 'bar : r'
-            a = Animation(x = self.width - self.bar_width, duration = 1.5)
+            a = Animation(x = self.width - 1*self.bar_width, duration = 1.5)
             a.bind(on_complete=self.animation_is_over)
             a.start(self)
             self.position_left = False

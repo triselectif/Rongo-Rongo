@@ -416,6 +416,7 @@ class Field(Widget):
                 self.push_back_into_place(square)
 
             #focus on rotation
+            if len(square._touches)<=1 : return
             #calculate angle between previous pos and now
             a = square.rotation
             b = square.rotation_90d
