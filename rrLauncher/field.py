@@ -7,6 +7,7 @@ from kivy.properties import ObjectProperty, NumericProperty,StringProperty, \
 from kivy.uix.widget import Widget
 from kivy.uix.scatter import Scatter
 from kivy.uix.label import Label
+from kivy.uix.image import Image
 from kivy.vector import Vector
 from kivy.animation import Animation
 from kivy.clock import Clock
@@ -290,20 +291,19 @@ class Field(Widget):
 
     def html2texture(self, layers):
         converted_layers = {}
-        import os
         for key,path in layers.iteritems():
             #fileName, fileExtension = os.path.splitext(path)
             #if fileName[4] in ['http','file']: #fileExtension in ['.org','.com','.fr','.html','.htm'] :
             if path[:4] in ['http','file']:
-                url = path
                 size = (600,600)
-                bk = berkelium.Webbrowser(url=url, size=size)
+                bk = berkelium.Webbrowser(url=path, size=size)
                 texture = bk._bk.texture
-                print url, texture
                 converted_layers[key] = texture  
-            else : 
-                converted_layers[key] = path
-                print path
+            else :
+                img = Image(source=path)
+                texture = img.texture
+                converted_layers[key] = texture
+        print path, texture
         return converted_layers
              
 
