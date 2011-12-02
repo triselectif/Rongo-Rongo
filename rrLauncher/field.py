@@ -328,11 +328,13 @@ class Field(Widget):
                             main_media_type = apps[key]['main_media_type'],
                             image_path = apps[key]['image_path'],
                             video_path = apps[key]['video_path'],
-                            layers = {
+                            layers = self.html2texture(
+                                      {
                                       "large" : str( apps[key]['layer_large'] ), 
                                       "medium" : str( apps[key]['layer_medium'] ), 
                                       "small": str( apps[key]["layer_small"] )
-                                     },
+                                      }
+                                     ),
  
                             alternative_image_path = apps[key]['alternative_image_path'],
                             main_description = apps[key]['main_description'] ,
