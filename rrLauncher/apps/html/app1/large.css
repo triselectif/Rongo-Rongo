@@ -1,3 +1,8 @@
+@font-face {  
+	  font-family: Dejavu Serif Condensed ;  
+	  src: url( DejaVuSerifCondensed.ttf ) format("truetype");  
+	}
+
 body {
 	/*background-image: url(bg-gradient.jpg);
 	background-repeat: repeat-x;*/
@@ -23,28 +28,36 @@ h1 {
         font-size: 13pt;  
         line-height: 17pt;  
         padding: 3px 0;
-	font-family: Dejavu Serif Condensed;
+	font-family: DejaVu Serif Condensed;
     } 
       
 h2 {  
         font-size: 8pt;  
         line-height: 12pt;  
         padding: 3px 0;
-	font-family: Dejavu Serif Condensed;
+	font-family: DejaVu Serif Condensed;
     }  
       
 h3 {  
         font-size: 11pt;  
         line-height: 13pt;  
         padding: 3px 0;
-	font-family: Dejavu Serif Book;
+	font-family: DejaVu Serif Book;
     }
 h4 {  
         font-size: 7pt;  
         line-height: 12pt;  
         padding: 3px 0;
 	font-family: Dejavu Serif Condensed;
-    }    
+    }
+h5 {  
+        font-size: 8pt;
+	font-style: italic;  
+        line-height: 12pt;  
+        padding: 0px 0;
+	font-family: Dejavu Serif Condensed;
+	text-align: right;
+    }     
 
 #wrap {
 	background-color: #ECECED;
