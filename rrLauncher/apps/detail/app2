@@ -6,7 +6,7 @@
         "color_up" : [0.82,0.82,0.82,1],
         "color_down" : [0,0.62,0.87],
         "authors": "Realise par Lapin\n Michel Marie-Rose1",
-        "main_media_type" : "video",
+        "main_media_type" : "image",
         "image_path" : "apps/tranches.png", 
         "video_path" : "apps/tranches.mp4",
         "layer_large" : "apps/layers/app2/Fond-jeu-T3.png",

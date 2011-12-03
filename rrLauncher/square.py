@@ -28,9 +28,10 @@ class Square(Scatter):
     color_down = ObjectProperty( (1,1,0,1) )
     color_up = ObjectProperty( (.1,.1,.1,1) )
     authors = StringProperty(None)
-    main_media_type = StringProperty(None) #'image' or 'video'
+    main_media_type = StringProperty(None) #'image' or 'video' or 'webpage'
     image_path = StringProperty(None)
     video_path = StringProperty(None)
+    webpage_path = StringProperty('http://www.google.com')
     vote_feedback = NumericProperty(0) #value between 0 and 1
     #shape
     rotation_90d = NumericProperty(0)
@@ -59,6 +60,12 @@ class Square(Scatter):
             self.video.bind(on_start=self.on_start)
             self.video.bind(on_fullscreen = self.on_fullscreen)
             self.video.bind(on_leave_fullscreen = self.on_leave_fullscreen)
+        
+        elif self.main_media_type == 'webpage' :
+            #berkelium installed was already checked
+            from kivy.ext import load
+            berkelium = load('berkelium', (1, 1))
+            self.webpage = berkelium.Webbrowser(url=self.webpage_path)
         
         l,h = self.size
         pad = self.padding
@@ -140,10 +147,12 @@ class Square(Scatter):
         self.box_middle.add_widget( self.box_middle2 ) 
         if self.main_media_type == 'image' : 
             from kivy.uix.image import Image
-            image = Image(source = self.alternative_image_path, size_hint = (1,1) )
+            image = Image(source = self.image_path, size_hint = (1,1) )
             self.box_middle1.add_widget( image ) 
         elif self.main_media_type == 'video' : 
             self.box_middle1.add_widget( self.video ) 
+        elif self.main_media_type == 'webpage' : 
+            self.box_middle1.add_widget( self.webpage ) 
         self.layout.add_widget( self.box_middle ) 
 
         #Bottom part : buttons

@@ -52,6 +52,7 @@ class Field(Widget):
     def __init__(self,**kwargs) :
         super(Field, self).__init__(**kwargs)
         
+        self.berkelium_is_installed = self.berkelium_is_installed()
         self.init_geometry()
         self.init_app()
         self.init_geometry_detailed()
@@ -238,11 +239,15 @@ class Field(Widget):
         nb = 0
         for subdir, dirs, files in walk(file_path):
             for file in files:
-                print 'Load app: '+str(file)
                 with open(file_path +'/'+file, 'r') as fd:
                     t = loads(fd.read())
-                    apps[str(nb)] = t 
-                nb +=1
+                    if self.validate_web_app(t) :
+                        apps[str(nb)] = t
+                        print 'Load app: '+str(file)
+                        nb +=1
+                    else : 
+                        print 'Unable to load '+str(file)+', which has html/web content'  
+                
 
         if apps is None:
             print 'Unable to load', file_path
@@ -258,7 +263,8 @@ class Field(Widget):
             size = val['size']
             layout_type = val['layout_type']
             square = self.init_square(self.apps, key, pos, size, layout_type)
-            self.add_square(square)
+            if square is not None :
+                self.add_square(square)
 
     def add_square(self, square):
             id = str(square.id)
@@ -293,6 +299,31 @@ class Field(Widget):
                 del(self.squares[id] )
 
 
+    def berkelium_is_installed(self):
+        try : 
+            #from kivy.ext import load
+            berkelium = load('berkelium', (1, 1))
+        except :
+            return False
+
+    def validate_web_app(self,app):
+            #avoid the case of webpage without Berkelium installed
+            #first case: main media is web
+            main_media_type = app['main_media_type']
+            if (self.berkelium_is_installed == False and main_media_type == 'webpage') :
+                return False
+            #second case: layers are html
+            layers =                  {
+                                      "large" : str( app['layer_large'] ), 
+                                      "medium" : str( app['layer_medium'] ), 
+                                      "small": str( app["layer_small"] )
+                                      }
+            for key,path in layers.iteritems():
+                if path[:4] in ['http','file']:
+                    if self.berkelium_is_installed == False : 
+                        return False
+            return True
+
     def layers2texture(self, layers):
         #convert either an image or an html webpage to texture
         #to be used as a background by the square
@@ -301,6 +332,7 @@ class Field(Widget):
             #fileName, fileExtension = os.path.splitext(path)
             #if fileName[4] in ['http','file']: #fileExtension in ['.org','.com','.fr','.html','.htm'] :
             if path[:4] in ['http','file']:
+                if self.berkelium_is_installed == False : return None
                 size = (600,600)
                 bk = berkelium.Webbrowser(url=path, size=size)
                 texture = bk._bk.texture
@@ -310,11 +342,11 @@ class Field(Widget):
                 texture = img.texture
                 converted_layers[key] = texture
         #print path, texture
-        return converted_layers
-             
+        return converted_layers        
+        
 
     def init_square(self,apps,key,pos,size, layout_type):
-
+            
             return Square(
                             app =self.app,
                             pos = pos, 
@@ -337,14 +369,14 @@ class Field(Widget):
                             main_media_type = apps[key]['main_media_type'],
                             image_path = apps[key]['image_path'],
                             video_path = apps[key]['video_path'],
+                            #webpage_path = apps[key]['webpage_path'],
                             layers = self.layers2texture(
                                       {
                                       "large" : str( apps[key]['layer_large'] ), 
                                       "medium" : str( apps[key]['layer_medium'] ), 
                                       "small": str( apps[key]["layer_small"] )
                                       }
-                                     ),
- 
+                                     ), 
                             alternative_image_path = apps[key]['alternative_image_path'],
                             main_description = apps[key]['main_description'] ,
                             long_description = apps[key]['long_description'],
@@ -355,7 +387,8 @@ class Field(Widget):
                             square_parameters = self.square_parameters,
                             padding = self.square_padding
                             )
-
+            
+   
     def geometry_square2square(self,key):
         ret = None
         g = self.geometry_squares
