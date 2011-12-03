@@ -1,0 +1,134 @@
+
+body {
+	/*background-image: url(bg-gradient.jpg);
+	background-repeat: repeat-x;*/
+	margin: 0px auto;
+	padding: 0px;
+	font-family: Verdana, Tahoma, Arial, sans-serif; 
+	font-size: 86%;
+	background-color: #cccccc;
+	color: #666666;
+        width: 100%;
+	height: 100%;
+
+}
+
+h0 {  
+        font-size: 8pt;  
+        line-height: 11pt;  
+        padding: 3px 0;
+	font-family: Dejavu Serif Condensed;
+    }
+
+h1 {  
+        font-size: 13pt;  
+        line-height: 17pt;  
+        padding: 3px 0;
+	font-family: DejaVu Serif Condensed;
+    } 
+      
+h2 {  
+        font-size: 8pt;  
+        line-height: 12pt;  
+        padding: 3px 0;
+	font-family: DejaVu Serif Condensed;
+    }  
+      
+h3 {  
+        font-size: 11pt;  
+        line-height: 13pt;  
+        padding: 3px 0;
+	font-family: DejaVu Serif Book;
+    }
+h4 {  
+        font-size: 7pt;  
+        line-height: 12pt;  
+        padding: 3px 0;
+	font-family: Dejavu Serif Condensed;
+    }
+h5 {  
+        font-size: 8pt;
+	font-style: italic;  
+        line-height: 12pt;  
+        padding: 0px 0;
+	font-family: Dejavu Serif Condensed;
+	text-align: right;
+    }     
+
+#wrap {
+	position: relative;	
+	background-color: #ECECED;
+	color: #111111;
+	margin: 0 auto;
+	width: 600px;
+        height: 600px;
+	padding: 0px;
+	border: 1px solid #35526E;
+
+}
+
+#page-header {
+	position: relative;
+	background: url("service.png") no-repeat top right;
+	text-align: right;
+	width: 100%;
+	height: 20%;
+	/*border: 0px solid #35526E;*/
+	margin: 0%;
+}
+
+#sub-header {
+	position:absolute;
+	bottom:0;
+	right:0;
+	width: 27%;
+	height: 50%;
+	margin: 5px;
+	color:#9B9C9E;
+}
+
+#left-side {
+	float: left;
+	width: 99%;
+	height: 65%;
+	text-align: left;
+	/*border: 1px solid #35526E;*/
+	margin: 0px 0px 0px 0px;
+}
+
+#sub-heading {
+	width: 100%;
+	height: 84%;
+	margin: 5px;
+}
+
+#sub-column1 {
+	float: left;
+	width: 99%;
+        height: 16%;
+	background-color: #D3D3D4;
+	padding: 5px 5px 5px 5px;
+}
+
+
+#footer {
+	/*position: relative;
+	clear: both;*/
+        position:absolute;
+	bottom:0;
+	left:0;
+	width: 98%;
+	height: 10%;
+	text-align: left;
+	margin: 0px 5px 5px 5px;
+}
+
+#sub-footer {
+	position:absolute;
+	top:0;
+	left:0;
+	width: 27%;
+	height: 50%;
+	margin: 5px;
+	color:#9B9C9E;
+}

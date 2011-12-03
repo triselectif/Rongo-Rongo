@@ -293,7 +293,9 @@ class Field(Widget):
                 del(self.squares[id] )
 
 
-    def html2texture(self, layers):
+    def layers2texture(self, layers):
+        #convert either an image or an html webpage to texture
+        #to be used as a background by the square
         converted_layers = {}
         for key,path in layers.iteritems():
             #fileName, fileExtension = os.path.splitext(path)
@@ -307,7 +309,7 @@ class Field(Widget):
                 img = Image(source=path)
                 texture = img.texture
                 converted_layers[key] = texture
-        print path, texture
+        #print path, texture
         return converted_layers
              
 
@@ -335,7 +337,7 @@ class Field(Widget):
                             main_media_type = apps[key]['main_media_type'],
                             image_path = apps[key]['image_path'],
                             video_path = apps[key]['video_path'],
-                            layers = self.html2texture(
+                            layers = self.layers2texture(
                                       {
                                       "large" : str( apps[key]['layer_large'] ), 
                                       "medium" : str( apps[key]['layer_medium'] ), 
