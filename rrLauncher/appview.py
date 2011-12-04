@@ -146,6 +146,7 @@ class AppView(Scatter):
                     * self.do_translation_x
         dy = (touch.y - self._last_touch_pos[touch][1]) \
                     * self.do_translation_y
+        if dx > 50 : return
         self.apply_transform(Matrix().translate(dx, dy, 0))
         return
     
@@ -168,7 +169,9 @@ class AppView(Scatter):
             self.anim = True
 
     def animation_is_over(self,a,b):
-        self.anim = False 
+        self.anim = False
+        if self.position_left == False :
+            self.app.bar.show_leave_app_button()
 
     def move_back(self):
         if self.anim : return
@@ -179,4 +182,12 @@ class AppView(Scatter):
             x = self.width - 1.0*self.bar_width   
         a = Animation(x = x, t='out_circ')
         a.start(self)
+
+    def launch_app(self,id, title):
+        print 'launch app ' + title
+        if self.position_left : 
+            self.move_bar_to_right() 
+
+    def leave_current_app(self):
+        print 'leave app'
     

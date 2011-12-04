@@ -62,8 +62,10 @@ class BarImage(Scatter):
             else : 
                 return False 
         if self.collide_point(*touch.pos):
+            bar = self.bar
+            #if not self.bar.collide_point(*touch.pos):
+            if not self.x < bar.x + bar.width :
             #if image outside of bar : set the square on the field 
-            if not self.bar.collide_point(*touch.pos):
                 if self.app.appview.position_left : #bar is on the left side
                     self.bar.put_on_field(self.key, touch)
             #move back icon to bar

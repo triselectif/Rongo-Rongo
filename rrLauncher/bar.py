@@ -35,6 +35,8 @@ class Bar(FloatLayout):
         self.sort()
         self.fill()
         #self.resort('title')
+        self.leave_app_button = SuperButton(background_normal = 'style/bar/slider-picto-type-off.png',background_down = 'style/bar/slider-picto-type-on.png', size = (30,30) )
+        self.leave_app_button.bind(on_press = self.app.appview.leave_current_app)
 
     def clear(self):
         for i in self.children :
@@ -178,4 +180,10 @@ class Bar(FloatLayout):
         else : 
             #check if already on field
             self.app.field.shake_square( touch,key,10)
+
+    def show_leave_app_button(self):
+        self.add_widget( self.leave_app_button )
+
+    def hide_leave_app_button(self):
+        self.remove_widget( self.leave_app_button )
             

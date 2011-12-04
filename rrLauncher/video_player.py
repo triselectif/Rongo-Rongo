@@ -3,7 +3,6 @@ from kivy.app import App
 from kivy.clock import Clock
 
 from kivy.uix.widget import Widget
-#from kivy.uix.scatter import Scatter
 from kivy.uix.video import Video
 from kivy.uix.button import Button
 from kivy.properties import ObjectProperty, NumericProperty, StringProperty, \
@@ -35,31 +34,24 @@ class VideoPlayer(Widget):
             self.register_event_type('on_start')
             self.register_event_type('on_stop')
             self.register_event_type('on_fullscreen')
-            self.register_event_type('on_leave_fullscreen')            
-            """
-            #avoid manual transform
-            self.do_translation = False
-            self.do_rotation = False
-            self.do_scale = False
-            """
+            self.register_event_type('on_leave_fullscreen')
+            
             self.video = Video(source = self.source, play=self.play, options = self.options , size_hint = (1,1))
-            #self.video.bind(size = self.setter('size'))
             #delay to load the video before launching it
             Clock.schedule_once(self.start,0.2)
             Clock.schedule_once(self.stop,2.4)             
             
             #buttons box
-            #self.buttons = BoxLayout(orientation = 'vertical', size_hint = (None, None), size = (40,120) )
             self.buttons = BoxLayout(orientation = 'horizontal', size_hint = (None, None), size = (self.video.width, 30 ) )
-            self.buttons.padding = 5 #box.height*0.14
-            self.buttons.spacing = 5# self.layout_type2size(text)[0]*0.46
+            self.buttons.padding = 5 
+            self.buttons.spacing = 5
 
             #play button
-            self.play_button = SuperButton2(text ='', background_normal= 'video_player/style/1318898242_media-play.png', background_down= 'video_player/style/1318898242_media-play.png', size_hint = (None, None), size = (20, 20) )#, size_hint = (1,0.5) )
+            self.play_button = SuperButton2(text ='', background_normal= 'video_player/style/1318898242_media-play.png', background_down= 'video_player/style/1318898242_media-play.png', size_hint = (None, None), size = (20, 20) )
             self.play_button.bind( on_press = self.start_stop_button )
             self.buttons.add_widget( self.play_button )
             #sound button
-            self.sound_button = SuperButton2(text ='', background_normal = 'video_player/style/1318898261_media-volume-0.png', background_down = 'video_player/style/1318898261_media-volume-0.png', size_hint = (None, None), size = (20, 20) )#, size_hint = (1,0.5)
+            self.sound_button = SuperButton2(text ='', background_normal = 'video_player/style/1318898261_media-volume-0.png', background_down = 'video_player/style/1318898261_media-volume-0.png', size_hint = (None, None), size = (20, 20) )
             self.sound_button.bind( on_press = self.mute_unmute_button )
             self.buttons.add_widget( self.sound_button )
             #fullscreen 
@@ -70,7 +62,6 @@ class VideoPlayer(Widget):
             self.duration = -1
             self.progress_bar = ProgressBar( size_hint = (1, 1)  )
             self.progress_bar.bind(on_touch_move = self.move_to_position)
-            #self.progress_bar.bind( value = self.video.setter('position') )
             self.buttons.add_widget( self.progress_bar )
             #manage appearance counter
             self.last_touch_down_time = 0
@@ -78,7 +69,7 @@ class VideoPlayer(Widget):
             self.full_screen = False
             
             #main play button
-            self.main_play_button = SuperButton(text ='', background_normal= 'video_player/style/A-play-T3.png', size_hint = (None, None), size = (50, 50) )#, size_hint = (1,0.5) )
+            self.main_play_button = SuperButton(text ='', background_normal= 'video_player/style/A-play-T3.png', size_hint = (None, None), size = (50, 50) )
             self.main_play_button.bind( on_press = self.start )
             self.add_widget( self.main_play_button )
                       
@@ -86,8 +77,6 @@ class VideoPlayer(Widget):
             Clock.schedule_interval(self.refresh_player,0.005)    
 
             self.add_widget(self.video)
-            #self.add_widget(self.buttons)
-            #self.add_widget(self.progress_bar)
 
 
     def start_stop_button(self,a) :
@@ -145,11 +134,9 @@ class VideoPlayer(Widget):
         if self.duration in [-1,1,0] :
             self.duration = self.video.duration
             self.progress_bar.max = int(self.duration)
-            #size
         self.buttons.pos = self.pos
         self.buttons.width = self.width
         self.progress_bar.width = self.width
-        #self.progress_bar.pos = self.pos
         self.video.pos = self.pos
         self.video.size = self.size
         self.progress_bar.value = self.video.position
@@ -172,16 +159,12 @@ class VideoPlayer(Widget):
 
     def hide_buttons(self,a):
         delta = Clock.get_time() - self.last_touch_down_time
-        #print delta
         if delta >= (self.hide_buttons_time_out - 0.02) : 
             self.remove_widget(self.buttons)
-            #self.remove_widget(self.progress_bar)
 
     def show_buttons(self):
         self.remove_widget(self.buttons)
-        #self.remove_widget(self.progress_bar)
         self.add_widget(self.buttons)
-        #self.add_widget(self.progress_bar)
         Clock.schedule_once(self.hide_buttons, self.hide_buttons_time_out)
     
     def on_mute(self):

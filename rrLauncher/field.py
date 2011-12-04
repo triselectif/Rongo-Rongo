@@ -460,10 +460,14 @@ class Field(Widget):
             elif a < (b - 45) : 
                 square.rotation_90d -=90
             rot = square.rotation_90d
+            
             #fix an issue : flip 180 when smallest angle is negative
             smallest_angle = min( (180 - abs(a - b), abs(a - b)) )
+            if a > b : r=1
+            else : r=-1
             if smallest_angle <0 : 
-                rot = rot + 180
+                rot = rot + r*180
+            #print a,b,rot
             
             self.rotate(square, rot)
         
@@ -476,9 +480,9 @@ class Field(Widget):
             square.pos = self.geometry_squares[id].pos
 
     def rotate(self,square, rotation) :
-        #animation = Animation(rotation = rotation, duration =0.3)
-        #animation.start(square)
-        square.rotation = rotation  
+        animation = Animation(rotation = rotation, duration =0.3)
+        animation.start(square)
+        #square.rotation = rotation  
         
     
     def find_matcher(self,square):

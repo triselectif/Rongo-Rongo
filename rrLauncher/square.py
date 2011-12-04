@@ -216,10 +216,7 @@ class Square(Scatter):
         self.layer_texture_path = self.layers[self.layout_type]
     
     def launch(self,a):
-        print 'launch app ' + self.title
-        appview = self.app.appview
-        if appview.position_left : 
-            appview.move_bar_to_right() 
+        self.app.appview.launch_app(id, self.title)
 
     def vote(self,a):
         print 'vote for app ' + self.title
