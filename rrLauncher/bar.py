@@ -4,6 +4,7 @@ from kivy.uix.widget import Widget
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.button import Button 
+from kivy.uix.scrollview import ScrollView
 from kivy.animation import Animation 
 
 from bar_image import BarImage
@@ -27,7 +28,7 @@ class Bar(FloatLayout):
         self.geometry_squares = {}
         self.images = {}
         self.sorting = []  
-        #self.scroll = ScrollView( size_hint=(1, None), height = 1500 )
+        #self.scroll = ScrollView( size_hint=(None, None), width = 130, height = 1500 )
         #self.add_widget(self.scroll) 
         self.layout = Widget(size_hint = (1,1) )#self.add_widget(self.layout)
         self.add_widget(self.layout)
@@ -35,8 +36,9 @@ class Bar(FloatLayout):
         self.sort()
         self.fill()
         #self.resort('title')
-        self.leave_app_button = SuperButton(background_normal = 'style/bar/slider-picto-type-off.png',background_down = 'style/bar/slider-picto-type-on.png', size = (30,30) )
+        self.leave_app_button = SuperButton(background_normal = 'style/bar/slider-picto-type-off.png',background_down = 'style/bar/slider-picto-type-on.png', size = (30,30), pos_hint = (None,0.95), x = 0 )
         self.leave_app_button.bind(on_press = self.app.appview.leave_current_app)
+        
 
     def clear(self):
         for i in self.children :
@@ -141,6 +143,8 @@ class Bar(FloatLayout):
     def add_app(self, key, app, center, pos):
         # Nop.
         self.images[key] = BarImage( source= str(app["image_path"]) , app =self.app, bar=self, key=key, pos =pos, initial_center = center, size = self.element_size )
+        if key in self.app.field.squares.keys() : 
+            self.images[key].opacify()
         if self.app.field.geometry["vertical"] == "True": 
             self.images[key].rotation += 270 
         self.layout.add_widget(self.images[key])
@@ -182,8 +186,20 @@ class Bar(FloatLayout):
             self.app.field.shake_square( touch,key,10)
 
     def show_leave_app_button(self):
-        self.add_widget( self.leave_app_button )
+        return
+        self.layout.add_widget( self.leave_app_button )
 
     def hide_leave_app_button(self):
-        self.remove_widget( self.leave_app_button )
+        return
+        self.layout.remove_widget( self.leave_app_button )
+
+    def opacify(self):
+        squares = self.app.field.squares.keys()
+        for key,item in self.images.iteritems() :
+            if key in squares : 
+                item.opacify()
+
+    def unopacify(self):
+        for key,item in self.images.iteritems() :
+                item.unopacify()
             

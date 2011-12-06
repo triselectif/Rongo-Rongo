@@ -425,10 +425,12 @@ class Field(Widget):
                     #print "matcher: "+matcher
                     #sq = geometry_id = str(square.geometry_id)
                     self.add_square(square)
+                    self.app.bar.images[key].opacify()
                     print 'add square '+key  
                     self.switch(square, matcher)
                     if matching_square in self.squares.keys():
                         self.remove_square( self.squares[str(matching_square)], True, touch )
+                        self.app.bar.images[str(matching_square)].unopacify()
                         print 'remove square '+matching_square
                     else :
                         print matching_square +' not in self.squares'

@@ -158,6 +158,7 @@ class AppView(Scatter):
             a.start(self)
             self.position_left = False
             self.anim = True
+            self.app.bar.unopacify()
         
     def move_bar_to_left(self):
         if self.position_left == False:
@@ -167,6 +168,7 @@ class AppView(Scatter):
             a.start(self)  
             self.position_left = True
             self.anim = True
+            self.app.bar.opacify()
 
     def animation_is_over(self,a,b):
         self.anim = False
@@ -188,6 +190,9 @@ class AppView(Scatter):
         if self.position_left : 
             self.move_bar_to_right() 
 
-    def leave_current_app(self):
+    def leave_current_app(self,a):
         print 'leave app'
+        if not self.position_left : 
+            self.move_bar_to_left()
+        
     

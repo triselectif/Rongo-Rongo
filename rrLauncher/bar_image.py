@@ -94,3 +94,10 @@ class BarImage(Scatter):
     def shake(self):
         self.center_x +=2
         self.center_y +=2
+
+    def opacify(self):
+        self.image.color = (0.5,0.5,0.5,1)
+
+    def unopacify(self):
+        self.image.color = (1,1,1,1)
+        
