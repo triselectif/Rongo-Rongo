@@ -53,8 +53,24 @@ class Square(Scatter):
 
     def __init__(self,**kwargs) :
         super(Square,self).__init__(**kwargs)
-
         
+        if self.main_media_type == 'video' :
+            self.video = VideoPlayer(source = self.video_path)
+            self.video.bind(on_unmute =self.on_unmute)
+            self.video.bind(on_start=self.on_start)
+            self.video.bind(on_fullscreen = self.on_fullscreen)
+            self.video.bind(on_leave_fullscreen = self.on_leave_fullscreen)
+        
+        elif self.main_media_type == 'webpage' :
+            #berkelium installed was already checked
+            from kivy.ext import load
+            berkelium = load('berkelium', (1, 1))
+            try :
+                self.webpage = berkelium.Webbrowser(url="http://kivy.org", size=(50,50) )
+                print 'donr' 
+            except :
+                print 'Cannot load url: '+str(self.webpage_path)
+                self.main_media_type = 'image'
         
         l,h = self.size
         pad = self.padding
@@ -96,24 +112,6 @@ class Square(Scatter):
         else : return font_size - 6            
 
     def init_layouts(self):
-
-        if self.main_media_type == 'video' :
-            self.video = VideoPlayer(source = self.video_path)
-            self.video.bind(on_unmute =self.on_unmute)
-            self.video.bind(on_start=self.on_start)
-            self.video.bind(on_fullscreen = self.on_fullscreen)
-            self.video.bind(on_leave_fullscreen = self.on_leave_fullscreen)
-        
-        elif self.main_media_type == 'webpage' :
-            #berkelium installed was already checked
-            from kivy.ext import load
-            berkelium = load('berkelium', (1, 1))
-            try :
-                self.webpage = berkelium.Webbrowser(url="http://kivy.org", size=(50,50) )
-                print 'donr' 
-            except :
-                print 'Cannot load url: '+str(self.webpage_path)
-                self.main_media_type = 'image'
 
         layout_type = self.layout_type
         param = self.square_parameters[layout_type] #load parameters specific to that size (small, medium, large)
