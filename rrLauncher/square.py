@@ -70,10 +70,11 @@ class Square(Scatter):
             berkelium = load('berkelium', (1, 1))
             print "berkelium loaded3"
             print self.webpage_path
-            try :
+            try : 
                 self.webpage = berkelium.Webbrowser(url='http://www.google.com')
             except :
-                print "berkelium not loaded4"
+                print 'Cannot load url: '+str(self.webpage_path)
+                self.main_media_type == 'image'
         
         l,h = self.size
         pad = self.padding
@@ -159,8 +160,10 @@ class Square(Scatter):
             self.box_middle1.add_widget( image ) 
         elif self.main_media_type == 'video' : 
             self.box_middle1.add_widget( self.video ) 
-        elif self.main_media_type == 'webpage' : 
-            self.box_middle1.add_widget( self.webpage ) 
+        elif self.main_media_type == 'webpage' :
+            print "ooij" 
+            self.box_middle1.add_widget( self.webpage )
+            print "ooij2"  
         self.layout.add_widget( self.box_middle ) 
 
         #Bottom part : buttons
