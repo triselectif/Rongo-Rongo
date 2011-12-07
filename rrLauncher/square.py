@@ -174,9 +174,8 @@ class Square(Scatter):
         self.layout.add_widget( self.box_bottom )
 
         self.add_widget(self.layout)
-        self.canvas.ask_update()
-        self.texture_path = 'style/square/square_'+str(self.layout_type)+'_touch_down.png'
-        self.texture_path = 'style/square/square_'+str(self.layout_type)+'.png'
+        Clock.schedule_once(self.update_canvas, 1)
+
 
     def convert_vote_feedback(self):
         vf = self.vote_feedback
@@ -264,6 +263,9 @@ class Square(Scatter):
         #self.app_type_label.color = self.color_up
         self.texture_path = 'style/square/square_'+str(self.layout_type)+'.png'
         pass
+
+    def update_canvas(self,a):
+        self.canvas.ask_update()
 
     
         
