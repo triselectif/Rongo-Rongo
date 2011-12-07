@@ -31,7 +31,7 @@ class Square(Scatter):
     main_media_type = StringProperty(None) #'image' or 'video' or 'webpage'
     image_path = StringProperty(None)
     video_path = StringProperty(None)
-    webpage_path = StringProperty('http://www.google.com')
+    webpage_path = StringProperty("http://www.google.com")
     vote_feedback = NumericProperty(0) #value between 0 and 1
     #shape
     rotation_90d = NumericProperty(0)
@@ -66,6 +66,7 @@ class Square(Scatter):
             from kivy.ext import load
             berkelium = load('berkelium', (1, 1))
             self.webpage = berkelium.Webbrowser(url=self.webpage_path)
+            print "berkelium loaded"
         
         l,h = self.size
         pad = self.padding
@@ -175,7 +176,8 @@ class Square(Scatter):
 
         self.add_widget(self.layout)
         #Clock.schedule_once(self.update_canvas, 4)
-
+        if self.main_media_type == 'webpage' : 
+            print 'square init done' 
 
     def convert_vote_feedback(self):
         vf = self.vote_feedback
