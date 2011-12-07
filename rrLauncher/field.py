@@ -346,7 +346,13 @@ class Field(Widget):
         
 
     def init_square(self,apps,key,pos,size, layout_type):
-            
+            layers = self.layers2texture(
+                                      {
+                                      "large" : str( apps[key]['layer_large'] ), 
+                                      "medium" : str( apps[key]['layer_medium'] ), 
+                                      "small": str( apps[key]["layer_small"] )
+                                      }
+                                     )
             return Square(
                             app =self.app,
                             pos = pos, 
@@ -370,13 +376,7 @@ class Field(Widget):
                             image_path = apps[key]['image_path'],
                             video_path = apps[key]['video_path'],
                             webpage_path = apps[key]['webpage_path'],
-                            layers = self.layers2texture(
-                                      {
-                                      "large" : str( apps[key]['layer_large'] ), 
-                                      "medium" : str( apps[key]['layer_medium'] ), 
-                                      "small": str( apps[key]["layer_small"] )
-                                      }
-                                     ), 
+                            layers = layers, 
                             alternative_image_path = apps[key]['alternative_image_path'],
                             main_description = apps[key]['main_description'] ,
                             long_description = apps[key]['long_description'],
