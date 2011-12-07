@@ -13,8 +13,9 @@ from kivy.app import App
 from kivy.ext import load
 berkelium = load('berkelium', (1, 1))
 
-urls = ( 'https://www.google.com/search?q=poule','http://www.google.com')
-#urls = ('file:apps/html/app1/large.html', 'file:///apps/html/app1/medium.html','file://apps/html/app1/small.html')
+#urls = ( 'https://www.google.com/search?q=poule','http://www.google.com')
+urls = ('file://apps/html/info_large.html', 'file://apps/html/info_medium.html','file://apps/html/info_small.html')
+
 
 class BerkeliumBrowserApp(App):
     def build(self):

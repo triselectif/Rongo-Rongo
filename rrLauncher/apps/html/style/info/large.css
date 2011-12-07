@@ -17,12 +17,7 @@ body {
 
 }
 
-h0 {  
-        font-size: 8pt;  
-        line-height: 11pt;  
-        padding: 3px 0;
-	font-family: Dejavu Serif Condensed;
-    }
+
 
 h1 {  
         font-size: 13pt;  
@@ -59,13 +54,20 @@ h5 {
 	text-align: right;
     }     
 
+h6 {  
+        font-size: 8pt;  
+        line-height: 11pt;  
+        padding: 3px 0;
+	font-family: Dejavu Serif Condensed;
+    }
+
 #wrap {
 	position: relative;	
 	background-color: #ECECED;
 	color: #111111;
 	margin: 0 auto;
-	width: 600px;
-        height: 600px;
+	width: 598px;
+        height: 598px;
 	padding: 0px;
 	border: 1px solid #35526E;
 
