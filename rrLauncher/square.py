@@ -64,10 +64,13 @@ class Square(Scatter):
         
         elif self.main_media_type == 'webpage' :
             #berkelium installed was already checked
+            print "berkelium loaded1"
             from kivy.ext import load
+            print "berkelium loaded2"
             berkelium = load('berkelium', (1, 1))
+            print "berkelium loaded3"
             self.webpage = berkelium.Webbrowser(url=self.webpage_path)
-            print "berkelium loaded"
+            print "berkelium loaded4"
         
         l,h = self.size
         pad = self.padding

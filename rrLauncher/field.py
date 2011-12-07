@@ -263,7 +263,6 @@ class Field(Widget):
             size = val['size']
             layout_type = val['layout_type']
             square = self.init_square(self.apps, key, pos, size, layout_type)
-            print key
             if square is not None :
                 self.add_square(square)
 
