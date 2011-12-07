@@ -9,6 +9,7 @@
         "main_media_type" : "video",
         "image_path" : "apps/tranches.png", 
         "video_path" : "apps/tranches.mp4",
+	"webpage_path" : "http://www.google.com",
         "layer_large" : "http://www.google.com",
         "layer_medium" : "apps/layers/app2/Fond-jeu-T2.png",
         "layer_small" : "apps/layers/app2/Fond-jeu-T1.png",

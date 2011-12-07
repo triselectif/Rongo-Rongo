@@ -369,7 +369,7 @@ class Field(Widget):
                             main_media_type = apps[key]['main_media_type'],
                             image_path = apps[key]['image_path'],
                             video_path = apps[key]['video_path'],
-                            #webpage_path = apps[key]['webpage_path'],
+                            webpage_path = apps[key]['webpage_path'],
                             layers = self.layers2texture(
                                       {
                                       "large" : str( apps[key]['layer_large'] ), 
