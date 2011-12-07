@@ -66,8 +66,7 @@ class Square(Scatter):
             from kivy.ext import load
             berkelium = load('berkelium', (1, 1))
             try :
-                self.webpage = berkelium.Webbrowser(url="http://kivy.org", size=(50,50) )
-                print 'donr' 
+                self.webpage = berkelium.Webbrowser(url=self.webpage, size=(50,50) )
             except :
                 print 'Cannot load url: '+str(self.webpage_path)
                 self.main_media_type = 'image'
@@ -157,9 +156,7 @@ class Square(Scatter):
         elif self.main_media_type == 'video' : 
             self.box_middle1.add_widget( self.video ) 
         elif self.main_media_type == 'webpage' :
-            print "ooij" 
-            self.box_middle1.add_widget( self.webpage )
-            print "ooij2"  
+            self.box_middle1.add_widget( self.webpage ) 
         self.layout.add_widget( self.box_middle ) 
 
         #Bottom part : buttons
@@ -182,8 +179,6 @@ class Square(Scatter):
 
         self.add_widget(self.layout)
         #Clock.schedule_once(self.update_canvas, 4)
-        if self.main_media_type == 'webpage' : 
-            print 'square init done' 
 
     def convert_vote_feedback(self):
         vf = self.vote_feedback
