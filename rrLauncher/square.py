@@ -69,6 +69,7 @@ class Square(Scatter):
             print "berkelium loaded2"
             berkelium = load('berkelium', (1, 1))
             print "berkelium loaded3"
+            print self.webpage_path
             self.webpage = berkelium.Webbrowser(url=self.webpage_path)
             print "berkelium loaded4"
         
