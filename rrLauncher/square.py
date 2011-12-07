@@ -53,7 +53,6 @@ class Square(Scatter):
 
     def __init__(self,**kwargs) :
         super(Square,self).__init__(**kwargs)
-        print 'enter init'  
 
         if self.main_media_type == 'video' :
             self.video = VideoPlayer(source = self.video_path)
@@ -72,6 +71,7 @@ class Square(Scatter):
             print self.webpage_path
             try : 
                 self.webpage = berkelium.Webbrowser(url='http://www.google.com')
+                print 'donr'
             except :
                 print 'Cannot load url: '+str(self.webpage_path)
                 self.main_media_type == 'image'
