@@ -174,7 +174,7 @@ class Square(Scatter):
         self.layout.add_widget( self.box_bottom )
 
         self.add_widget(self.layout)
-        Clock.schedule_once(self.update_canvas, 4)
+        #Clock.schedule_once(self.update_canvas, 4)
 
 
     def convert_vote_feedback(self):
