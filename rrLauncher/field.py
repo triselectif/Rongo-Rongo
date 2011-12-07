@@ -341,7 +341,7 @@ class Field(Widget):
                 img = Image(source=path)
                 texture = img.texture
                 converted_layers[key] = texture
-        print path, texture
+        #print path, texture
         return converted_layers        
         
 
