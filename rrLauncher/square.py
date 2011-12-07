@@ -52,7 +52,8 @@ class Square(Scatter):
     padding = NumericProperty(10) #square layout padding
 
     def __init__(self,**kwargs) :
-        super(Square,self).__init__(**kwargs)  
+        super(Square,self).__init__(**kwargs)
+        print 'enter init'  
 
         if self.main_media_type == 'video' :
             self.video = VideoPlayer(source = self.video_path)
