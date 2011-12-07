@@ -70,7 +70,7 @@ class Square(Scatter):
             print "berkelium loaded3"
             print self.webpage_path
             try : 
-                self.webpage = berkelium.Webbrowser(url='http://www.google.com')
+                self.webpage = berkelium.Webbrowser(url='http://www.kivy.org')
                 print 'donr'
             except :
                 print 'Cannot load url: '+str(self.webpage_path)
