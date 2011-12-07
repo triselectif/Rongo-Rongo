@@ -112,7 +112,6 @@ class Square(Scatter):
         else : return font_size - 6            
 
     def init_layouts(self):
-        print "enter init layouts"
         layout_type = self.layout_type
         param = self.square_parameters[layout_type] #load parameters specific to that size (small, medium, large)
         
