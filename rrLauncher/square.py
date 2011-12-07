@@ -173,8 +173,8 @@ class Square(Scatter):
         self.box_bottom.spacing = (self.layout.width - self.vote_button.width - self.launch_button.width)*0.97
         self.layout.add_widget( self.box_bottom )
 
-        self.canvas.before.ask_update()
         self.add_widget(self.layout)
+        self.canvas.ask_update()
 
     def convert_vote_feedback(self):
         vf = self.vote_feedback
