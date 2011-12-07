@@ -175,6 +175,8 @@ class Square(Scatter):
 
         self.add_widget(self.layout)
         self.canvas.ask_update()
+        self.texture_path = 'style/square/square_'+str(self.layout_type)+'_touch_down.png'
+        self.texture_path = 'style/square/square_'+str(self.layout_type)+'.png'
 
     def convert_vote_feedback(self):
         vf = self.vote_feedback
