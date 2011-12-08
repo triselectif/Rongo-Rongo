@@ -54,38 +54,8 @@ class Square(Scatter):
 
     def __init__(self,**kwargs) :
 
-        def layers2texture(layers, berkelium):
-            #convert either an image or an html webpage to texture
-            #to be used as a background by the square
-            converted_layers = {}
-            bk = {}
-            for key,path in layers.iteritems():
-                #fileName, fileExtension = os.path.splitext(path)
-                #if fileName[4] in ['http','file']: #fileExtension in ['.org','.com','.fr','.html','.htm'] :
-                if path[:4] in ['http','file']:
-                    if self.berkelium_is_installed == False : return None
-                    size = (600,600)
-                    bk[key] = berkelium.Webbrowser(url=path, size=size)
-                    texture = bk[key]._bk.texture
-                    converted_layers[key] = texture
-                    del bk[key]  
-                else :
-                    img = Image(source=path)
-                    texture = img.texture
-                    converted_layers[key] = texture
-            #print path, texture
-            return converted_layers
-        
         super(Square,self).__init__(**kwargs)
 
-        #load berkelium
-        berkelium = None
-        if self.berkelium_is_installed == True : 
-            from kivy.ext import load
-            berkelium = load('berkelium', (1, 1))            
-
-        self.layers = layers2texture(self.layers, berkelium)
-        
         l,h = self.size
         pad = self.padding
         self.layout = BoxLayout(orientation = 'vertical', size = (l -2*pad,h -2*pad), pos = (pad,pad) )           
@@ -128,6 +98,37 @@ class Square(Scatter):
         else : return font_size - 6            
 
     def init_layouts(self, berkelium):
+
+        def layers2texture(layers, berkelium):
+            #convert either an image or an html webpage to texture
+            #to be used as a background by the square
+            converted_layers = {}
+            bk = {}
+            for key,path in layers.iteritems():
+                #fileName, fileExtension = os.path.splitext(path)
+                #if fileName[4] in ['http','file']: #fileExtension in ['.org','.com','.fr','.html','.htm'] :
+                if path[:4] in ['http','file']:
+                    if self.berkelium_is_installed == False : return None
+                    size = (600,600)
+                    bk[key] = berkelium.Webbrowser(url=path, size=size)
+                    texture = bk[key]._bk.texture
+                    converted_layers[key] = texture
+                    del bk[key]  
+                else :
+                    img = Image(source=path)
+                    texture = img.texture
+                    converted_layers[key] = texture
+            #print path, texture
+            return converted_layers   
+        
+        #load berkelium
+        berkelium = None
+        if self.berkelium_is_installed == True : 
+            from kivy.ext import load
+            berkelium = load('berkelium', (1, 1))            
+
+        self.layers = layers2texture(self.layers, berkelium)
+
 
         layout_type = self.layout_type
         param = self.square_parameters[layout_type] #load parameters specific to that size (small, medium, large)
