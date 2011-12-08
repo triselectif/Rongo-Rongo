@@ -54,7 +54,7 @@ class Square(Scatter):
 
     def __init__(self,**kwargs) :
         super(Square,self).__init__(**kwargs)
-
+        print berkelium_is_installed
         #load berkelium
         if self.berkelium_is_installed == True : 
             from kivy.ext import load
