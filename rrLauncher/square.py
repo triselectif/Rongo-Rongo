@@ -89,7 +89,7 @@ class Square(Scatter):
         l,h = self.size
         pad = self.padding
         self.layout = BoxLayout(orientation = 'vertical', size = (l -2*pad,h -2*pad), pos = (pad,pad) )           
-        self.init_layouts() 
+        self.init_layouts(berkelium) 
 
           
     
@@ -127,7 +127,7 @@ class Square(Scatter):
         if not multiline : return font_size
         else : return font_size - 6            
 
-    def init_layouts(self):
+    def init_layouts(self, berkelium):
 
         layout_type = self.layout_type
         param = self.square_parameters[layout_type] #load parameters specific to that size (small, medium, large)
@@ -170,9 +170,7 @@ class Square(Scatter):
         if self.main_media_type == 'webpage' :
             #elif self.main_media_type == 'webpage' :
             #berkelium installed was already checked by field
-            try :
-                from kivy.ext import load
-                berkelium = load('berkelium', (1, 1))   
+            try : 
                 self.webpage = berkelium.Webbrowser(url=self.webpage_path, size=(50,50) )
                 self.box_middle1.add_widget( self.webpage ) 
             except :
