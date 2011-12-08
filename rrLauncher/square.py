@@ -115,6 +115,7 @@ class Square(Scatter):
                     converted_layers[key] = texture
                     del bk[key]  
                 else :
+                    from kivy.uix.image import Image
                     img = Image(source=path)
                     texture = img.texture
                     converted_layers[key] = texture
