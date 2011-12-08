@@ -94,8 +94,9 @@ class Square(Scatter):
             self.video.bind(on_leave_fullscreen = self.on_leave_fullscreen)
         
         elif self.main_media_type == 'webpage' :
-            #berkelium installed was already checked
+            #berkelium installed was already checked by field
             try :
+                berkelium = load('berkelium', (1, 1))  
                 self.webpage = berkelium.Webbrowser(url=self.webpage_path, size=(50,50) )
             except :
                 print 'Cannot load url: '+str(self.webpage_path)
