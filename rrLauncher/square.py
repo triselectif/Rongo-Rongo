@@ -58,7 +58,7 @@ class Square(Scatter):
         #load berkelium
         if self.berkelium_is_installed == True : 
             from kivy.ext import load
-            berkelium = load('berkelium', (1, 1))            
+            self.berkelium = load('berkelium', (1, 1))            
 
         self.layers = self.layers2texture(self.layers)
 
@@ -72,7 +72,7 @@ class Square(Scatter):
         elif self.main_media_type == 'webpage' :
             #berkelium installed was already checked
             try :
-                self.webpage = berkelium.Webbrowser(url=self.webpage_path, size=(50,50) )
+                self.webpage = self.berkelium.Webbrowser(url=self.webpage_path, size=(50,50) )
             except :
                 print 'Cannot load url: '+str(self.webpage_path)
                 self.main_media_type = 'image'
@@ -93,7 +93,7 @@ class Square(Scatter):
             if path[:4] in ['http','file']:
                 if self.berkelium_is_installed == False : return None
                 size = (600,600)
-                bk[key] = berkelium.Webbrowser(url=path, size=size)
+                bk[key] = self.berkelium.Webbrowser(url=path, size=size)
                 texture = bk[key]._bk.texture
                 converted_layers[key] = texture
                 del bk[key]  
