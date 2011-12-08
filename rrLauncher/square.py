@@ -86,12 +86,7 @@ class Square(Scatter):
 
         self.layers = layers2texture(self.layers, berkelium)
 
-        if self.main_media_type == 'video' :
-            self.video = VideoPlayer(source = self.video_path)
-            self.video.bind(on_unmute =self.on_unmute)
-            self.video.bind(on_start=self.on_start)
-            self.video.bind(on_fullscreen = self.on_fullscreen)
-            self.video.bind(on_leave_fullscreen = self.on_leave_fullscreen)
+        
         
         
         
@@ -192,7 +187,13 @@ class Square(Scatter):
             image = Image(source = self.image_path, size_hint = (1,1) )
             self.box_middle1.add_widget( image ) 
 
-        elif self.main_media_type == 'video' : 
+        elif self.main_media_type == 'video' :
+            #if self.main_media_type == 'video' :
+            self.video = VideoPlayer(source = self.video_path)
+            self.video.bind(on_unmute =self.on_unmute)
+            self.video.bind(on_start=self.on_start)
+            self.video.bind(on_fullscreen = self.on_fullscreen)
+            self.video.bind(on_leave_fullscreen = self.on_leave_fullscreen)
             self.box_middle1.add_widget( self.video ) 
         
         self.layout.add_widget( self.box_middle ) 
