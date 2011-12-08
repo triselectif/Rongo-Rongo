@@ -182,7 +182,7 @@ class Square(Scatter):
             
         if self.main_media_type == 'image' : 
             from kivy.uix.image import Image
-            image = Image(source = self.image_path, allow_stretch = True, size_hint = (1,1), pos_hint={'left': 0, 'top' : 1} )
+            image = Image(source = self.image_path, allow_stretch = True, keep_ratio = False, size_hint = (1,1), pos_hint={'left': 1, 'top' : 1} )
             self.box_middle1.add_widget( image ) 
 
         elif self.main_media_type == 'video' :
