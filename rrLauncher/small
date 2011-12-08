@@ -1,11 +1,11 @@
 {
         "texture_path":"style/square/square_small.png",
-        "box_top_size_hint":[1,0.2],
+        "box_top_size_hint":[1,0.1],
 	"title_label_font_size" : "13",
 	"box2_size_hint" : [0.4,1],
         "app_type_label_font_size" : "10",
         "authors_label_font_size" : "0",
-        "box_middle_size_hint":[1,0.66],
+        "box_middle_size_hint":[1,0.35],
         "box_middle1_size_hint":[1,1],
         "box_middle2_size_hint":[0,1],
 	"box_bottom_size_hint":[1,0.15],
