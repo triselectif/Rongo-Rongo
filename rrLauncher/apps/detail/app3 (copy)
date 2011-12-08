@@ -4,7 +4,7 @@
         "app_type" : "app_types/service.png",
         "color_text": [0.1,0.1,0.1,1],
         "color_up" : [0.82,0.82,0.82,1],
-        "color_down" : [0.61,0.61,0.61,1],
+        "color_down" : [0,0.62,0.87],
         "authors": "Realise par Lapin\n Michel Marie-Rose2",
         "main_media_type" : "video",
         "image_path" : "apps/tranches.png", 
