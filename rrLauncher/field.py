@@ -365,7 +365,7 @@ class Field(Widget):
 
                             square_parameters = self.square_parameters,
                             padding = self.square_padding,
-                            berkelium_is_installed = self.berkelium_is_installed()
+                            berkelium_is_installed = self.berkelium_is_installed
                             )
             
    
