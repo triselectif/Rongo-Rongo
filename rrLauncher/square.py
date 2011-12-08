@@ -54,7 +54,7 @@ class Square(Scatter):
 
     def __init__(self,**kwargs) :
 
-        def layers2texture(self, layers, berkelium):
+        def layers2texture(layers, berkelium):
             #convert either an image or an html webpage to texture
             #to be used as a background by the square
             converted_layers = {}
