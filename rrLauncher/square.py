@@ -73,9 +73,8 @@ class Square(Scatter):
                     img = Image(source=path)
                     texture = img.texture
                     converted_layers[key] = texture
-            print path, texture
+            #print path, texture
             return converted_layers
-             
         
         super(Square,self).__init__(**kwargs)
 
@@ -172,6 +171,7 @@ class Square(Scatter):
             #elif self.main_media_type == 'webpage' :
             #berkelium installed was already checked by field
             try :
+                from kivy.ext import load
                 berkelium = load('berkelium', (1, 1))   
                 self.webpage = berkelium.Webbrowser(url=self.webpage_path, size=(50,50) )
                 self.box_middle1.add_widget( self.webpage ) 
