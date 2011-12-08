@@ -113,7 +113,8 @@ class Square(Scatter):
                     bk[key] = berkelium.Webbrowser(url=path, size=size)
                     texture = bk[key]._bk.texture
                     converted_layers[key] = texture
-                    del bk[key]  
+                    #finally delete the berkelium instance
+                    del bk[key]   
                 else :
                     from kivy.uix.image import Image
                     img = Image(source=path)
@@ -128,9 +129,10 @@ class Square(Scatter):
             from kivy.ext import load
             berkelium = load('berkelium', (1, 1))            
 
+        #extract textures from layouts
         self.layers = layers2texture(self.layers, berkelium)
 
-
+        #get current layout
         layout_type = self.layout_type
         param = self.square_parameters[layout_type] #load parameters specific to that size (small, medium, large)
         
@@ -170,7 +172,6 @@ class Square(Scatter):
         self.box_middle.add_widget( self.box_middle2 )
  
         if self.main_media_type == 'webpage' :
-            #elif self.main_media_type == 'webpage' :
             #berkelium installed was already checked by field
             try : 
                 self.webpage = berkelium.Webbrowser(url=self.webpage_path, size=(50,50) )
