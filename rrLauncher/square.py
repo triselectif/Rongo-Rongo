@@ -187,7 +187,7 @@ class Square(Scatter):
                 print 'Cannot load url: '+str(self.webpage_path)
                 self.main_media_type = 'image'
             
-        elif self.main_media_type == 'image' : 
+        if self.main_media_type == 'image' : 
             from kivy.uix.image import Image
             image = Image(source = self.image_path, size_hint = (1,1) )
             self.box_middle1.add_widget( image ) 
