@@ -53,14 +53,36 @@ class Square(Scatter):
     berkelium_is_installed = BooleanProperty(False)
 
     def __init__(self,**kwargs) :
+
+        def layers2texture(self, layers, berkelium):
+            #convert either an image or an html webpage to texture
+            #to be used as a background by the square
+            converted_layers = {}
+            
+            for key,path in layers.iteritems():
+                #fileName, fileExtension = os.path.splitext(path)
+                #if fileName[4] in ['http','file']: #fileExtension in ['.org','.com','.fr','.html','.htm'] :
+                if path[:4] in ['http','file']:
+                    if self.berkelium_is_installed == False : return None
+                    size = (600,600)
+                    bk = berkelium.Webbrowser(url=path, size=size)
+                    texture = bk[key]._bk.texture
+                    converted_layers[key] = texture  
+                else :
+                    img = Image(source=path)
+                    texture = img.texture
+                    converted_layers[key] = texture
+            #print path, texture
+            return converted_layers 
+        
         super(Square,self).__init__(**kwargs)
-        print self.berkelium_is_installed
         #load berkelium
+        berkelium = None
         if self.berkelium_is_installed == True : 
             from kivy.ext import load
-            self.berkelium = load('berkelium', (1, 1))            
+            berkelium = load('berkelium', (1, 1))            
 
-        self.layers = self.layers2texture(self.layers)
+        self.layers = self.layers2texture(self.layers, berkelium)
 
         if self.main_media_type == 'video' :
             self.video = VideoPlayer(source = self.video_path)
@@ -72,7 +94,7 @@ class Square(Scatter):
         elif self.main_media_type == 'webpage' :
             #berkelium installed was already checked
             try :
-                self.webpage = self.berkelium.Webbrowser(url=self.webpage_path, size=(50,50) )
+                self.webpage = berkelium.Webbrowser(url=self.webpage_path, size=(50,50) )
             except :
                 print 'Cannot load url: '+str(self.webpage_path)
                 self.main_media_type = 'image'
@@ -82,27 +104,7 @@ class Square(Scatter):
         self.layout = BoxLayout(orientation = 'vertical', size = (l -2*pad,h -2*pad), pos = (pad,pad) )           
         self.init_layouts() 
 
-    def layers2texture(self, layers):
-        #convert either an image or an html webpage to texture
-        #to be used as a background by the square
-        converted_layers = {}
-        bk = {}
-        for key,path in layers.iteritems():
-            #fileName, fileExtension = os.path.splitext(path)
-            #if fileName[4] in ['http','file']: #fileExtension in ['.org','.com','.fr','.html','.htm'] :
-            if path[:4] in ['http','file']:
-                if self.berkelium_is_installed == False : return None
-                size = (600,600)
-                bk[key] = self.berkelium.Webbrowser(url=path, size=size)
-                texture = bk[key]._bk.texture
-                converted_layers[key] = texture
-                #del bk[key]  
-            else :
-                img = Image(source=path)
-                texture = img.texture
-                converted_layers[key] = texture
-        #print path, texture
-        return converted_layers       
+          
     
     def on_start(self, a):
         try :
