@@ -96,7 +96,7 @@ class Square(Scatter):
                 bk[key] = self.berkelium.Webbrowser(url=path, size=size)
                 texture = bk[key]._bk.texture
                 converted_layers[key] = texture
-                del bk[key]  
+                #del bk[key]  
             else :
                 img = Image(source=path)
                 texture = img.texture
