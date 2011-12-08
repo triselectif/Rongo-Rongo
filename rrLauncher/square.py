@@ -66,7 +66,7 @@ class Square(Scatter):
                     if self.berkelium_is_installed == False : return None
                     size = (600,600)
                     bk = berkelium.Webbrowser(url=path, size=size)
-                    texture = bk[key]._bk.texture
+                    texture = bk._bk.texture
                     converted_layers[key] = texture  
                 else :
                     img = Image(source=path)
@@ -76,6 +76,7 @@ class Square(Scatter):
             return converted_layers 
         
         super(Square,self).__init__(**kwargs)
+
         #load berkelium
         berkelium = None
         if self.berkelium_is_installed == True : 
