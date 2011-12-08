@@ -6,7 +6,7 @@
         "color_up" : [0.82,0.82,0.82,1],
         "color_down" : [0,0.62,0.87],
         "authors": "Realise par Lapin\n Michel Marie-Rose2",
-        "main_media_type" : "webpage",
+        "main_media_type" : "image",
         "image_path" : "apps/tranches.png", 
         "video_path" : "apps/tranches.mp4",
 	"webpage_path" : "http://www.google.com",
