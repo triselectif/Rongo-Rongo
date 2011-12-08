@@ -93,14 +93,7 @@ class Square(Scatter):
             self.video.bind(on_fullscreen = self.on_fullscreen)
             self.video.bind(on_leave_fullscreen = self.on_leave_fullscreen)
         
-        elif self.main_media_type == 'webpage' :
-            #berkelium installed was already checked by field
-            try :
-                berkelium = load('berkelium', (1, 1))  
-                self.webpage = berkelium.Webbrowser(url=self.webpage_path, size=(50,50) )
-            except :
-                print 'Cannot load url: '+str(self.webpage_path)
-                self.main_media_type = 'image'
+        
         
         l,h = self.size
         pad = self.padding
@@ -181,15 +174,27 @@ class Square(Scatter):
         self.box_middle1 = BoxLayout(orientation = 'horizontal', size_hint = param['box_middle1_size_hint'], padding = 0, spacing = 0 )
         self.box_middle2 = BoxLayout(orientation = 'horizontal', size_hint = param['box_middle2_size_hint'], padding = 0, spacing = 0 )
         self.box_middle.add_widget( self.box_middle1 ) 
-        self.box_middle.add_widget( self.box_middle2 ) 
-        if self.main_media_type == 'image' : 
+        self.box_middle.add_widget( self.box_middle2 )
+ 
+        if self.main_media_type == 'webpage' :
+            #elif self.main_media_type == 'webpage' :
+            #berkelium installed was already checked by field
+            try :
+                berkelium = load('berkelium', (1, 1))   
+                self.webpage = berkelium.Webbrowser(url=self.webpage_path, size=(50,50) )
+                self.box_middle1.add_widget( self.webpage ) 
+            except :
+                print 'Cannot load url: '+str(self.webpage_path)
+                self.main_media_type = 'image'
+            
+        elif self.main_media_type == 'image' : 
             from kivy.uix.image import Image
             image = Image(source = self.image_path, size_hint = (1,1) )
             self.box_middle1.add_widget( image ) 
+
         elif self.main_media_type == 'video' : 
             self.box_middle1.add_widget( self.video ) 
-        elif self.main_media_type == 'webpage' :
-            self.box_middle1.add_widget( self.webpage ) 
+        
         self.layout.add_widget( self.box_middle ) 
 
         #Bottom part : buttons
