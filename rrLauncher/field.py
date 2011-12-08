@@ -323,36 +323,10 @@ class Field(Widget):
                     if self.berkelium_is_installed == False : 
                         return False
             return True
-
-    def layers2texture(self, layers):
-        #convert either an image or an html webpage to texture
-        #to be used as a background by the square
-        converted_layers = {}
-        for key,path in layers.iteritems():
-            #fileName, fileExtension = os.path.splitext(path)
-            #if fileName[4] in ['http','file']: #fileExtension in ['.org','.com','.fr','.html','.htm'] :
-            if path[:4] in ['http','file']:
-                if self.berkelium_is_installed == False : return None
-                size = (600,600)
-                bk = berkelium.Webbrowser(url=path, size=size)
-                texture = bk._bk.texture
-                converted_layers[key] = texture  
-            else :
-                img = Image(source=path)
-                texture = img.texture
-                converted_layers[key] = texture
-        #print path, texture
-        return converted_layers        
-        
+       
 
     def init_square(self,apps,key,pos,size, layout_type):
-            layers = self.layers2texture(
-                                      {
-                                      "large" : str( apps[key]['layer_large'] ), 
-                                      "medium" : str( apps[key]['layer_medium'] ), 
-                                      "small": str( apps[key]["layer_small"] )
-                                      }
-                                     )
+            
             return Square(
                             app =self.app,
                             pos = pos, 
@@ -376,7 +350,11 @@ class Field(Widget):
                             image_path = apps[key]['image_path'],
                             video_path = apps[key]['video_path'],
                             webpage_path = apps[key]['webpage_path'],
-                            layers = layers, 
+                            layers = {
+                                      "large" : str( apps[key]['layer_large'] ), 
+                                      "medium" : str( apps[key]['layer_medium'] ), 
+                                      "small": str( apps[key]["layer_small"] )
+                                      }, 
                             alternative_image_path = apps[key]['alternative_image_path'],
                             main_description = apps[key]['main_description'] ,
                             long_description = apps[key]['long_description'],
@@ -385,7 +363,8 @@ class Field(Widget):
                             info_conclusion = apps[key]['info_conclusion'],
 
                             square_parameters = self.square_parameters,
-                            padding = self.square_padding
+                            padding = self.square_padding,
+                            berkelium_is_installed = self.berkelium_is_installed
                             )
             
    

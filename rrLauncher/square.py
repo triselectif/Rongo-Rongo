@@ -50,10 +50,18 @@ class Square(Scatter):
     layer_texture_path = ObjectProperty( None )
     process_touch_up_forbidden = BooleanProperty(False)
     padding = NumericProperty(10) #square layout padding
+    berkelium_is_installed = BooleanProperty(False)
 
     def __init__(self,**kwargs) :
         super(Square,self).__init__(**kwargs)
-        
+
+        #load berkelium
+        if self.berkelium_is_installed == True : 
+            from kivy.ext import load
+            berkelium = load('berkelium', (1, 1))            
+
+        self.layers = self.layers2texture(self.layers)
+
         if self.main_media_type == 'video' :
             self.video = VideoPlayer(source = self.video_path)
             self.video.bind(on_unmute =self.on_unmute)
@@ -63,8 +71,6 @@ class Square(Scatter):
         
         elif self.main_media_type == 'webpage' :
             #berkelium installed was already checked
-            from kivy.ext import load
-            berkelium = load('berkelium', (1, 1))
             try :
                 self.webpage = berkelium.Webbrowser(url=self.webpage_path, size=(50,50) )
             except :
@@ -75,6 +81,28 @@ class Square(Scatter):
         pad = self.padding
         self.layout = BoxLayout(orientation = 'vertical', size = (l -2*pad,h -2*pad), pos = (pad,pad) )           
         self.init_layouts() 
+
+    def layers2texture(self, layers):
+        #convert either an image or an html webpage to texture
+        #to be used as a background by the square
+        converted_layers = {}
+        bk = {}
+        for key,path in layers.iteritems():
+            #fileName, fileExtension = os.path.splitext(path)
+            #if fileName[4] in ['http','file']: #fileExtension in ['.org','.com','.fr','.html','.htm'] :
+            if path[:4] in ['http','file']:
+                if self.berkelium_is_installed == False : return None
+                size = (600,600)
+                bk[key] = berkelium.Webbrowser(url=path, size=size)
+                texture = bk[key]._bk.texture
+                converted_layers[key] = texture
+                del bk[key]  
+            else :
+                img = Image(source=path)
+                texture = img.texture
+                converted_layers[key] = texture
+        #print path, texture
+        return converted_layers       
     
     def on_start(self, a):
         try :
