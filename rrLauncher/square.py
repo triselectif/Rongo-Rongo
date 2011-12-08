@@ -82,7 +82,7 @@ class Square(Scatter):
             from kivy.ext import load
             berkelium = load('berkelium', (1, 1))            
 
-        self.layers = self.layers2texture(self.layers, berkelium)
+        self.layers = layers2texture(self.layers, berkelium)
 
         if self.main_media_type == 'video' :
             self.video = VideoPlayer(source = self.video_path)
