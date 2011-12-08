@@ -58,16 +58,17 @@ class Square(Scatter):
             #convert either an image or an html webpage to texture
             #to be used as a background by the square
             converted_layers = {}
-            
+            bk = {}
             for key,path in layers.iteritems():
                 #fileName, fileExtension = os.path.splitext(path)
                 #if fileName[4] in ['http','file']: #fileExtension in ['.org','.com','.fr','.html','.htm'] :
                 if path[:4] in ['http','file']:
                     if self.berkelium_is_installed == False : return None
                     size = (600,600)
-                    bk = berkelium.Webbrowser(url=path, size=size)
-                    texture = bk._bk.texture
-                    converted_layers[key] = texture  
+                    bk[key] = berkelium.Webbrowser(url=path, size=size)
+                    texture = bk[key]._bk.texture
+                    converted_layers[key] = texture
+                    del bk[key]  
                 else :
                     img = Image(source=path)
                     texture = img.texture
