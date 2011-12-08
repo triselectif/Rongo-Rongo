@@ -66,7 +66,7 @@ class Square(Scatter):
             from kivy.ext import load
             berkelium = load('berkelium', (1, 1))
             try :
-                self.webpage = berkelium.Webbrowser(url=self.webpage, size=(50,50) )
+                self.webpage = berkelium.Webbrowser(url=self.webpage_path, size=(50,50) )
             except :
                 print 'Cannot load url: '+str(self.webpage_path)
                 self.main_media_type = 'image'
