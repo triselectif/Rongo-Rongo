@@ -59,7 +59,7 @@ class Square(Scatter):
         l,h = self.size
         pad = self.padding
         self.layout = BoxLayout(orientation = 'vertical', size = (l -2*pad,h -2*pad), pos = (pad,pad) )           
-        self.init_layouts(berkelium) 
+        self.init_layouts() 
 
           
     
@@ -97,7 +97,7 @@ class Square(Scatter):
         if not multiline : return font_size
         else : return font_size - 6            
 
-    def init_layouts(self, berkelium):
+    def init_layouts(self):
 
         def layers2texture(layers, berkelium):
             #convert either an image or an html webpage to texture
