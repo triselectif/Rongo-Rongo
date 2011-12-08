@@ -73,8 +73,9 @@ class Square(Scatter):
                     img = Image(source=path)
                     texture = img.texture
                     converted_layers[key] = texture
-            #print path, texture
-            return converted_layers 
+            print path, texture
+            return converted_layers
+             
         
         super(Square,self).__init__(**kwargs)
 
@@ -85,10 +86,6 @@ class Square(Scatter):
             berkelium = load('berkelium', (1, 1))            
 
         self.layers = layers2texture(self.layers, berkelium)
-
-        
-        
-        
         
         l,h = self.size
         pad = self.padding
