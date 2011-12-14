@@ -115,7 +115,7 @@ class Bar(FloatLayout):
 
     def add_button(self, place):
         pos = self.geometry_squares[str(place)].pos
-        buttons = GridLayout(cols=2, row_force_default=True, row_default_height=self.element_size[1]*0.5, size = self.element_size, pos = pos )
+        buttons = GridLayout(cols=2, row_force_default=True, row_default_height=self.element_size[1]*0.5, size = self.element_size, pos = pos, spacing = 3 )
         but1 = SuperButton(background_normal = 'style/bar/slider-picto-type-off.png',background_down = 'style/bar/slider-picto-type-on.png')
         but1.bind(on_press = self.sort_by_app_type)
         but2 = Button(background_normal = 'style/bar/slider-picto-ABC-off.png',background_down = 'style/bar/slider-picto-ABC-on.png')

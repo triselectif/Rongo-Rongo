@@ -74,7 +74,7 @@ class AppView(Scatter):
         l = len(self.touches2)
         if l > 1 :
             #if several touches on the bar
-            self.set_texture('style/bar/bouton-lancer-T2-off.png')
+            self.set_texture('style/bar/slider-fond.png')
             
         return super(AppView, self).on_touch_down(touch)    
 
