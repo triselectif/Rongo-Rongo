@@ -1,5 +1,5 @@
 {
-        "screen_size":[1920, 1080],
+        "screen_size":[1360, 768],
         "vertical":"False",
         "bar_width":"135",
 	"icon_px" : [72,72]

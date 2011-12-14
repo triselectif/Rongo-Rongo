@@ -19,6 +19,7 @@ class AppView(Scatter):
     texture = ObjectProperty(None)
     bar_width = NumericProperty(135)
     bar_translation_min_distance = NumericProperty(250)
+    content = ObjectProperty(None)
 
     def __init__(self, **kwargs):
         super(AppView, self).__init__(**kwargs)          
@@ -37,7 +38,13 @@ class AppView(Scatter):
         self.gdb = GestureDatabase()
         self.create_gesture( [(0,0),(10,0)] )
         self.create_gesture( [(0,0),(-10,0)] )        
-
+    '''
+    def add_widget(self, child):
+        if self.content:
+            print child
+            return self.content.add_widget(child)
+        return super(AppView, self).add_widget(child)
+    '''
     def set_texture(self,path):
         #from kivy.core.image import Image
         tex = Image(path).texture
@@ -67,26 +74,8 @@ class AppView(Scatter):
         l = len(self.touches2)
         if l > 1 :
             #if several touches on the bar
-            #print str(l)+' touches on bar'
             self.set_texture('style/bar/bouton-lancer-T2-off.png')
-            """   
-            x, y = touch.x, touch.y
-            # if the touch isnt on the widget we do nothing
-            if not self.collide_point(x, y):
-                return False
-
-            #don't dispatch touches to children (icons)
             
-            # grab the touch so we get all it later move events for sure
-            touch.grab(self)
-            self._touches.append(touch)
-            self._last_touch_pos[touch] = touch.pos
-            
-            return True
-        else :
-            #regular behaviour 
-            return super(AppView, self).on_touch_down(touch)
-            """
         return super(AppView, self).on_touch_down(touch)    
 
     def on_touch_up(self,touch):

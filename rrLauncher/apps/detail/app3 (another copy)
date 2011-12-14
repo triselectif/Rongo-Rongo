@@ -1,6 +1,6 @@
 {
         "id" : "app1",
-        "title" : "NOM XY",
+        "title" : "Titre I",
         "app_type" : "app_types/service.png",
         "color_text": [0.1,0.1,0.1,1],
         "color_up" : [0.82,0.82,0.82,1],

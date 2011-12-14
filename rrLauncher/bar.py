@@ -28,9 +28,9 @@ class Bar(FloatLayout):
         self.geometry_squares = {}
         self.images = {}
         self.sorting = []  
-        #self.scroll = ScrollView( size_hint=(None, None), width = 130, height = 1500 )
+        #self.scroll = ScrollView( size_hint = (None, None), width = 130, height = 1000 )
         #self.add_widget(self.scroll) 
-        self.layout = Widget(size_hint = (1,1) )#self.add_widget(self.layout)
+        self.layout = Widget(size_hint = (None, None), width = 130, height = 2000 ) #size_hint=(None, None), width = 130, height = 1500) # size_hint = (1,1) )#self.add_widget(self.layout)
         self.add_widget(self.layout)
         self.draw_empty_squares()
         self.sort()

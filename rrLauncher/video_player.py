@@ -55,7 +55,7 @@ class VideoPlayer(Widget):
             self.sound_button.bind( on_press = self.mute_unmute_button )
             self.buttons.add_widget( self.sound_button )
             #fullscreen 
-            self.fullscreen_button = SuperButton(text ='', background_normal = 'video_player/style/1318898261_media-volume-0.png', background_down = 'video_player/style/1318898261_media-volume-0.png', size_hint = (None, None), size = (20, 20) )
+            self.fullscreen_button = SuperButton(text ='', background_normal = 'video_player/style/fullscreen-logo.png', background_down = 'video_player/style/fullscreen-logo.png', size_hint = (None, None), size = (20, 20) )
             self.fullscreen_button.bind(on_press = self.fullscreen_button_down )
             self.buttons.add_widget( self.fullscreen_button )
             #duration bar

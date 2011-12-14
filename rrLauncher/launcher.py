@@ -16,7 +16,7 @@ class LauncherApp(App):
         self.field = Field(app=self, activate_animations = True)
         self.appview.add_widget(self.field)
         
-        self.bar = Bar(app = self, element_size = self.field.geometry['icon_px'])
+        self.bar = Bar(app = self, element_size = self.field.geometry['icon_px'], size_hint = (None, None), height =2000)
         #root = ScrollView(size_hint=(None, None), size=(200, 800))
         #root.add_widget(self.bar)
         self.appview.add_widget(self.bar)

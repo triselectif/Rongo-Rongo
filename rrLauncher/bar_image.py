@@ -74,9 +74,11 @@ class BarImage(Scatter):
         super(BarImage,self).on_touch_up(touch)
  
     def on_touch_move(self,touch):
+        
         if self.bar_is_moving() or self.app.appview.position_left == False: 
             #stick icon to the bar
             return False
+        
         """
         #get currrent touches 
         touches = self.app.appview.touches2
