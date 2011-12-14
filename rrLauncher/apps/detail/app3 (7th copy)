@@ -1,0 +1,22 @@
+{
+        "id" : "app1",
+        "title" : "Titre H",
+        "app_type" : "app_types/service.png",
+        "color_text": [0.1,0.1,0.1,1],
+        "color_up" : [0.82,0.82,0.82,1],
+        "color_down" : [0,0.62,0.87],
+        "authors": "Realise par Lapin\n Michel Marie-Rose2",
+        "main_media_type" : "image",
+        "image_path" : "apps/tranches.png", 
+        "video_path" : "apps/tranches.mp4",
+	"webpage_path" : "http://www.google.com",
+        "layer_large" : "apps/layers/app2/Fond-jeu-T3.png",
+        "layer_medium" : "apps/layers/app2/Fond-jeu-T2.png",
+        "layer_small" : "apps/layers/app2/Fond-jeu-T1.png", 
+        "alternative_image_path" : "apps/pic.png", 
+        "main_description" : "LLapein oindoziuhboiuhqvoi\nuhb oiuhbqdsoiuhbv oiuhbqosi\nduhb oiuhbv" , 
+        "long_description" : "LLapein oindoziuhboiuhqvoi\nuhb oiuhbqdsoiuhbv oiuhbqosi\nduhb oiuhbv", 
+        "info_title" : "oiuhnoiuhn oiuhn", 
+        "info_text" : " uuhu", 
+        "info_conclusion":"conclude"
+}
